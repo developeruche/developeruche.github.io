@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Uche | Software Engineer</title>
+    <meta name="description"
+        content="Personal website of Developer Uche, a blockchain engineer & researcher specializing in zero-knowledge proofs, cryptography, and distributed systems.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <img src="developeruche.jpg" alt="Developer Uche Logo">
+                <span>developeruche</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#projects">Project</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#publications">Publications</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="home" class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1>Developer Uche</h1>
+                <p class="tagline">Blockchain Engineer & Researcher</p>
+                <p class="sub-tagline">Specializing in Zero-Knowledge Proofs, Cryptography, and Distributed Systems</p>
+                <div class="current-role">
+                    <span class="role-badge">Currently a Fellow at Ethereum</span>
+                </div>
+                <div class="social-links">
+                    <a href="mailto:developeruche@gmail.com" class="btn btn-primary">Contact Me</a>
+                    <a href="https://github.com/developeruche" class="social-icon">GitHub</a>
+                    <a href="https://x.com/developeruche" class="social-icon">X (Twitter)</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="publications" class="section">
+            <div class="container">
+                <h2 class="section-title">Research & Publications</h2>
+                <div class="grid-2">
+                    <div class="card research-card">
+                        <h3>Cryptography and Zero Knowledge Proof Research</h3>
+                        <p>A research repo implementing research papers, cryptographic primitives, trying out imaginary
+                            exploits, and so on.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/cryptography-n-zk-research">code</a>
+                            <a href="https://developeruche.gitbook.io/computational-proof-systems">research notes</a>
+                        </div>
+                    </div>
+                    <div class="card research-card">
+                        <h3>RISC-V EVM Experiment</h3>
+                        <p>Aims to bridge the gap between the RISC-V instruction set architecture and the Ethereum
+                            Virtual Machine (EVM). Integrating RISC-V with the EVM to create a more efficient, secure,
+                            and scalable blockchain VM platform.</p>
+                        <div class="card-links">
+                            <a href="https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl">research article</a>
+                            <a href="https://github.com/developeruche/riscv-evm-experiment">rust PoC implementation</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section bg-alt">
+            <div class="container">
+                <h2 class="section-title">Open Source Work</h2>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">Major Contributions</h3>
+                    <div class="card project-card">
+                        <h4>Alloy</h4>
+                        <p>Alloy connects applications to blockchains. A rewrite of ethers-rs from the ground up, with
+                            exciting new features, high performance, and excellent docs.</p>
+                        <a href="https://github.com/alloy-rs/alloy/commits?author=developeruche" class="tag">PRs</a>
+                    </div>
+                    <br />
+                    <div class="card project-card">
+                        <h4>REVM</h4>
+                        <p>REVM is a high-performance, high-fidelity Ethereum Virtual Machine implementation written in
+                            Rust.</p>
+                        <a href="https://github.com/bluealloy/revm/commits?author=developeruche" class="tag">PRs</a>
+                    </div>
+                    <br />
+                    <div class="card project-card">
+                        <h4>Ere</h4>
+                        <p>Unified zkVM Interface & Toolkit. Compile. Execute. Prove. Verify. One ergonomic Rust API,
+                            multiple zero‑knowledge virtual machines.</p>
+                        <a href="https://github.com/eth-act/ere/commits?author=developeruche" class="tag">PRs</a>
+                    </div>
+                    <br />
+                    <div class="card project-card">
+                        <h4>ZKboost</h4>
+                        <p>Simple HTTP API for any Ere-compliant zkVM. zkboost is an API wrapper on top of Ere allowing
+                            you to execute, verify and create zkVM proofs by calling a HTTP endpoint.</p>
+                        <a href="https://github.com/eth-act/zkboost/commits?author=developeruche" class="tag">PRs</a>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">Contributions</h3>
+                    <div class="grid-3">
+                        <div class="card highlight-card">
+                            <h4>OpenZeppelin Rust Contracts</h4>
+                            <p>A library for secure smart contract development written in Rust.</p>
+                            <a href="https://github.com/OpenZeppelin/rust-contracts-stylus/commits?author=developeruche"
+                                class="tag">PRs</a>
+                        </div>
+                        <div class="card highlight-card">
+                            <h4>Scroll SDK</h4>
+                            <p>Utility SDK for handling anything bridging in the scroll Ecosystem.</p>
+                            <a href="https://github.com/developeruche/scroll-sdks" class="tag">PRs</a>
+                        </div>
+                        <div class="card highlight-card">
+                            <h4>Hyperbridge</h4>
+                            <p>First fully permissionless and decentralized cross-chain protocol powered by
+                                interoperability proofs. Allows anyone to run a relayer without staking or whitelisting.
+                            </p>
+                            <a href="https://github.com/polytope-labs/hyperbridge/commits?author=developeruche"
+                                class="tag">PRs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">Personal Projects</h2>
+                <div class="grid-2">
+                    <div class="card project-card">
+                        <h4>Hybrid Blockchain Framework</h4>
+                        <p>A modern blockchain framework for developing, deploying, and interacting with RISCV-based
+                            smart contracts on Ethereum. Features RISCV smart contract development, local blockchain
+                            node, deployment tools, dual VM integration, and Rust ecosystem integration.</p>
+
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/hybrid">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>RISC-V EVM (RUST)</h4>
+                        <p>Experimental implementation of a RISC-V based Ethereum Virtual Machine exploring technical
+                            feasibility and performance implications.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/riscv-evm-experiment">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>RISC-V Assembler (RUST)</h4>
+                        <p>A Rust implementation of a RISC-V (RV32IM) assembler with both a library and CLI tool.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/riscv-assembler">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>RISC-V Emulator (RUST)</h4>
+                        <p>A simple attempt to create a RISC-V emulator in Rust with the goal of understanding the
+                            RISC-V architecture and its application in zkVM.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/riscv-emulator">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>Gas Relay</h4>
+                        <p>A secure and efficient Gas Relay implementation based on the ERC-2771 specification. This
+                            software enables meta-transactions by receiving signed requests from Transaction Signers,
+                            covering gas costs, and relaying transactions to a Trusted Forwarder.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/gas-relay">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>Open Gateway</h4>
+                        <p>Decentralized payment gateway system that facilitates secure and efficient handling of
+                            payments in native ETH or ERC20 tokens.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/open-gateway">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>Chronicle</h4>
+                        <p>Indexing software that indexes transactions and modules (Smart contract, Parachain, and so
+                            on) Events.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/chronicle">code</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>Pallet DEX</h4>
+                        <p>Custom DEX pallet using the Polkadot SDK based on UniswapV2 implementation. Published on
+                            crates.io</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/pallet-dex">code</a>
+                            <a href="https://crates.io/crates/pallet-dex-v2">crates.io</a>
+                        </div>
+                    </div>
+                    <div class="card project-card">
+                        <h4>Light Tornado Cash</h4>
+                        <p>Implementation of Tornado Cash for learning Groth16 zero-knowledge proofs.</p>
+                        <div class="card-links">
+                            <a href="https://github.com/developeruche/light-tornodo-cash">code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" class="section bg-alt">
+            <div class="container">
+                <h2 class="section-title">Featured Technical Articles</h2>
+
+                <h3 class="subsection-title">Blockchain & EVM Deep Dives</h3>
+                <div class="article-list">
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl">Bridging Worlds: A Performance and
+                            Feasibility Analysis of RISC-V Integration with Ethereum Virtual Machine</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/Byhbp7y9xx">A Hybrid Ethereum: Experimenting with a
+                            RISC-V Execution Engine</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJbNXVJeWl">How ZK-Rollups Work After EIP-4844: From
+                            calldata to Blobs</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/HJD7M2tebg">Ethereum Protocol Fellowship Development
+                            Log: Project Summary</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/r1mC2oDrZx">A Deep Dive into EIP-7928 and
+                            Block-Level Access Lists</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/HkBLGkjyll">EVM Object Format deep dive</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJQTekokex">What Does EVM's JUMPDEST Do?</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJ3ZKCj6Jg">If State Read/Write Opcode Aren't Native VM (WASM/RISC-V) Instructions, How Do
+                            Blockchains State read and write?</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/Bk-DGd8Qyl">Building EIP2771 Gasless Relayer</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://developeruche.medium.com/merkle-tree-and-the-blockchain-f40cc58650b7">Merkle Tree and the Blockchain</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-1-6fd7bd920bce">Understanding Polynomial Commitment KZG using Airdrop Distribution - Part 1</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-2-8ed1a4539c5a">Understanding Polynomial Commitment KZG using Airdrop Distribution - Part 2</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://developeruche.medium.com/deep-dive-into-abstract-account-wallet-eip4337-b7ae60dbf9a7">Deep Dive into Abstract Account Wallet EIP4337</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://developeruche.medium.com/chronicle-blockchain-indexer-built-in-rust-blazing-fast-fff45ba60a97">Chronicle: Blockchain Indexer Built in Rust - Blazing Fast</a>
+                    </article>
+                </div>
+
+                <h3 class="subsection-title">Zero-Knowledge Proofs & Cryptography</h3>
+                <div class="article-list">
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/HJX8bvAz1x">The multiset check IOP</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/rkd1vBsElx">Deconstructing the 1.5 GHz zkVM: How
+                            ZisK Redefined the Limits of Trace Generation</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/Bk8UzubUel">Understanding the Winternitz One-Time
+                            Signature Scheme: A Deep Dive into Post-Quantum Cryptography</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJX_RT3Ule">The Matryoshka MLE Algorithm</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/SkWiQX8--l">Ron's Optimization for Multilinear
+                            Extension Evaluation</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJ-hB-Lb-e">Multilinear Polynomial Extension and
+                            Direct evaluation</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/ryqo14f7-x">Jagged Multilinear Extension (Stacked
+                            MLE)</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/S11ZKNpJeg">Lecture Notes: Fields and Extension Fields in Cryptography</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/By10JQ6Myx">Building Blocks of Modern Zero-Knowledge
+                            Proofs: An Engineering Perspective
+                            (Overview)</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/HkdDT4Kzyl">The Groth16 protocol</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BkhzajEfye">R1CS to QAP</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/BkCdZ1tGJg">Permutation Check Polynomial IOP</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/B1GexOrGkl">ProductCheck Polynomial Interactive Oracle Proof</a>
+                    </article>
+                </div>
+
+                <h3 class="subsection-title">Distributed Systems & Infrastructure</h3>
+                <div class="article-list">
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/H1BJhOHylx">Merkle Patricia Trie</a>
+                    </article>
+                    <article class="article-item">
+                        <a href="https://hackmd.io/@0xdeveloperuche/Sy2ZEn32Je">Building a Kademlia Distributed Hash Table</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Developer Uche. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="mailto:contact@developeruche.com">Email</a>
+                <a href="https://github.com/developeruche">GitHub</a>
+                <a href="https://x.com/developeruche">X (Twitter)</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

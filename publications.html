@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publications | Developer Uche</title>
+    <!-- Fallback fonts similar to PP Neue Bit and PP Supply Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-left">
+            <a href="index.html" class="logo">
+                <img src="developeruche.jpg" alt="Developer Uche Logo" class="logo-img">
+                <span style="font-family: var(--font-ui); font-size: 14px;">developeruche</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">HOME</a>
+                <a href="projects.html">PROJECTS</a>
+                <a href="blog.html">BLOG</a>
+                <a href="publications.html" class="active">PUBLICATIONS</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <a href="mailto:developeruche@gmail.com" class="btn-primary" style="padding: 8px 16px;">CONTACT</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header slide-up">
+            <h1 class="hero-title"><span class="text-gradient">RESEARCH</span><br>& PAPERS</h1>
+            <p class="hero-subtitle">// ACADEMIC-STYLE OUTPUTS & DEEP ARCHITECTURE ANALYSIS</p>
+
+            <!-- Floating connection illustration -->
+            <svg class="svg-illustration glow-node"
+                style="position:absolute; right:10%; top:30%; opacity:0.3; width:200px; height:200px;"
+                viewBox="0 0 100 100">
+                <circle cx="20" cy="50" r="5" fill="var(--bg-dark)" stroke="var(--accent-glow)" />
+                <circle cx="80" cy="20" r="5" fill="var(--bg-dark)" stroke="var(--accent-glow)" />
+                <circle cx="80" cy="80" r="5" fill="var(--bg-dark)" stroke="var(--accent-glow)" />
+                <path d="M25 50 L75 25 M25 50 L75 75" stroke="var(--accent-glow)" fill="none"
+                    class="animated-path-segment" />
+            </svg>
+        </section>
+
+        <section class="content-list-section">
+            <div class="container-narrow">
+
+                <h2 class="subsection-title">// PRIMARY RESEARCH AREAS</h2>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM</h3>
+                        <p class="abstract">An extensive experimental study aiming to bridge the gap between the RISC-V
+                            instruction set architecture and the Ethereum Virtual Machine (EVM). This research
+                            investigates the technical feasibility of integrating RISC-V with the EVM to create a more
+                            efficient, secure, and scalable blockchain VM platform.</p>
+                        <div class="publication-links">
+                            <a href="https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl" target="_blank"
+                                class="btn-secondary">READ PAPER <span>→</span></a>
+                            <a href="https://github.com/developeruche/riscv-evm-experiment" target="_blank"
+                                class="btn-secondary">RUST PoC CODE <span>→</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Cryptography and Zero Knowledge Proof Research Repository</h3>
+                        <p class="abstract">A living research repository dedicated to implementing academic research
+                            papers, defining cryptographic primitives from scratch in Rust, and analyzing theoretical
+                            exploits in proof systems.</p>
+                        <div class="publication-links">
+                            <a href="https://developeruche.gitbook.io/computational-proof-systems" target="_blank"
+                                class="btn-secondary">RESEARCH NOTES <span>→</span></a>
+                            <a href="https://github.com/developeruche/cryptography-n-zk-research" target="_blank"
+                                class="btn-secondary">SOURCE CODE <span>→</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="subsection-title" style="margin-top: var(--spacing-xl);">// THEORETICAL EXPLORATIONS</h2>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>The Multiset Check IOP</h3>
+                        <p class="abstract">Formal analysis of interactive oracle proofs used for validating multiset
+                            equivalences in zero-knowledge contexts.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/HJX8bvAz1x" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>The Matryoshka MLE Algorithm</h3>
+                        <p class="abstract">Notes mapping out the mechanics of the Matryoshka Multilinear Extension
+                            algorithm for efficient proof structures.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJX_RT3Ule" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Jagged Multilinear Extension (Stacked MLE)</h3>
+                        <p class="abstract">Exploration of Stacked MLE structures utilized in advanced cryptographic
+                            polynomial commitments.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/ryqo14f7-x" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Ron's Optimization for Multilinear Extension Evaluation</h3>
+                        <p class="abstract">An optimization strategy for efficiently evaluating multilinear extensions
+                            in proof systems.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/SkWiQX8--l" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Multilinear Polynomial Extension and Direct Evaluation</h3>
+                        <p class="abstract">Technical exploration of multilinear polynomials and methods for their
+                            direct evaluation.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJ-hB-Lb-e" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Lecture Notes: Fields and Extension Fields in Cryptography</h3>
+                        <p class="abstract">Foundational lecture notes on finite fields, extension fields, and their
+                            cryptographic properties.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/S11ZKNpJeg" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>The Groth16 Protocol</h3>
+                        <p class="abstract">A deep dive into the mechanics and mathematics of the Groth16 zero-knowledge
+                            proving system.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/HkdDT4Kzyl" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>R1CS to QAP</h3>
+                        <p class="abstract">Understanding the transformation from Rank-1 Constraint Systems (R1CS) to
+                            Quadratic Arithmetic Programs (QAP).</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BkhzajEfye" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Permutation Check Polynomial IOP</h3>
+                        <p class="abstract">Analysis of the permutation check interactive oracle proof used within
+                            modern zk-SNARKs.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BkCdZ1tGJg" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>ProductCheck Polynomial Interactive Oracle Proof</h3>
+                        <p class="abstract">An examination of the ProductCheck argument and its role in building
+                            efficient polynomial IOPs.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/B1GexOrGkl" target="_blank" class="read-more">READ
+                            ANALYSIS <span>→</span></a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-mission">
+                <p>Advancing the frontier of decentralized systems. Translating complex math and cryptography into
+                    scalable, secure software.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-column">
+                    <a href="https://github.com/developeruche">GITHUB</a>
+                    <a href="https://x.com/developeruche">X (TWITTER)</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>GENRE: BLOCKCHAIN / CRYPTOGRAPHY</p>
+            <p>© 2026 DEVELOPER UCHE. ALL RIGHTS RESERVED.</p>
+        </div>
+    </footer>
+
+    <script src="index.js"></script>
+</body>
+
+</html>

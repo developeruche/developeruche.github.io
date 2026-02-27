@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Developer Uche</title>
+    <!-- Fallback fonts similar to PP Neue Bit and PP Supply Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-left">
+            <a href="index.html" class="logo">
+                <img src="developeruche.jpg" alt="Developer Uche Logo" class="logo-img">
+                <span style="font-family: var(--font-ui); font-size: 14px;">developeruche</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">HOME</a>
+                <a href="projects.html">PROJECTS</a>
+                <a href="blog.html" class="active">BLOG</a>
+                <a href="publications.html">PUBLICATIONS</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <a href="mailto:developeruche@gmail.com" class="btn-primary" style="padding: 8px 16px;">CONTACT</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header slide-up">
+            <h1 class="hero-title"><span class="text-gradient">TECHNICAL</span><br>WRITINGS</h1>
+            <p class="hero-subtitle">// BLOCKCHAIN, EVM, AND ZERO-KNOWLEDGE PROOFS</p>
+        </section>
+
+        <section class="content-list-section">
+            <div class="container-narrow">
+
+                <h2 class="subsection-title">// ZK & CRYPTOGRAPHY</h2>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Deconstructing the 1.5 GHz zkVM: How ZisK Redefined the Limits of Trace Generation</h3>
+                        <div class="meta-tags"><span>HackMD</span><span>Zero-Knowledge</span></div>
+                        <p>An engineering deep dive into trace generation optimization and how ZisK pushes the
+                            boundaries of zkVM performance.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/rkd1vBsElx" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Understanding the Winternitz One-Time Signature Scheme: A Deep Dive into Post-Quantum
+                            Cryptography</h3>
+                        <p>Exploring the mechanics of hash-based signature schemes and their implications for
+                            post-quantum security guarantees.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/Bk8UzubUel" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Building Blocks of Modern Zero-Knowledge Proofs: An Engineering Perspective</h3>
+                        <p>A comprehensive overview of the fundamental components that make up modern ZK proof systems,
+                            from polynomials to commitments.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/By10JQ6Myx" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1)</h3>
+                        <div class="meta-tags"><span>Medium</span><span>Cryptography</span></div>
+                        <p>An accessible explanation of KZG commitments grounded in the practical example of airdrop
+                            claims.</p>
+                        <a href="https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-1-6fd7bd920bce"
+                            target="_blank" class="read-more">READ POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 2)</h3>
+                        <div class="meta-tags"><span>Medium</span><span>Cryptography</span></div>
+                        <p>Continuing the exploration of KZG commitments, focusing on the mechanics of polynomial
+                            evaluation and proof verification.</p>
+                        <a href="https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-2-8ed1a4539c5a"
+                            target="_blank" class="read-more">READ POST <span>→</span></a>
+                    </div>
+                </div>
+
+
+                <h2 class="subsection-title" style="margin-top: var(--spacing-xl);">// BLOCKCHAIN & EVM</h2>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>How ZK-Rollups Work After EIP-4844: From calldata to Blobs</h3>
+                        <div class="meta-tags"><span>HackMD</span><span>EVM Deep Dive</span></div>
+                        <p>Analyzing the architectural shifts in Layer 2 rollups following the implementation of
+                            Proto-Danksharding.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJbNXVJeWl" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>EVM Object Format (EOF) Deep Dive</h3>
+                        <p>An exploration of EOF, the proposed upgrade to EVM code execution and validation rules.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/HkBLGkjyll" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>If State Read/Write Opcodes Aren't Native VM (WASM/RISC-V) Instructions, How Do Blockchains
+                            Read and Write State?</h3>
+                        <p>Bridging the conceptual gap between general-purpose VM instructions and blockchain specific
+                            state transitions.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJ3ZKCj6Jg" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Deep Dive into Abstract Account Wallet EIP-4337</h3>
+                        <div class="meta-tags"><span>Medium</span><span>Smart Contracts</span></div>
+                        <p>Understanding the mempool, bundlers, and entry point contracts powering account abstraction.
+                        </p>
+                        <a href="https://developeruche.medium.com/deep-dive-into-abstract-account-wallet-eip4337-b7ae60dbf9a7"
+                            target="_blank" class="read-more">READ POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Chronicle: Blockchain Indexer Built in Rust - Blazing Fast</h3>
+                        <div class="meta-tags"><span>Medium</span><span>Indexer</span></div>
+                        <p>An introduction to Chronicle, a blazing fast blockchain indexer written in Rust.</p>
+                        <a href="https://developeruche.medium.com/chronicle-blockchain-indexer-built-in-rust-blazing-fast-fff45ba60a97"
+                            target="_blank" class="read-more">READ POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Building EIP2771 Gasless Relayer</h3>
+                        <div class="meta-tags"><span>HackMD</span><span>ERC-2771</span></div>
+                        <p>A technical guide on building a secure gasless relayer utilizing the EIP2771 specification
+                            for meta-transactions.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/Bk-DGd8Qyl" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>What Does EVM's JUMPDEST Do?</h3>
+                        <p>A focused analysis on the JUMPDEST opcode and its critical role in EVM control flow
+                            operations.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/BJQTekokex" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>A Deep Dive into EIP-7928 and Block-Level Access Lists</h3>
+                        <div class="meta-tags"><span>HackMD</span><span>EIP-7928</span></div>
+                        <p>An exploration of state access optimization through block-level access lists introduced in
+                            EIP-7928.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/r1mC2oDrZx" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Ethereum Protocol Fellowship Development Log: Project Summary</h3>
+                        <p>Summarized findings and logs detailing research and engineering during the Ethereum Protocol
+                            Fellowship.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/HJD7M2tebg" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine</h3>
+                        <div class="meta-tags"><span>HackMD</span><span>RISC-V</span></div>
+                        <p>Discussions and insights from building an experimental execution engine separating the EVM
+                            and RISC-V architectures.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/Byhbp7y9xx" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <h2 class="subsection-title" style="margin-top: var(--spacing-xl);">// DISTRIBUTED SYSTEMS &
+                    INFRASTRUCTURE</h2>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Building a Kademlia Distributed Hash Table</h3>
+                        <div class="meta-tags"><span>HackMD</span><span>P2P Networking</span></div>
+                        <p>Engineering a Kademlia DHT from scratch, focusing on peer-to-peer node discovery and routing.
+                        </p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/Sy2ZEn32Je" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Merkle Patricia Trie</h3>
+                        <p>A technical breakdown of the Merkle Patricia Trie data structure underpinning Ethereum's
+                            state storage.</p>
+                        <a href="https://hackmd.io/@0xdeveloperuche/H1BJhOHylx" target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+                <div class="list-item fade-in">
+                    <div class="list-item-content">
+                        <h3>Understanding Ethereum State Trie</h3>
+                        <div class="meta-tags"><span>Medium</span><span>EVM Architecture</span></div>
+                        <p>An accessible exploration of the Ethereum State Trie and how account balances and contract
+                            states are managed.</p>
+                        <a href="https://developeruche.medium.com/merkle-tree-and-the-blockchain-f40cc58650b7"
+                            target="_blank" class="read-more">READ
+                            POST <span>→</span></a>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-mission">
+                <p>Advancing the frontier of decentralized systems. Translating complex math and cryptography into
+                    scalable, secure software.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-column">
+                    <a href="https://github.com/developeruche">GITHUB</a>
+                    <a href="https://x.com/developeruche">X (TWITTER)</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>GENRE: BLOCKCHAIN / CRYPTOGRAPHY</p>
+            <p>© 2026 DEVELOPER UCHE. ALL RIGHTS RESERVED.</p>
+        </div>
+    </footer>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
