@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Uche — Design System Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    /* ── This page's own scaffolding (built ONLY from tokens) ───────────── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-ui);
+      font-size: var(--text-base);
+      line-height: var(--leading-base);
+      text-transform: uppercase;
+      -webkit-font-smoothing: antialiased;
+      padding: var(--space-md);
+    }
+    h1 { font-family: var(--font-heading); font-size: var(--text-section); line-height: var(--leading-tight); margin-bottom: var(--space-sm); }
+    h2 { font-family: var(--font-heading); font-size: var(--text-2xl); line-height: var(--leading-tight); color: var(--color-text); }
+    .lead { color: var(--color-text-muted); max-width: var(--container-prose); letter-spacing: var(--tracking-tight); margin-bottom: var(--space-md); }
+    section { max-width: 1100px; margin: 0 auto var(--space-xl); }
+    .rule { color: var(--color-text-muted); font-size: var(--text-md); letter-spacing: var(--tracking-wide); border-bottom: var(--border-1) solid var(--color-border); padding-bottom: var(--space-10); margin-bottom: var(--space-md); }
+    .grid { display: grid; gap: var(--space-md); }
+    .cols-2 { grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); }
+    .swatch { border: var(--border-1) solid var(--color-border); border-radius: var(--radius-sm); overflow: hidden; }
+    .swatch .chip { height: 72px; }
+    .swatch .meta { padding: var(--space-10) var(--space-12); font-size: var(--text-xs); color: var(--color-text-muted); }
+    .swatch .meta b { color: var(--color-text); display:block; }
+    .row { display:flex; flex-wrap:wrap; gap: var(--space-md); align-items:center; }
+    .note { color: var(--color-accent); font-size: var(--text-xs); margin-top: var(--space-8); }
+    .drift { border-left: var(--border-2) solid var(--color-accent); padding-left: var(--space-12); color: var(--color-text-muted); font-size: var(--text-sm); margin: var(--space-sm) 0; }
+    .bar { background: var(--gradient-mono); height: 16px; border-radius: var(--radius-xs); }
+    .stack { display:flex; flex-direction:column; gap: var(--space-sm); }
+    .label-cell { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    /* ── Replicated component styles (token-driven, from styles.css) ─────── */
+    a { color: var(--color-text); text-decoration: none; transition: color var(--motion-fast) var(--ease-standard), text-shadow var(--motion-fast) var(--ease-standard); }
+    a:hover { color: var(--color-accent); text-shadow: var(--glow-accent-md); }
+    .text-gradient { background: var(--gradient-mono); -webkit-background-clip: text; background-clip: text; color: transparent; display:inline-block; }
+
+    button, .btn { font-family: var(--font-ui); text-transform: uppercase; cursor: pointer; background: transparent; border: none; font-size: var(--text-base); display: inline-flex; align-items: center; gap: var(--space-8); transition: all var(--motion-fast) var(--ease-standard); }
+    .btn-primary { color: var(--color-on-accent); background: var(--gradient-mono); padding: var(--space-12) var(--space-24); border-radius: var(--radius-pill); font-weight: var(--font-weight-bold); box-shadow: var(--shadow-btn-primary); }
+    .btn-primary:hover { box-shadow: var(--shadow-btn-primary-hover); }
+    .btn-primary:hover span { transform: translateX(5px); }
+    .btn-secondary { color: var(--color-text); border: var(--border-1) solid var(--color-border); background: var(--color-surface); padding: var(--space-12) var(--space-24); border-radius: var(--radius-pill); }
+    .btn-secondary:hover { border-color: var(--color-accent); box-shadow: var(--glow-inset-accent); }
+
+    .info-card { display:flex; flex-direction:column; align-items:flex-start; background: var(--color-surface); border: var(--border-1) solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-md); transition: border-color var(--motion-medium) var(--ease-standard), box-shadow var(--motion-medium) var(--ease-standard); }
+    .info-card:hover { border-color: var(--color-accent-a30); box-shadow: var(--shadow-card-hover); }
+    .info-card.featured { border-left: var(--border-2) solid var(--color-accent); }
+    .card-title { font-size: var(--text-xl); color: var(--color-text); margin-bottom: var(--space-10); }
+    .info-card p { color: var(--color-text-muted); margin-bottom: var(--space-15); letter-spacing: var(--tracking-tight); }
+
+    .mini-card { padding: var(--space-10) var(--space-15); border: var(--border-1) solid var(--color-border); background: var(--color-surface); border-radius: var(--radius-sm); font-size: var(--text-sm); text-align:center; min-width:200px; }
+    .mini-card:hover { border-color: var(--color-accent); }
+
+    .meta-tags { display:flex; gap: var(--space-10); }
+    .meta-tags span { font-size: var(--text-xs); padding: var(--space-2) var(--space-8); background: var(--color-white-a05); border: var(--border-1) solid var(--color-border); border-radius: var(--radius-xs); color: var(--color-text-muted); }
+    .tag-link { display:inline-block; padding: 6px 14px; border: var(--border-1) solid var(--color-border); border-radius: var(--radius-pill-sm); font-size: var(--text-xs); color: var(--color-text-muted); }
+    .tag-link:hover { color: var(--color-on-accent); background: var(--color-text); }
+    .read-more { color: var(--color-accent); font-weight: var(--font-weight-bold); font-size: var(--text-sm); }
+    .section-label { color: var(--color-accent); text-shadow: var(--glow-accent-sm); margin-bottom: var(--space-sm); }
+
+    .list-item { padding: var(--space-md) 0; border-bottom: var(--border-1) dashed var(--color-border); transition: all var(--motion-fast) var(--ease-standard); }
+    .list-item:hover { border-bottom-color: var(--color-accent); }
+    .list-item h3 { font-size: var(--text-2xl); line-height: var(--leading-snug); margin-bottom: var(--space-10); font-family: var(--font-heading); font-weight: var(--font-weight-normal); }
+
+    .newsletter-form { display:flex; border-bottom: var(--border-1) solid var(--color-border); padding-bottom: 5px; max-width:300px; transition: border-color var(--motion-fast); }
+    .newsletter-form:focus-within { border-color: var(--color-accent); }
+    .newsletter-form input { background: transparent; border:none; color: var(--color-text); font-family: inherit; font-size: inherit; flex:1; outline:none; text-transform: uppercase; }
+    .newsletter-form input::placeholder { color: var(--color-text-muted); }
+    .newsletter-form button { color: var(--color-accent); font-size: var(--text-lg); padding: 0 var(--space-10); }
+
+    .nav-demo { display:flex; gap: var(--space-sm); }
+    .nav-demo a.active { color: var(--color-accent); text-shadow: var(--glow-accent-sm); }
+
+    .svg-illustration { width: var(--size-svg-illu); height: var(--size-svg-illu); fill:none; stroke: var(--color-text); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; overflow:visible; }
+    .glow-node { filter: drop-shadow(0 0 15px var(--color-accent-a60)); }
+    .glow-node circle, .glow-node path { stroke: var(--color-accent); }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h1>DEVELOPER <span class="text-gradient">UCHE</span></h1>
+    <p class="lead">// Design system reference — light terminal / blueprint: navy ink on off-white paper. Every value below is driven by <b>tokens.css</b>. Hover the components to see states.</p>
+  </section>
+
+  <!-- COLORS -->
+  <section>
+    <div class="rule">// COLOR · SEMANTIC</div>
+    <div class="grid cols-2">
+      <div class="swatch"><div class="chip" style="background:var(--color-bg);border-bottom:1px solid var(--color-border)"></div><div class="meta"><b>--color-bg</b>#F4F2EC · paper</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-surface)"></div><div class="meta"><b>--color-surface</b>#FCFBF8 · cards</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-border)"></div><div class="meta"><b>--color-border</b>#C9D0DB · borders</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-text-muted)"></div><div class="meta"><b>--color-text-muted</b>#54627A · body</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-text)"></div><div class="meta"><b>--color-text</b>#0B1A2E · ink</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-accent)"></div><div class="meta"><b>--color-accent</b>#1B3A6B · accent</div></div>
+    </div>
+    <div class="row" style="margin-top:var(--space-md)">
+      <div style="flex:1;min-width:240px"><div class="label-cell">--gradient-mono (navy ramp)</div><div class="bar"></div></div>
+    </div>
+    <div class="drift">SCHEME — light mode: off-white paper, navy ink, black. Accent is very dark navy blue (#1B3A6B); the former neon glow is now subtle navy elevation.</div>
+  </section>
+
+  <!-- TYPE -->
+  <section>
+    <div class="rule">// TYPOGRAPHY</div>
+    <div class="stack">
+      <div><span class="label-cell">--text-hero · VT323</span><div style="font-family:var(--font-heading);font-size:clamp(3rem,8vw,6rem);line-height:var(--leading-tight)">DISPLAY HERO</div></div>
+      <div><span class="label-cell">--text-2xl 24px · list h3</span><div style="font-family:var(--font-heading);font-size:var(--text-2xl)">Section heading example</div></div>
+      <div><span class="label-cell">--text-xl 20px · card-title</span><div style="font-size:var(--text-xl)">Card title</div></div>
+      <div><span class="label-cell">--text-md 14px · subsection</span><div style="font-size:var(--text-md);letter-spacing:var(--tracking-wide)">// subsection label</div></div>
+      <div><span class="label-cell">--text-base 13px · body</span><div style="font-size:var(--text-base);color:var(--color-text-muted);letter-spacing:var(--tracking-tight)">Body copy in Share Tech Mono, muted, uppercase, 0.5px tracking.</div></div>
+      <div><span class="label-cell">--text-xs 11px · chips/footer</span><div style="font-size:var(--text-xs);color:var(--color-text-muted)">Fine print / meta</div></div>
+    </div>
+  </section>
+
+  <!-- SPACING -->
+  <section>
+    <div class="rule">// SPACING SCALE (rem)</div>
+    <div class="stack">
+      <div class="row"><span class="label-cell" style="width:90px">xs · 8</span><div style="height:16px;width:var(--space-xs);background:var(--color-accent)"></div></div>
+      <div class="row"><span class="label-cell" style="width:90px">sm · 16</span><div style="height:16px;width:var(--space-sm);background:var(--color-accent)"></div></div>
+      <div class="row"><span class="label-cell" style="width:90px">md · 32</span><div style="height:16px;width:var(--space-md);background:var(--color-accent)"></div></div>
+      <div class="row"><span class="label-cell" style="width:90px">lg · 64</span><div style="height:16px;width:var(--space-lg);background:var(--color-accent)"></div></div>
+      <div class="row"><span class="label-cell" style="width:90px">xl · 96</span><div style="height:16px;width:var(--space-xl);background:var(--color-accent)"></div></div>
+    </div>
+  </section>
+
+  <!-- RADIUS -->
+  <section>
+    <div class="rule">// RADIUS</div>
+    <div class="row">
+      <div style="width:90px;height:64px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xs)"><div class="meta label-cell" style="padding:6px">xs 4</div></div>
+      <div style="width:90px;height:64px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-sm)"><div class="meta label-cell" style="padding:6px">sm 8</div></div>
+      <div style="width:90px;height:64px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md)"><div class="meta label-cell" style="padding:6px">md 16</div></div>
+      <div style="width:90px;height:64px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-pill)"><div class="meta label-cell" style="padding:6px">pill 30</div></div>
+      <div style="width:64px;height:64px;background:var(--color-surface);border:1px solid var(--color-accent);border-radius:var(--radius-full)"></div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section>
+    <div class="rule">// BUTTONS  <span class="label-cell">(hover to see states)</span></div>
+    <div class="row">
+      <a class="btn btn-primary" href="#">PRIMARY <span>&rarr;</span></a>
+      <a class="btn btn-secondary" href="#">SECONDARY <span>&rarr;</span></a>
+      <a class="btn btn-secondary" href="#">GITHUB</a>
+    </div>
+    <div class="drift">Primary uses a navy gradient fill with off-white text + soft navy elevation (resting → hover lift). Secondary is an outlined pill that gains a navy ring on hover.</div>
+  </section>
+
+  <!-- NAV -->
+  <section>
+    <div class="rule">// NAV LINKS</div>
+    <nav class="nav-demo">
+      <a href="#" class="active">HOME</a><a href="#">PROJECTS</a><a href="#">BLOG</a><a href="#">PUBLICATIONS</a>
+    </nav>
+  </section>
+
+  <!-- CARDS -->
+  <section>
+    <div class="rule">// CARDS  <span class="label-cell">(hover)</span></div>
+    <div class="grid cols-2">
+      <div class="info-card">
+        <p class="section-label">// 01 &nbsp; HIGHLIGHT</p>
+        <h3 class="card-title">STANDARD INFO CARD</h3>
+        <p>Surface fill, 1px border, 16px radius. Hover lifts the border to accent + drop shadow.</p>
+        <a href="#" class="tag-link">VIEW PRs</a>
+      </div>
+      <div class="info-card featured">
+        <h3 class="card-title">FEATURED CARD</h3>
+        <div class="meta-tags" style="margin-bottom:var(--space-10)"><span>Rust</span><span>RISC-V</span><span>EVM</span></div>
+        <p>Adds a 2px accent left-rail to flag importance.</p>
+        <a href="#" class="read-more">SOURCE CODE <span>&rarr;</span></a>
+      </div>
+    </div>
+    <div class="row" style="margin-top:var(--space-md)">
+      <div class="mini-card">MINI CARD</div>
+      <div class="mini-card">HOVER ME</div>
+    </div>
+  </section>
+
+  <!-- CHIPS -->
+  <section>
+    <div class="rule">// CHIPS &amp; TAGS</div>
+    <div class="row">
+      <div class="meta-tags"><span>HackMD</span><span>Zero-Knowledge</span><span>Rust</span></div>
+      <a href="#" class="tag-link">VIEW CODE</a>
+      <a href="#" class="read-more">READ POST <span>&rarr;</span></a>
+    </div>
+  </section>
+
+  <!-- LIST -->
+  <section>
+    <div class="rule">// LIST ITEMS  <span class="label-cell">(hover row)</span></div>
+    <div class="list-item">
+      <h3>Deconstructing the 1.5 GHz zkVM</h3>
+      <div class="meta-tags" style="margin-bottom:var(--space-10)"><span>HackMD</span><span>Zero-Knowledge</span></div>
+      <p style="color:var(--color-text-muted)">An engineering deep dive into trace generation optimization.</p>
+      <a href="#" class="read-more">READ POST <span>&rarr;</span></a>
+    </div>
+    <div class="list-item">
+      <h3>Merkle Patricia Trie</h3>
+      <p style="color:var(--color-text-muted)">A technical breakdown of the data structure behind Ethereum state.</p>
+      <a href="#" class="read-more">READ POST <span>&rarr;</span></a>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section>
+    <div class="rule">// NEWSLETTER FORM  <span class="label-cell">(focus the input)</span></div>
+    <form class="newsletter-form" onsubmit="return false">
+      <input type="email" placeholder="your@email.com" />
+      <button type="submit"><span>&rarr;</span></button>
+    </form>
+  </section>
+
+  <!-- SVG -->
+  <section>
+    <div class="rule">// SVG ILLUSTRATION + GLOW NODE</div>
+    <svg class="svg-illustration glow-node" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="8" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="3" fill="var(--color-accent)"/>
+      <path d="M50 50 L20 30 M50 50 L80 30 M50 50 L30 80 M50 50 L70 80" stroke="var(--color-text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
+    </svg>
+  </section>
+
+  <section>
+    <p class="lead" style="margin:0">END OF REFERENCE · This page renders only from tokens.css — change a token, re-skin everything.</p>
+  </section>
+
+</body>
+</html>
