@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM",
+    "tags": ["RISC-V", "EVM", "Blockchain", "Performance"],
+    "abstract": "An extensive experimental study aiming to bridge the gap between the RISC-V instruction set architecture and the Ethereum Virtual Machine (EVM). This research investigates the technical feasibility of integrating RISC-V with the EVM to create a more efficient, secure, and scalable blockchain VM platform.",
+    "links": [
+      { "label": "READ PAPER", "url": "https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl" },
+      { "label": "RUST PoC CODE", "url": "https://github.com/developeruche/riscv-evm-experiment" }
+    ],
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
+    "title": "Cryptography and Zero Knowledge Proof Research Repository",
+    "tags": ["Cryptography", "Zero-Knowledge", "Rust", "Research"],
+    "abstract": "A living research repository dedicated to implementing academic research papers, defining cryptographic primitives from scratch in Rust, and analyzing theoretical exploits in proof systems.",
+    "links": [
+      { "label": "RESEARCH NOTES", "url": "https://developeruche.gitbook.io/computational-proof-systems" },
+      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/cryptography-n-zk-research" }
+    ],
+    "highlight": true,
+    "thumbnail": null
+  }
+]
