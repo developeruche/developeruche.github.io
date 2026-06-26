@@ -11,6 +11,56 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://developeruche.com/blog-eip2771-gasless-relayer.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-eip7928-block-access-lists.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-eof-deep-dive.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-epf-dev-log.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-evm-jumpdest.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-fields-extension-fields.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-groth16.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-hybrid-ethereum-riscv.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-jagged-mle.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-kademlia-dht.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://developeruche.com/blog-kzg-polynomial-commitment-part-1.html</loc>
     <lastmod>2026-06-26</lastmod>
     <priority>0.6</priority>
@@ -21,7 +71,52 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://developeruche.com/blog-matryoshka-mle.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-merkle-patricia-trie.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://developeruche.com/blog-merkle-tree-blockchain.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-mle-direct-evaluation.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-multiset-check-iop.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-permutation-check-iop.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-product-check-iop.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-r1cs-to-qap.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-ron-mle-optimization.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-state-read-write-opcodes.html</loc>
     <lastmod>2026-06-26</lastmod>
     <priority>0.6</priority>
   </url>
@@ -37,6 +132,11 @@
   </url>
   <url>
     <loc>https://developeruche.com/blog-zisk-zkvm-trace-generation.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://developeruche.com/blog-zk-rollups-eip4844-blobs.html</loc>
     <lastmod>2026-06-26</lastmod>
     <priority>0.6</priority>
   </url>

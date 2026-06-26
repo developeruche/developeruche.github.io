@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>If State Read/Write Opcodes Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State? — Developer Uche</title>
+  <meta name="description" content="If State Read/Write Opcode Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains State read and write? Dive into the instruction set of…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-state-read-write-opcodes.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="If State Read/Write Opcodes Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State? — Developer Uche" />
+  <meta property="og:description" content="If State Read/Write Opcode Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains State read and write? Dive into the instruction set of…" />
+  <meta property="og:url" content="https://developeruche.com/blog-state-read-write-opcodes.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/state-read-write-opcodes.png" />
+  <meta property="og:image:alt" content="If State Read/Write Opcodes Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State? — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="evm" />
+  <meta property="article:tag" content="blockchain" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="If State Read/Write Opcodes Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State? — Developer Uche" />
+  <meta name="twitter:description" content="If State Read/Write Opcode Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains State read and write? Dive into the instruction set of…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/state-read-write-opcodes.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "If State Read/Write Opcodes Aren't Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State?",
+  "description": "If State Read/Write Opcode Aren't Native VM (WASM/RISC-V) Instructions, How Do Blockchains State read and write? Dive into the instruction set of…",
+  "image": [
+    "https://developeruche.com/assets/blogs/state-read-write-opcodes.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "evm, blockchain",
+  "url": "https://developeruche.com/blog-state-read-write-opcodes.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-state-read-write-opcodes.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">If State Read/Write Opcodes Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State?</h1>
+        <img class="post-hero-img" src="assets/blogs/state-read-write-opcodes.png" alt="If State Read/Write Opcodes Aren&#x27;t Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State? — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 10 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>evm</span>
+          <span>blockchain</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>Dive into the instruction set of powerful, general-purpose virtual machines like WebAssembly (WASM) or RISC-V, and you'll find commands for arithmetic, logic, and memory operations – the building blocks of computation. 1  But search for specific opcodes designed to directly read from or write to a blockchain's state, like the EVM's famous SLOAD or SSTORE, and you'll come up empty. This presents a fascinating paradox: if the VMs running smart contracts on many innovative blockchains lack these native state-handling instructions, how do these platforms actually manage the crucial tasks of reading account balances or writing data to contract storage? This post unravels the essential mechanism that bridges the gap between general-purpose computation and blockchain-specific state management.</p>
+        <h2>This VM is not the blockchain, but rather a component  of the blockchain</h2>
+        <p>The VM is a powerful component of the blockchain, tasked with state transition function of the blockchain among other features. It is important to note that this VM does not run in Isolation. This engine, be it powered by WASM or RISC-V, doesn't operate in a vacuum. Instead, it thrives within a "host environment," the very blockchain node software itself. This environment provides a set of specialized tools, the Host Functions or APIs, that the VM can utilize. Think of them as bridges, allowing the code within the VM to interact with the broader blockchain ecosystem. These host functions are crucial, as they connect the general-purpose computational capabilities of the VM to the blockchain's unique functionalities, enabling smart contracts to read and write ledger data, interact with other accounts, and ultimately, drive the blockchain's logic.</p>
+        <p>When a smart contract, compiled into bytecode for a virtual machine (VM) like WASM or RISC-V, needs to interact with the blockchain—whether to <strong>transfer tokens</strong>, <strong>modify storage</strong>, <strong>call another contract</strong>, or <strong>read block information</strong>—it doesn’t rely on native VM instructions tailored for those specific actions. Instead, the contract invokes <strong>predefined host functions</strong> provided by the blockchain’s runtime environment. For example, a function like <code>env.transfer_balance(recipient_address, amount)</code> might be called to send tokens to a recipient, or <code>env.storage_write(key, value)</code> to update the contract’s persistent storage. The VM identifies these as external calls, passing them to the host environment, which securely executes the requested blockchain operation and updates the system state. This design keeps the VM focused on computation while delegating blockchain-specific tasks to the runtime, ensuring both flexibility and security.</p>
+        <p>When a smart contract executes within a virtual machine (VM), such as WASM or RISC-V, and invokes a blockchain-specific operation, the VM’s execution <strong>pauses temporarily</strong>. At this point, control shifts to the <strong>host environment</strong>—the blockchain node running the network’s software. The node takes over, natively executing the requested operation by interpreting the call and interacting with the blockchain’s infrastructure. This process involves <strong>accessing the blockchain’s state</strong> (e.g., the state trie or database), <strong>performing necessary checks</strong> (such as verifying an account has sufficient balance for a transaction), and <strong>updating relevant data structures</strong> like account balances or contract storage tries. All actions adhere strictly to the blockchain’s <strong>consensus rules</strong>, ensuring consistency and security. Though this execution occurs outside the VM’s core instruction processing, it is seamlessly <strong>triggered by the VM’s code</strong>, bridging the contract’s logic with the blockchain’s state management.</p>
+        <h3>Returning Control &amp; Results</h3>
+        <p>When a smart contract executes on a blockchain, certain operations—such as reading data from storage, updating account balances, or modifying contract state—require interaction with the <strong>host environment</strong> (typically the blockchain node). Once the host environment completes the requested operation, it <strong>returns control</strong> to the virtual machine (VM). This handoff is crucial because the VM is responsible for executing the smart contract’s logic, but it relies on the host for operations that involve the blockchain’s state or external data.</p>
+        <p>Along with control, the host environment often provides a <strong>result</strong>. This result could be:</p>
+        <ul><li>A <strong>success/failure status</strong>, indicating whether the operation completed as expected.</li><li><strong>Data retrieved</strong>, such as a value read from storage or the outcome of a balance transfer.</li></ul>
+        <p>Once the VM regains control, it resumes executing the smart contract’s code from the exact point where it paused to call the host function. The returned result is then integrated into the ongoing execution, allowing the smart contract to proceed with its logic based on the outcome or data provided by the host.</p>
+        <p>For example:</p>
+        <ul><li>If a smart contract queries an account balance, the host retrieves the value and returns it to the VM, which might then use it in a subsequent calculation.</li><li>If the operation fails (e.g., due to insufficient funds for a transfer), the VM can handle the failure accordingly, potentially reverting changes.</li></ul>
+        <p>This seamless interaction ensures that the VM and host work together efficiently to execute complex smart contract logic.</p>
+        <h3>Gas / Metering</h3>
+        <p>In blockchain systems like the Ethereum Virtual Machine (EVM), every operation consumes computational resources, and this usage is tracked and charged via a mechanism called <strong>gas</strong> or <strong>compute units</strong>. Gas serves as a metering system to:</p>
+        <ul><li>Measure the computational effort required for an operation.</li><li>Ensure fair compensation for the network nodes performing the work.</li><li>Prevent abuse, such as infinite loops or excessive resource consumption.</li></ul>
+        <h4>What Incurs Gas Costs?</h4>
+        <p>Gas costs apply to two main categories of operations:</p>
+        <ol><li><strong>VM Instructions</strong>: These are the basic operations executed within the VM, such as:<ul><li>Arithmetic (e.g., addition, multiplication).</li><li>Logic operations (e.g., comparisons like greater-than or equal-to). These typically have lower, standardized gas costs because they are relatively lightweight.</li></ul></li></ol>
+        <ol><li><strong>Host Function Calls</strong>: These involve operations that interact with the blockchain’s state or external systems, such as:<ul><li>Reading data from storage.</li><li>Writing to storage (e.g., updating a variable in a smart contract).</li><li>Transferring balances between accounts.</li><li>Emitting events or logs.</li></ul></li></ol>
+        <h4>Why Do Host Functions Cost More?</h4>
+        <p>Host functions, especially those that <strong>modify state</strong>, often have <strong>specific and higher gas costs</strong> compared to simple VM instructions. This reflects the greater resource demands they place on the blockchain network. For instance:</p>
+        <ul><li><strong>Writing to storage</strong> requires updating the blockchain’s persistent state, which involves disk I/O, consensus among nodes, and permanent storage—making it resource-intensive.</li><li><strong>Transferring balances</strong> alters account states and requires validation across the network, adding to the computational overhead.</li></ul>
+        <p>In contrast, reading data from storage might cost less than writing, but it still exceeds the cost of basic arithmetic because it involves retrieving data from the blockchain’s state.</p>
+        <h4>Why Gas Matters</h4>
+        <p>This gas-based metering ensures that:</p>
+        <ul><li>Resource usage is accurately tracked and limited.</li><li>The blockchain remains efficient and secure by discouraging wasteful operations.</li><li>Users pay fees proportional to the resources they consume, incentivizing optimized smart contract design.</li></ul>
+        <h3>Analogy:</h3>
+        <p>Think of it like running a standard application on your computer's operating system (OS):</p>
+        <ul><li>Your application code runs on the CPU (using instruction sets like x86 or ARM).</li><li>The CPU's instruction set doesn't have a command like SAVE_FILE_TO_DISK.</li><li>Instead, your application makes a system call (like write()) provided by the OS.</li><li>The OS takes over, performs the complex operations needed to interact with the file system and hardware, and then returns control to your application.</li></ul>
+        <p>In the blockchain context:</p>
+        <ul><li>The Smart Contract Code is the "application."</li><li>The VM (WASM, RISC-V) is like the "CPU."</li><li>The Host Functions are like the "system calls."</li><li>The Blockchain Node Software is like the "Operating System," managing the core state (like the file system).</li></ul>
+        <h2>Diving deeper, if this VM is a RISCV VM, how would this be implemented</h2>
+        <p>To implement a RISC-V Virtual Machine (VM) for a blockchain, we need to create a system where smart contracts written in RISC-V assembly or compiled to RISC-V instructions can execute within the blockchain environment. The VM must interpret or compile these instructions and provide a way for contracts to interact with the blockchain’s state (e.g., transferring tokens or updating storage) through a set of predefined <strong>host functions</strong>. Below, I’ll explain the high-level implementation and provide code snippets to illustrate the concept.</p>
+        <hr />
+        <h3>Overview of the Implementation</h3>
+        <ol><li><strong>RISC-V VM Core</strong>:<ul><li>The blockchain runtime includes a RISC-V VM that can either interpret RISC-V instructions step-by-step or use a just-in-time (JIT) compiler for better performance.</li><li>The VM executes the contract’s code, managing its registers, memory, and program counter.</li></ul></li></ol>
+        <ol><li><strong>Host Functions</strong>:<ul><li>These are blockchain-specific functions provided by the runtime (e.g., transferring tokens or reading storage).</li><li>Contracts call these functions to perform actions that affect the blockchain state.</li></ul></li></ol>
+        <ol><li><strong>System Call Mechanism</strong>:<ul><li>RISC-V uses the <code>ecall</code> instruction to make system calls, traditionally for OS services. In this blockchain context, we repurpose <code>ecall</code> to invoke host functions.</li><li>The contract specifies which host function to call using a system call number and passes arguments via registers.</li></ul></li></ol>
+        <ol><li><strong>Execution Flow</strong>:<ul><li>The contract runs on the VM until it needs to interact with the blockchain.</li><li>It triggers an <code>ecall</code>, which the runtime intercepts and maps to the appropriate host function.</li><li>The host function executes, modifies the blockchain state, and returns control to the VM.</li></ul></li></ol>
+        <hr />
+        <h3>Example: Transferring Tokens</h3>
+        <p>Let’s walk through a concrete example: a smart contract transferring tokens from one account to another. We’ll cover both the <strong>contract side</strong> (RISC-V assembly) and the <strong>runtime side</strong> (host implementation).</p>
+        <h4>1. Runtime Side (Host Implementation)</h4>
+        <p>The runtime defines host functions and a system call handler to process requests from the VM. Here’s how it might look in pseudocode (using Rust-like syntax for clarity):</p>
+        <pre><code>// Define system call numbers
+const SYS_TRANSFER: u32 = 1;
+
+// Host function to transfer tokens
+fn host_transfer(caller: Address, to: Address, amount: u64) -&gt; Result&lt;(), Error&gt; {
+    // Check the caller's balance
+    let caller_balance = get_balance(caller);
+    if caller_balance &lt; amount {
+        return Err("Insufficient balance");
+    }
+    // Update balances
+    set_balance(caller, caller_balance - amount);
+    set_balance(to, get_balance(to) + amount);
+    // Emit an event (optional)
+    emit_event("Transfer", caller, to, amount);
+    Ok(())
+}
+
+// System call handler in the runtime
+fn handle_syscall(vm: &amp;mut RiscVVM, syscall_num: u32) -&gt; Result&lt;(), Error&gt; {
+    match syscall_num {
+        SYS_TRANSFER =&gt; {
+            // Get arguments from VM registers (a0 = to, a1 = amount)
+            let to = vm.get_register("a0");
+            let amount = vm.get_register("a1");
+            host_transfer(vm.caller_address(), to, amount)
+        }
+        _ =&gt; Err("Invalid system call"),
+    }
+}
+
+// Simplified VM structure
+struct RiscVVM {
+    registers: HashMap&lt;String, u64&gt;, // e.g., "a0", "a1", "a7"
+    caller_address: Address,         // Address of the contract caller
+    // Other VM state (memory, PC, etc.)
+}
+
+impl RiscVVM {
+    fn get_register(&amp;self, reg: &amp;str) -&gt; u64 {
+        *self.registers.get(reg).unwrap_or(&amp;0)
+    }
+
+    fn set_register(&amp;mut self, reg: &amp;str, value: u64) {
+        self.registers.insert(reg.to_string(), value);
+    }
+
+    fn caller_address(&amp;self) -&gt; Address {
+        self.caller_address
+    }
+}</code></pre>
+        <ul><li><strong>Key Points</strong>:<ul><li><code>SYS_TRANSFER</code> is a predefined constant (e.g., 1) that identifies the token transfer operation.</li><li>Arguments (<code>to</code> and <code>amount</code>) are passed via RISC-V registers (<code>a0</code> and <code>a1</code>).</li><li>The runtime checks the caller’s balance, updates the state, and returns success or an error.</li></ul></li></ul>
+        <h4>2. Contract Side (RISC-V Assembly)</h4>
+        <p>The smart contract, written in RISC-V assembly, prepares the arguments and triggers the system call. Here’s an example:</p>
+        <pre><code># Transfer 100 tokens to address 0x1234
+# Arguments: a0 = to_address, a1 = amount
+# System call number: a7 = SYS_TRANSFER (1)
+
+# Load the 'to' address into a0
+li a0, 0x1234    # Example target address (simplified)
+
+# Load the amount into a1
+li a1, 100       # Transfer 100 tokens
+
+# Load the system call number into a7
+li a7, 1         # SYS_TRANSFER = 1
+
+# Make the system call
+ecall            # Triggers the runtime's handle_syscall function
+
+# After ecall returns, check result (e.g., in a0)
+# a0 = 0 means success, non-zero means error
+bnez a0, error_handler  # Branch to error handler if a0 != 0
+
+# Continue execution on success
+j continue
+
+error_handler:
+    # Handle the error (e.g., revert or log)
+    nop
+
+continue:
+    # Proceed with contract logic
+    nop</code></pre>
+        <ul><li><strong>Key Points</strong>:<ul><li><code>li</code> loads immediate values into registers (<code>a0</code> for the recipient address, <code>a1</code> for the amount, <code>a7</code> for the system call number).</li><li><code>ecall</code> invokes the runtime’s system call handler.</li><li>The runtime may return a result in <code>a0</code> (e.g., 0 for success).</li></ul></li></ul>
+        <hr />
+        <h3>How It Works Together</h3>
+        <ol><li><strong>Contract Execution</strong>:<ul><li>The RISC-V VM loads and runs the contract’s instructions.</li><li>When it hits the <code>ecall</code>, execution pauses, and control transfers to the runtime.</li></ul></li></ol>
+        <ol><li><strong>Runtime Processing</strong>:<ul><li>The runtime reads the system call number from register <code>a7</code> and arguments from <code>a0</code> and <code>a1</code>.</li><li>It calls <code>host_transfer</code>, which updates the blockchain state (e.g., token balances).</li></ul></li></ol>
+        <ol><li><strong>Return to Contract</strong>:<ul><li>The runtime sets a return value in <code>a0</code> (e.g., 0 for success) and resumes the VM.</li><li>The contract checks the result and continues or handles an error.</li></ul></li></ol>
+        <hr />
+        <h3>Additional Considerations</h3>
+        <ul><li><strong>Argument Passing</strong>:<ul><li>RISC-V uses registers <code>a0</code>–<code>a5</code> for arguments and <code>a7</code> for the system call number, following its calling convention.</li><li>For complex data, the contract could pass a memory address pointing to the data.</li></ul></li></ul>
+        <ul><li><strong>Security</strong>:<ul><li>The runtime must validate inputs (e.g., ensure <code>caller</code> has enough tokens) to prevent unauthorized actions.</li><li>Errors should revert state changes to maintain consistency.</li></ul></li></ul>
+        <ul><li><strong>Resource Metering</strong>:<ul><li>Each <code>ecall</code> consumes “gas” or a similar resource to limit execution and prevent abuse.</li></ul></li></ul>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

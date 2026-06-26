@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ron&#x27;s Optimization for Multilinear Extension Evaluation — Developer Uche</title>
+  <meta name="description" content="Ron&#x27;s Optimization for Multilinear Extension Evaluation Author&#x27;s Note: This article builds directly on concepts established in Part 1: Multilinear…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-ron-mle-optimization.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Ron&#x27;s Optimization for Multilinear Extension Evaluation — Developer Uche" />
+  <meta property="og:description" content="Ron&#x27;s Optimization for Multilinear Extension Evaluation Author&#x27;s Note: This article builds directly on concepts established in Part 1: Multilinear…" />
+  <meta property="og:url" content="https://developeruche.com/blog-ron-mle-optimization.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/ron-mle-optimization.png" />
+  <meta property="og:image:alt" content="Ron&#x27;s Optimization for Multilinear Extension Evaluation — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="zero knowledge" />
+  <meta property="article:tag" content="algo" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Ron&#x27;s Optimization for Multilinear Extension Evaluation — Developer Uche" />
+  <meta name="twitter:description" content="Ron&#x27;s Optimization for Multilinear Extension Evaluation Author&#x27;s Note: This article builds directly on concepts established in Part 1: Multilinear…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/ron-mle-optimization.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ron's Optimization for Multilinear Extension Evaluation",
+  "description": "Ron's Optimization for Multilinear Extension Evaluation Author's Note: This article builds directly on concepts established in Part 1: Multilinear…",
+  "image": [
+    "https://developeruche.com/assets/blogs/ron-mle-optimization.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "zero knowledge, algo",
+  "url": "https://developeruche.com/blog-ron-mle-optimization.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-ron-mle-optimization.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Ron&#x27;s Optimization for Multilinear Extension Evaluation</h1>
+        <img class="post-hero-img" src="assets/blogs/ron-mle-optimization.png" alt="Ron&#x27;s Optimization for Multilinear Extension Evaluation — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 14 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>zero knowledge</span>
+          <span>algo</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p><strong>Author's Note:</strong> <em>This article builds directly on concepts established in <strong>Part 1: Multilinear Polynomial Extension and Direct Evaluation</strong>. If you haven't read that yet, I strongly advise starting there to understand the definition of the MLE and the naive direct evaluation method. This part focuses on optimization strategies proposed by Ron Rothblum.</em></p>
+        <p>In Part 1, we implemented the "Direct Evaluation" of a Multilinear Extension (MLE). While mathematically clear, that approach suffers from a significant bottleneck: it requires $O(m \cdot 2^m)$ field multiplications.</p>
+        <p>In the context of Zero-Knowledge Proofs (like Spartan or checking Sumcheck protocols), the prover often works with large polynomials ($m \approx 20+$). At this scale, the difference between $m \cdot 2^m$ and $2^m$ is a factor of 20x or more. Standard Dynamic Programming (DP) can achieve $O(2^m)$ speed but often at the cost of $O(2^m)$ memory—a prohibitive cost for large zkVMs.</p>
+        <p>In this post, we explore an elegant optimization I call <strong>Ron’s Method</strong> (from <a href="https://eprint.iacr.org/2024/1103.pdf" target="_blank" rel="noopener noreferrer">Rothblum</a>). This technique allows us to evaluate the MLE in <strong>linear time</strong> $O(2^m)$ with <strong>constant extra memory</strong> $O(1)$ (relative to the input size) by utilizing <strong>Gray Codes</strong>.</p>
+        <h3>The Intuition: Streaming the Hypercube</h3>
+        <p>Recall the MLE formula:</p>
+        <p>$$
+\tilde{f}(z) = \sum_{b \in \{0,1\}^m} \text{eq}(z, b) \cdot f(b)
+$$</p>
+        <p>The Lagrange basis term $\text{eq}(z, b)$ is a product of $m$ univariate terms. In the standard lexicographic iteration (000, 001, 010...), consecutive points $b$ and $b'$ might differ by multiple bits. For example, moving from <code>011</code> to <code>100</code> flips 3 bits. This forces us to recompute the product almost entirely.</p>
+        <p>However, if we iterate over the hypercube using a <strong>Gray Code</strong> sequence, consecutive integers differ by exactly <strong>one bit</strong>. This mathematical property allows us to update our running product $\text{eq}(z, b)$ with a single multiplication operation.</p>
+        <h3>The Update Logic</h3>
+        <p>Let $b$ and $b'$ be two adjacent points in a Gray code sequence that differ only at index $k$. To transition from $\text{eq}(z, b)$ to $\text{eq}(z, b')$, we don't need to rebuild the product. We simply "swap out" the term for the $k$-th coordinate.</p>
+        <p>We precompute two update ratios for every dimension $i \in \{0, \dots, m-1\}$:</p>
+        <p>$$
+eq(z, b \oplus e_i) = eq(z, b) \cdot \frac{eq_1(z_i, b_i \oplus 1)}{eq_1(z_i, b_i)}
+$$</p>
+        <p>By precomputing these ratios, we can transition from one basis evaluation to the next with <strong>one multiplication</strong>.</p>
+        <ol><li><strong>Flip $0 \to 1$ (Up):</strong> $R_{i, \uparrow} = \frac{z_i}{1 - z_i}$</li><li><strong>Flip $1 \to 0$ (Down):</strong> $R_{i, \downarrow} = \frac{1 - z_i}{z_i}$</li></ol>
+        <p><em>(Note: We assume $z_i \notin \{0,1\}$ for now. We will handle the boolean case in the "Dimension Reduction" section).</em></p>
+        <p>The update rule becomes:</p>
+        <p>$$
+\text{eq}(z, b') = \text{eq}(z, b) \times (\text{Ratio for bit } k)
+$$</p>
+        <h3>Visualizing the Traversal</h3>
+        <p>Let's trace this with a concrete example where $m=3$. We want to compute the weighted sum of evaluations $f(b)$.</p>
+        <ul><li><strong>Dimensions ($m$):</strong> 3</li><li><strong>Verifier Challenge ($z$):</strong> $z = (z_0, z_1, z_2)$ (using 0-indexing for convenience).</li><li><strong>Evaluations ($f$):</strong> A vector $[0, 1, 2, 3, 4, 5, 6, 7]$.<ul><li><em>Note: These values typically map to lexicographic indices $000_2$ to $111_2$. Because we are traversing in Gray code order, we must access these values out of order.</em></li></ul></li></ul>
+        <p><strong>1. Precomputation</strong> We calculate the update ratios for each dimension $i \in \{0, 1, 2\}$. Assuming $z_i \notin \{0, 1\}$:</p>
+        <ul><li>To flip bit $i$ from $0 \to 1$: multiply by $R_{i, \uparrow} = \frac{z_i}{1-z_i}$</li><li>To flip bit $i$ from $1 \to 0$: multiply by $R_{i, \downarrow} = \frac{1-z_i}{z_i}$</li></ul>
+        <p><strong>2. The Traversal</strong></p>
+        <ul><li>Start at $b=000$.</li><li>Initial accumulator $E = (1-z_0)(1-z_1)(1-z_2)$.</li><li>We traverse the Gray code sequence.</li></ul>
+        <table><thead><tr><th>Step</th><th>Gray Code ($b$)</th><th>Bit Flipped</th><th>Action on $E$</th><th>Contribution to Sum</th></tr></thead><tbody><tr><td><strong>0</strong></td><td><code>000</code></td><td>—</td><td>Initial Calc</td><td>$E \cdot f(0)$</td></tr><tr><td><strong>1</strong></td><td><code>001</code></td><td>0 ($0 \to 1$)</td><td>$E \times R_{0, \uparrow}$</td><td>$E \cdot f(1)$</td></tr><tr><td><strong>2</strong></td><td><code>011</code></td><td>1 ($0 \to 1$)</td><td>$E \times R_{1, \uparrow}$</td><td>$E \cdot f(3)$</td></tr><tr><td><strong>3</strong></td><td><code>010</code></td><td>0 ($1 \to 0$)</td><td>$E \times R_{0, \downarrow}$</td><td>$E \cdot f(2)$</td></tr><tr><td><strong>4</strong></td><td><code>110</code></td><td>2 ($0 \to 1$)</td><td>$E \times R_{2, \uparrow}$</td><td>$E \cdot f(6)$</td></tr><tr><td><strong>5</strong></td><td><code>111</code></td><td>0 ($0 \to 1$)</td><td>$E \times R_{0, \uparrow}$</td><td>$E \cdot f(7)$</td></tr><tr><td><strong>6</strong></td><td><code>101</code></td><td>1 ($1 \to 0$)</td><td>$E \times R_{1, \downarrow}$</td><td>$E \cdot f(5)$</td></tr><tr><td><strong>7</strong></td><td><code>100</code></td><td>0 ($1 \to 0$)</td><td>$E \times R_{0, \downarrow}$</td><td>$E \cdot f(4)$</td></tr></tbody></table>
+        <p>Notice that for every step after the initialization, we perform exactly <strong>one field multiplication</strong> to update our weight $E$, and <strong>one addition</strong> to accumulate the result. This is optimal.</p>
+        <p><strong>3. Detailed Trace of the Math</strong> We track the accumulator $E$ as it transforms through the hypercube.</p>
+        <ul><li><strong>Definitions:</strong><ul><li>$R_{i, \uparrow} = \frac{z_i}{1-z_i}$ (multiplier when bit $i$ flips $0 \to 1$).</li><li>$R_{i, \downarrow} = \frac{1-z_i}{z_i}$ (multiplier when bit $i$ flips $1 \to 0$).</li><li>Target index $b$ is written as $(b_2, b_1, b_0)_2$.</li></ul></li></ul>
+        <h4><strong>Step 0: Initialization</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>000</code> (Integer 0)</li><li><strong>Action:</strong> Compute the base term directly.</li><li><strong>Math:</strong> <p>$$E_0 = (1-z_2)(1-z_1)(1-z_0)$$</p></li><li><strong>Result:</strong> Matches $eq(z, 000)$.</li><li><strong>Accumulate:</strong> Add $E_0 \cdot f(0)$ to sum.</li></ul>
+        <h4><strong>Step 1: Flip Bit 0 ($0 \to 1$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>001</code> (Integer 1)</li><li><strong>Action:</strong> Update $E_0$ using ratio $R_{0, \uparrow}$.</li><li><strong>Math:</strong> <p>$$E_1 = E_0 \cdot \frac{z_0}{1-z_0}$$</p> <p>$$E_1 = (1-z_2)(1-z_1)\cancel{(1-z_0)} \cdot \frac{z_0}{\cancel{1-z_0}}$$</p></li><li><strong>Result:</strong> $(1-z_2)(1-z_1)z_0$. Matches $eq(z, 001)$.</li><li><strong>Accumulate:</strong> Add $E_1 \cdot f(1)$ to sum.</li></ul>
+        <h4><strong>Step 2: Flip Bit 1 ($0 \to 1$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>011</code> (Integer 3)</li><li><strong>Action:</strong> Update $E_1$ using ratio $R_{1, \uparrow}$.</li><li><strong>Math:</strong> <p>$$E_2 = E_1 \cdot \frac{z_1}{1-z_1}$$</p> <p>$$E_2 = (1-z_2)\cancel{(1-z_1)}z_0 \cdot \frac{z_1}{\cancel{1-z_1}}$$</p></li><li><strong>Result:</strong> $(1-z_2)z_1 z_0$. Matches $eq(z, 011)$.</li><li><strong>Accumulate:</strong> Add $E_2 \cdot f(3)$ to sum. <em>Note: We access index 3 here, not 2.</em></li></ul>
+        <h4><strong>Step 3: Flip Bit 0 ($1 \to 0$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>010</code> (Integer 2)</li><li><strong>Action:</strong> Update $E_2$ using ratio $R_{0, \downarrow}$.</li><li><strong>Math:</strong> <p>$$E_3 = E_2 \cdot \frac{1-z_0}{z_0}$$</p> <p>$$E_3 = (1-z_2)z_1 \cancel{z_0} \cdot \frac{1-z_0}{\cancel{z_0}}$$</p></li><li><strong>Result:</strong> $(1-z_2)z_1 (1-z_0)$. Matches $eq(z, 010)$.</li><li><strong>Accumulate:</strong> Add $E_3 \cdot f(2)$ to sum.</li></ul>
+        <h4><strong>Step 4: Flip Bit 2 ($0 \to 1$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>110</code> (Integer 6)</li><li><strong>Action:</strong> Update $E_3$ using ratio $R_{2, \uparrow}$.</li><li><strong>Math:</strong> <p>$$E_4 = E_3 \cdot \frac{z_2}{1-z_2}$$</p> <p>$$E_4 = \cancel{(1-z_2)}z_1 (1-z_0) \cdot \frac{z_2}{\cancel{1-z_2}}$$</p></li><li><strong>Result:</strong> $z_2 z_1 (1-z_0)$. Matches $eq(z, 110)$.</li><li><strong>Accumulate:</strong> Add $E_4 \cdot f(6)$ to sum.</li></ul>
+        <h4><strong>Step 5: Flip Bit 0 ($0 \to 1$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>111</code> (Integer 7)</li><li><strong>Action:</strong> Update $E_4$ using ratio $R_{0, \uparrow}$.</li><li><strong>Math:</strong> <p>$$E_5 = E_4 \cdot \frac{z_0}{1-z_0}$$</p> <p>$$E_5 = z_2 z_1 \cancel{(1-z_0)} \cdot \frac{z_0}{\cancel{1-z_0}}$$</p></li><li><strong>Result:</strong> $z_2 z_1 z_0$. Matches $eq(z, 111)$.</li><li><strong>Accumulate:</strong> Add $E_5 \cdot f(7)$ to sum.</li></ul>
+        <h4><strong>Step 6: Flip Bit 1 ($1 \to 0$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>101</code> (Integer 5)</li><li><strong>Action:</strong> Update $E_5$ using ratio $R_{1, \downarrow}$.</li><li><strong>Math:</strong> <p>$$E_6 = E_5 \cdot \frac{1-z_1}{z_1}$$</p> <p>$$E_6 = z_2 \cancel{z_1} z_0 \cdot \frac{1-z_1}{\cancel{z_1}}$$</p></li><li><strong>Result:</strong> $z_2 (1-z_1) z_0$. Matches $eq(z, 101)$.</li><li><strong>Accumulate:</strong> Add $E_6 \cdot f(5)$ to sum.</li></ul>
+        <h4><strong>Step 7: Flip Bit 0 ($1 \to 0$)</strong></h4>
+        <ul><li><strong>Gray Code:</strong> <code>100</code> (Integer 4)</li><li><strong>Action:</strong> Update $E_6$ using ratio $R_{0, \downarrow}$.</li><li><strong>Math:</strong> <p>$$E_7 = E_6 \cdot \frac{1-z_0}{z_0}$$</p> <p>$$E_7 = z_2 (1-z_1) \cancel{z_0} \cdot \frac{1-z_0}{\cancel{z_0}}$$</p></li><li><strong>Result:</strong> $z_2 (1-z_1) (1-z_0)$. Matches $eq(z, 100)$.</li><li><strong>Accumulate:</strong> Add $E_7 \cdot f(4)$ to sum.</li></ul>
+        <p>At the end of this linear scan, we have computed $\hat{f}(z)$ using exactly <strong>7 multiplications</strong> for the updates (plus initial setup) and <strong>8 additions</strong> for the accumulation.</p>
+        <p>The algorithm described so far assumes that $z_i \notin \{0, 1\}$ to avoid division by zero during the update steps. However, in real-world protocols (like Sumcheck), it is common for the verifier's challenge vector $z$ to contain <strong>boolean values</strong> (0 or 1), or for the engineer to want to evaluate the extension on a sub-cube.</p>
+        <p>The paper provides a powerful optimization for this case: <strong>Dimension Reduction</strong>.</p>
+        <h4>Dimension Reduction</h4>
+        <p>If a coordinate $z_i$ is boolean ($0$ or $1$), the Lagrange basis polynomial $eq_1(z_i, b_i)$ collapses:</p>
+        <ul><li>If $z_i = 1$, then $eq_1(1, b_i)$ is $1$ only if $b_i = 1$, and $0$ otherwise.</li><li>If $z_i = 0$, then $eq_1(0, b_i)$ is $1$ only if $b_i = 0$, and $0$ otherwise.</li></ul>
+        <p>Mathematically, we partition the coordinates into two sets:</p>
+        <ol><li><strong>$S$ (Boolean Set):</strong> Indices where $z_i \in \{0, 1\}$.</li><li><strong>$\bar{S}$ (Non-Boolean Set):</strong> Indices where $z_i \in \mathbb{F} \setminus \{0, 1\}$.</li></ol>
+        <p>The paper observes that $eq(z, b) = 0$ whenever the bits in $b$ do not exactly match the boolean values in $z$. Therefore, we can <strong>skip</strong> all vectors $b$ where $b_S \neq z_S$. We only perform the Gray code enumeration over the remaining coordinates in $\bar{S}$.</p>
+        <p>This effectively reduces the problem size from $2^m$ to $2^{|\bar{S}|}$, changing the complexity from exponential in $m$ to exponential only in the number of <em>non-boolean</em> variables.</p>
+        <h3>Example when dimension reduction kicks in</h3>
+        <p>Let's revisit our 3-variable example where $m=3$ and the full evaluation vector is indices $[0, \dots, 7]$.</p>
+        <p><strong>Scenario:</strong> Suppose the verifier sends the challenge: <p>$$z = (z_0, z_1, z_2) = (0.5, 1, 0)$$</p></p>
+        <p>Here:</p>
+        <ul><li>$z_0 = 0.5$ (Non-boolean). This is the only "active" dimension we must iterate.</li><li>$z_1 = 1$ (Boolean).</li><li>$z_2 = 0$ (Boolean).</li></ul>
+        <p><strong>The Filtering Logic:</strong> We rely on the property that for the final result to be non-zero, the bits of our index $b = (b_2, b_1, b_0)_2$ must match the boolean constraints of $z$:</p>
+        <ol><li>Since $z_1 = 1$, we must have $b_1 = 1$.</li><li>Since $z_2 = 0$, we must have $b_2 = 0$.</li></ol>
+        <p>The only free variable is $b_0$.</p>
+        <p><strong>The Reduced Iteration:</strong> Instead of iterating through all 8 indices ($000$ to $111$), we essentially fix $b_2=0$ and $b_1=1$, and iterate $b_0$ through its Gray code sequence ($0 \to 1$).</p>
+        <p>Our target indices are:</p>
+        <ol><li>$b = (0, 1, 0)_2 \to$ <strong>Index 2</strong></li><li>$b = (0, 1, 1)_2 \to$ <strong>Index 3</strong></li></ol>
+        <p><strong>The Execution Trace:</strong> We are now computing a 1-variable MLE (over $z_0$) scaled by the fixed boolean terms (which evaluate to 1).</p>
+        <table><thead><tr><th>Step</th><th>Active Bit ($b_0$)</th><th>Fixed Bits ($b_2, b_1$)</th><th>Full Index</th><th>Value Calculation</th></tr></thead><tbody><tr><td><strong>0</strong></td><td>$0$</td><td>$0, 1$</td><td><strong>2</strong> (<code>010</code>)</td><td>$Accum += f(2) \cdot (1-z_0)$</td></tr><tr><td><strong>1</strong></td><td>$1$</td><td>$0, 1$</td><td><strong>3</strong> (<code>011</code>)</td><td>$Accum += f(3) \cdot (z_0)$</td></tr></tbody></table>
+        <p>We computed the exact result using only <strong>2 steps</strong> instead of 8. In a large system (e.g., $m=20$), if half the variables are boolean, this optimization speeds up the prover by a factor of $2^{10} \approx 1000x$.</p>
+        <h2>Ron Algo Impl Explaination</h2>
+        <p>This is a high-performance implementation of <strong>Proposition 1</strong> and <strong>Corollary 2</strong> from Rothblum's note.</p>
+        <p>The code implements the core optimization: calculating the Multilinear Extension (MLE) in $O(2^m)$ time and $O(m)$ space using <strong>Gray code enumeration</strong>. It also implements the specific optimization for "general vectors" (where some $z_i \in \{0,1\}$) to reduce the problem size.</p>
+        <p>Here is the breakdown of the Rust code, linked directly to the theoretical steps in the paper.</p>
+        <h3>1. The Precomputed Update Ratios</h3>
+        <p><strong>Code:</strong></p>
+        <pre><code>#[derive(Clone, Copy, Debug)]
+pub struct UpdateRatio&lt;F: Field&gt; {
+    up: F,   // Multiplier to flip 0 -&gt; 1:  z / (1-z)
+    down: F, // Multiplier to flip 1 -&gt; 0:  (1-z) / z
+}</code></pre>
+        <p><strong>Theory Connection:</strong> The paper states that consecutive terms in a Gray code sequence differ by exactly one bit. To update the running product $eq(z, b)$, we perform a single multiplication. The derivation comes from Equation (2) in the paper: <p>$$eq(z, b \oplus e_i) = \frac{eq_1(z_i, b_i \oplus 1)}{eq_1(z_i, b_i)} \cdot eq(z, b)$$</p></p>
+        <ul><li>If flipping $0 \to 1$: The multiplier is $\frac{z_i}{1-z_i}$ (variable <code>up</code>).</li><li>If flipping $1 \to 0$: The multiplier is $\frac{1-z_i}{z_i}$ (variable <code>down</code>).</li></ul>
+        <p>The code precomputes these values to ensure the inner loop only performs <strong>one multiplication</strong> per step, fulfilling the requirement of exactly $2^m$ multiplications.</p>
+        <h3>2\. Initialization and Handling Boolean Inputs</h3>
+        <p><strong>Code:</strong></p>
+        <pre><code>    let mut ratios = Vec::with_capacity(m);
+    let mut active_bit_positions = Vec::with_capacity(m);
+    let mut global_idx = 0usize;
+    let mut current_eq = F::one();
+
+    for (i, &amp;val) in z.iter().enumerate() {
+        let global_bit_pos = m - 1 - i; // Big-endian index adjustment
+
+        if val.is_zero() {
+            // Do nothing; bit remains 0 in global_idx
+        } else if val.is_one() {
+            global_idx |= 1 &lt;&lt; global_bit_pos; // Fixed to 1
+        } else {
+            // General case: z_i is not 0 or 1
+            let one_minus_val = F::one() - val;
+            let r_up = val * one_minus_val.inverse().unwrap();
+            let r_down = one_minus_val * val.inverse().unwrap();
+
+            ratios.push(UpdateRatio { up: r_up, down: r_down });
+            active_bit_positions.push(global_bit_pos);
+            current_eq *= one_minus_val; // Initial value for b_i = 0
+        }
+    }</code></pre>
+        <p><strong>Theory Connection:</strong> This section implements the optimization for "general vectors" described in the proof of Proposition 1.</p>
+        <ul><li><strong>Boolean Inputs ($z_i \in \{0,1\}$):</strong> The paper notes that $eq(z_S, b_S) = 0$ whenever $b_S \neq z_S$.<ul><li>The code efficiently skips these dimensions. It fixes the bits in <code>global_idx</code> (effectively effectively "hard-coding" the correct path in the truth table) and does not add them to <code>active_bit_positions</code>. This reduces the loop size from $2^m$ to $2^{|S|}$, where $|S|$ is the number of non-boolean variables.</li></ul></li><li><strong>Initial <code>current_eq</code>:</strong> The Gray code iteration starts at logical $00\dots0$. For the active variables, $eq_1(z_i, 0) = (1 - z_i)$. Therefore, the starting <code>current_eq</code> is initialized to $\prod_{i \in Active} (1 - z_i)$.</li></ul>
+        <h3>3. The Gray Code Loop (The Core Algorithm)</h3>
+        <p><strong>Code:</strong></p>
+        <pre><code>    // ... setup code ...
+    total_sum += current_eq * evals[global_idx]; // First term (all active bits 0)
+
+    let mut prev_gray = 0usize;
+
+    for k in 1..num_steps {
+        // Standard Gray code generation: g(k) = (k &gt;&gt; 1) ^ k
+        let gray = (k &gt;&gt; 1) ^ k;
+        let diff = prev_gray ^ gray;
+
+        // Identify which bit changed
+        let active_idx = diff.trailing_zeros() as usize;
+        let global_bit_pos = active_bit_positions[active_idx];
+
+        // Determine direction of flip
+        let direction_up = (gray &amp; diff) != 0;
+
+        if direction_up {
+            current_eq *= ratios[active_idx].up;
+        } else {
+            current_eq *= ratios[active_idx].down;
+        }
+
+        // Update the truth table index
+        global_idx ^= 1 &lt;&lt; global_bit_pos;
+        total_sum += current_eq * evals[global_idx];
+
+        prev_gray = gray;
+    }</code></pre>
+        <p><strong>Theory Connection:</strong> This loop implements the enumeration described in the proof: "We generate the sequence according to the Gray code ordering...".</p>
+        <ol><li><strong><code>let gray = (k &gt;&gt; 1) ^ k;</code></strong>: This generates the standard binary reflected Gray code.</li><li><strong><code>active_idx</code></strong>: This finds the index $i$ where the change occurred. Because we filtered out Boolean inputs, this index maps to <code>active_bit_positions</code> rather than the raw variable index.</li><li><strong>The Update:</strong> The code executes the update rule: "store only the previous $eq(z,b)$ and update it using a single multiplication".<ul><li>If <code>direction_up</code> is true, we flipped $0 \to 1$, so we multiply by <code>up</code> ($z/(1-z)$).</li><li>Otherwise, we flipped $1 \to 0$, so we multiply by <code>down</code> ($(1-z)/z$).</li></ul></li><li><strong><code>global_idx ^= 1 &lt;&lt; global_bit_pos</code></strong>: This effectively "moves" our pointer in the truth table <code>evals</code> to the next required value without recalculating the index from scratch.</li></ol>
+        <h3>Summary on Impl Efficiency</h3>
+        <ul><li><strong>Multiplications:</strong> Exactly $2^{|Active|}$ multiplications inside the loop (one per iteration).</li><li><strong>Space:</strong> The <code>ratios</code> and <code>active_bit_positions</code> vectors consume $O(m)$ space, matching the paper's claim of linear space complexity.</li><li><strong>Additions:</strong> Exactly $2^{|Active|}$ additions to <code>total_sum</code>.</li></ul>
+        <h2>Performance Benchmarks</h2>
+        <p>Theory suggests that Ron’s optimized method ($O(2^m)$) should strictly outperform the Direct method ($O(m \cdot 2^m)$). However, in systems programming, theory must always contend with CPU architecture, branch prediction, and memory hierarchy.</p>
+        <p>We implemented both methods in Rust using <code>arkworks</code> (BLS12-381 <code>Fr</code> field) and benchmarked them using <code>criterion</code> on an Apple Silicon machine.</p>
+        <h3>The Results</h3>
+        <table><thead><tr><th>Variables ($m$)</th><th>Vector Size ($2^m$)</th><th>Direct Method</th><th>Ron's Optimized</th><th>Speedup Factor</th></tr></thead><tbody><tr><td><strong>5</strong></td><td>32</td><td>3.16 µs</td><td>13.96 µs</td><td><strong>4x (Slower)</strong></td></tr><tr><td><strong>10</strong></td><td>1,024</td><td>170.43 µs</td><td>54.62 µs</td><td><strong>3.12x</strong></td></tr><tr><td><strong>17</strong></td><td>131,072</td><td>37.42 ms</td><td>4.68 ms</td><td><strong>7.99x</strong></td></tr><tr><td><strong>20</strong></td><td>1,048,576</td><td>341.27 ms</td><td>102.17 ms</td><td><strong>3.34x</strong></td></tr></tbody></table>
+        <p>The data reveals three distinct phases of performance behavior:</p>
+        <p><strong>1. The Overhead Phase ($m=5$)</strong> At small sizes ($m=5$), the Optimized method is actually <strong>4x slower</strong> than the naive approach.</p>
+        <ul><li><strong>Why?</strong> The setup costs dominate. The Optimized method requires allocating vectors for ratios, computing inverses for $z_i$, and performing bitwise logic to generate Gray codes.</li><li><strong>The Lesson:</strong> For tiny sub-circuits or small lookups, the naive $O(m \cdot 2^m)$ approach is preferred because the constant factors are negligible and the code is instruction-cache friendly.</li></ul>
+        <p><strong>2. The Compute-Bound Phase ($m=10$ to $m=17$)</strong> This is the "sweet spot" where the algorithm shines.</p>
+        <ul><li>At $m=17$, we see an <strong>8x speedup</strong>.</li><li>Here, the vector size fits comfortably within the CPU's L2/L3 cache. The CPU is bound by arithmetic operations (field multiplications). By reducing the multiplications from $17 \cdot 2^{17}$ to $1 \cdot 2^{17}$, the theoretical efficiency translates directly to wall-clock time.</li></ul>
+        <p><strong>3. The Memory-Bound Phase ($m=20$)</strong> This tends to get less attension, At $m=20$, the speedup drops from ~8x to ~3.3x.</p>
+        <ul><li><strong>The Context:</strong> A vector of $2^{20}$ BLS12-381 scalars (32 bytes each) occupies $\approx 33.5 \text{ MB}$. This exceeds the L3 cache size of most consumer CPUs.</li><li><strong>The Bottleneck:</strong> The "Direct" method iterates through the <code>evals</code> vector linearly (<code>0, 1, 2...</code>), which is perfect for the CPU's hardware prefetcher.</li><li><strong>Ron's Method:</strong> While efficient in arithmetic, it traverses memory based on Gray codes (<code>000</code> $\to$ <code>001</code> $\to$ <code>011</code> $\to$ <code>010</code>). This results in a non-linear memory access pattern. Once the data size exceeds the cache, the CPU spends more cycles waiting for RAM (cache misses) than performing the field multiplications we optimized away.</li></ul>
+        <h3>My hot take</h3>
+        <p>Ron’s optimization is a critical tool for modern zkVMs, particularly in the $m=10$ to $m=18$ range common in folding schemes and sumcheck protocols. However, engineers should remain aware of the "Memory Wall" at larger sizes ($m \ge 20$), where memory bandwidth may become the new bottleneck over arithmetic complexity.</p>
+        <p><strong>References:</strong></p>
+        <ol><li>*Rothblum, <a href="https://eprint.iacr.org/2024/1103.pdf" target="_blank" rel="noopener noreferrer">A Note on Efficient Computation of the Multilinear Extension</a></li><li>Developeruche, <a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/exps/eff-mle/src/ron.rs" target="_blank" rel="noopener noreferrer">Rust Impl</a></li></ol>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

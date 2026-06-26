@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Matryoshka MLE Algorithm — Developer Uche</title>
+  <meta name="description" content="The Matryoshka MLE Algorithm In modern cryptography, particularly within succinct proof systems like GKR (Goldwasser–Kalai–Rothblum), the efficient…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-matryoshka-mle.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="The Matryoshka MLE Algorithm — Developer Uche" />
+  <meta property="og:description" content="The Matryoshka MLE Algorithm In modern cryptography, particularly within succinct proof systems like GKR (Goldwasser–Kalai–Rothblum), the efficient…" />
+  <meta property="og:url" content="https://developeruche.com/blog-matryoshka-mle.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/matryoshka-mle.png" />
+  <meta property="og:image:alt" content="The Matryoshka MLE Algorithm — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="zero knowledge" />
+  <meta property="article:tag" content="algo" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="The Matryoshka MLE Algorithm — Developer Uche" />
+  <meta name="twitter:description" content="The Matryoshka MLE Algorithm In modern cryptography, particularly within succinct proof systems like GKR (Goldwasser–Kalai–Rothblum), the efficient…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/matryoshka-mle.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "The Matryoshka MLE Algorithm",
+  "description": "The Matryoshka MLE Algorithm In modern cryptography, particularly within succinct proof systems like GKR (Goldwasser–Kalai–Rothblum), the efficient…",
+  "image": [
+    "https://developeruche.com/assets/blogs/matryoshka-mle.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "zero knowledge, algo",
+  "url": "https://developeruche.com/blog-matryoshka-mle.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-matryoshka-mle.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">The Matryoshka MLE Algorithm</h1>
+        <img class="post-hero-img" src="assets/blogs/matryoshka-mle.png" alt="The Matryoshka MLE Algorithm — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 9 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>zero knowledge</span>
+          <span>algo</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>In modern cryptography, particularly within succinct proof systems like GKR (Goldwasser–Kalai–Rothblum), the efficient evaluation of polynomials is crucial. A fundamental operation in this context is the computation of the <strong>Multilinear Extension (MLE)</strong> of a Boolean function.</p>
+        <p>For a given Boolean function $f: \{0,1\}^m \to \mathbb{F}$ that maps an $m$-bit input to a value in a finite field $\mathbb{F}$, its multilinear extension, denoted $\tilde{f}$, is the unique multivariate polynomial that agrees with $f$ on all corners of the Boolean hypercube $\{0,1\}^m$ and is linear in each of its variables.</p>
+        <p>The primary challenge is evaluating this extension $\tilde{f}$ at an arbitrary point $r = (r_1, \dots, r_m) \in \mathbb{F}^m$. The standard definition for this evaluation is:</p>
+        <p>$$\tilde{f}(r) = \sum_{b \in \{0,1\}^m} f(b) \cdot eq(r, b)$$</p>
+        <p>where $eq(r, b)$ is a function that equals 1 if $r=b$ (for $r, b \in \{0,1\}^m$) and smoothly extends this property to the whole field. A common form is $eq(r, b) = \prod_{i=1}^m (r_i b_i + (1-r_i)(1-b_i))$. Direct computation using this formula requires a summation over all $2^m$ points in the Boolean hypercube, which is computationally infeasible for large $m$.</p>
+        <p>The <strong>Matryoshka MLE algorithm</strong> provides a significant optimization for this task. Drawing its name from the recursive structure of Russian nesting dolls, the algorithm evaluates $\tilde{f}(r)$ iteratively. It peels off one variable at a time, reducing the problem's size by half at each step. This method is particularly effective in protocols like GKR, forming a core component of modern zk-SNARKs as detailed in works like <em>“Scalable Zero Knowledge via Cycles of Elliptic Curves”</em>.</p>
+        <h3>The Algorithm</h3>
+        <p>The algorithm computes $\tilde{f}(r)$ by sequentially binding the variables $r_1, \dots, r_m$. We start with the original function $f$ over $m$ variables and iteratively produce new functions over fewer variables, until we are left with a single scalar value, which is the final evaluation.</p>
+        <ol><li><strong>Initialization</strong>: Define $f_0 := f$. This function $f_0$ takes $m$ Boolean inputs.</li></ol>
+        <ol><li><strong>Iterative Computation</strong>: For $i = 1, \dots, m$, compute the function $f_i: \{0,1\}^{m-i} \to \mathbb{F}$ as follows: <p>$$f_i(b_{i+1}, \dots, b_m) = \sum_{b_i \in \{0,1\}} eq_1(r_i, b_i) \cdot f_{i-1}(b_i, b_{i+1}, \dots, b_m)$$</p> where $eq_1(r_i, b_i) = r_i b_i + (1-r_i)(1-b_i)$. Each step $i$ eliminates one variable, and the computation requires $O(2^{m-i})$ arithmetic operations.</li></ol>
+        <ol><li><strong>Output</strong>: After $m$ steps, we compute $f_m$. This is a function of zero variables—a single scalar value in the field $\mathbb{F}$. This scalar is the final result, $\tilde{f}(r)$.</li></ol>
+        <h4>Implementation Note</h4>
+        <p>A key observation for implementation is that the summation in Step 2 can be simplified. For any set of inputs $(b_{i+1}, \dots, b_m)$, the computation becomes: <p>$$f_i(\dots) = eq_1(r_i, 0) \cdot f_{i-1}(0, \dots) + eq_1(r_i, 1) \cdot f_{i-1}(1, \dots)$$</p> Since $eq_1(r_i, 0) = 1-r_i$ and $eq_1(r_i, 1) = r_i$, this can be rewritten as: <p>$$f_i(\dots) = (1-r_i) \cdot f_{i-1}(0, \dots) + r_i \cdot f_{i-1}(1, \dots)$$</p> This can be further rearranged to: <p>$$f_i(\dots) = f_{i-1}(0, \dots) + r_i(f_{i-1}(1, \dots) - f_{i-1}(0, \dots))$$</p> This formulation is efficient as it requires only one multiplication and two additions for each output of $f_i$. Therefore, computing all $2^{m-i}$ values of $f_i$ takes exactly $2^{m-i}$ multiplications and $2 \cdot 2^{m-i}$ additions.</p>
+        <h2>Example [Using an example to explain this further]</h2>
+        <p><em>unforunately, I am quite lazy, we would be using a 3varible ploy for this example</em></p>
+        <h3>🎯 Goal:</h3>
+        <p>Given a Boolean function $f: \{0,1\}^3 \to \{0,1\}$, and a point $r = (r_1, r_2, r_3) \in \mathbb{F}^3$, compute the <strong>multilinear extension</strong> $\hat{f}(r) \in \mathbb{F}$.</p>
+        <h3>🔧 Setup:</h3>
+        <p>Let’s define:</p>
+        <ul><li>The field: $\mathbb{F} = \mathbb{F}_7$ (integers mod 7)</li><li>Function $f$ defined over the domain $\{0,1\}^3$, specified as a truth table:</li></ul>
+        <table><thead><tr><th>$x_1$</th><th>$x_2$</th><th>$x_3$</th><th>$f(x_1, x_2, x_3)$</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+        <p>Let:</p>
+        <p>$$
+r = (r_1, r_2, r_3) = (2, 3, 6) \in \mathbb{F}_7^3
+$$</p>
+        <h3>📌 Define <code>eq1(r, b) = (1 - r) * (1 - b) + r * b</code></h3>
+        <p>This is just the <strong>linear polynomial</strong> that evaluates to:</p>
+        <ul><li><code>1</code> when $b = r$</li><li><code>0</code> when $b \neq r$ Over domain $\{0,1\}$, it's:</li></ul>
+        <p>$$
+\text{eq1}(r, b) = (1 - b)(1 - r) + b \cdot r
+$$</p>
+        <p>Let’s compute <code>eq1</code> for all possible <code>b ∈ {0,1}</code> and for each <code>r_i</code>:</p>
+        <table><thead><tr><th>b</th><th>eq1(r₁ = 2, b)</th><th>eq1(r₂ = 3, b)</th><th>eq1(r₃ = 6, b)</th></tr></thead><tbody><tr><td>0</td><td>(1)(-1) = 6</td><td>(1)(-2) = 5</td><td>(1)(-5) = 2</td></tr><tr><td>1</td><td>(1)(2) = 2</td><td>(1)(3) = 3</td><td>(1)(6) = 6</td></tr></tbody></table>
+        <p>(Note: All values mod 7)</p>
+        <p>So:</p>
+        <ul><li>$\text{eq1}(2,0) = 6, \quad \text{eq1}(2,1) = 2$</li><li>$\text{eq1}(3,0) = 5, \quad \text{eq1}(3,1) = 3$</li><li>$\text{eq1}(6,0) = 2, \quad \text{eq1}(6,1) = 6$</li></ul>
+        <h3>🔄 Matryoshka MLE Evaluation Algorithm</h3>
+        <p>We define:</p>
+        <p>$$
+f_0(x_1,x_2,x_3) = f(x_1,x_2,x_3) \in \{0,1\}
+$$</p>
+        <p>We now compute recursively:</p>
+        <h4>🔹 Step 1: Compute $f_1(x_2, x_3)$</h4>
+        <p>$$
+f_1(x_2, x_3) = \sum_{x_1 \in \{0,1\}} \text{eq1}(r_1, x_1) \cdot f_0(x_1, x_2, x_3)
+$$</p>
+        <p>For all 4 combinations of $(x_2, x_3) \in \{0,1\}^2$, we compute:</p>
+        <table><thead><tr><th>$x_2$</th><th>$x_3$</th><th>$f_0(0,x_2,x_3)$</th><th>$f_0(1,x_2,x_3)$</th><th>$f_1(x_2,x_3)$</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>$6·1 + 2·0 = 6$</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>$6·0 + 2·1 = 2$</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>$6·1 + 2·0 = 6$</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>$6·1 + 2·1 = 6+2=8 ≡ 1$</td></tr></tbody></table>
+        <p>(Working mod 7: 8 ≡ 1)</p>
+        <p>So:</p>
+        <table><thead><tr><th>$x_2$</th><th>$x_3$</th><th>$f_1(x_2, x_3)$</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>6</td></tr><tr><td>0</td><td>1</td><td>2</td></tr><tr><td>1</td><td>0</td><td>6</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+        <h4>🔹 Step 2: Compute $f_2(x_3)$</h4>
+        <p>$$
+f_2(x_3) = \sum_{x_2 \in \{0,1\}} \text{eq1}(r_2, x_2) \cdot f_1(x_2, x_3)
+$$</p>
+        <p>For each $x_3$:</p>
+        <table><thead><tr><th>$x_3$</th><th>$f_1(0,x_3)$</th><th>$f_1(1,x_3)$</th><th>$f_2(x_3)$</th></tr></thead><tbody><tr><td>0</td><td>6</td><td>6</td><td>$5·6 + 3·6 = 30 + 18 = 48 ≡ 6$</td></tr><tr><td>1</td><td>2</td><td>1</td><td>$5·2 + 3·1 = 10 + 3 = 13 ≡ 6$</td></tr></tbody></table>
+        <h4>🔹 Step 3: Compute final output $f_3 = \hat{f}(r)$</h4>
+        <p>$$
+f_3 = \sum_{x_3 \in \{0,1\}} \text{eq1}(r_3, x_3) \cdot f_2(x_3)
+$$</p>
+        <p>$$
+= \text{eq1}(6, 0) · 6 + \text{eq1}(6, 1) · 6 = 2·6 + 6·6 = 12 + 36 = 48 ≡ 6 \mod 7
+$$</p>
+        <h4>✅ Final Result:</h4>
+        <p>$$
+\hat{f}(r_1 = 2, r_2 = 3, r_3 = 6) = \boxed{6}
+$$</p>
+        <h3>🔍 The Optimization Trick</h3>
+        <p>Recall that:</p>
+        <p>$$
+eq1(r_i, b_i) = 
+\begin{cases}
+1 - r_i & \text{if } b_i = 0 \\
+r_i & \text{if } b_i = 1
+\end{cases}
+$$</p>
+        <p>So we compute:</p>
+        <p>$$
+\sum_{b_i \in \{0,1\}} eq1(r_i, b_i) \cdot f_{i-1}(b_i, \ldots)
+= (1 - r_i) \cdot f_{i-1}(0, \ldots) + r_i \cdot f_{i-1}(1, \ldots)
+$$</p>
+        <h3>🧠 But Here's the Trick:</h3>
+        <p>The authors observe that you can <strong>compute this expression</strong> via the <strong>identity</strong>:</p>
+        <p>$$
+eq1(r_i, b_i) \cdot f_{i-1}(b_i, \ldots) = 
+f_{i-1}(0, \ldots) + r_i \cdot \left(f_{i-1}(1, \ldots) - f_{i-1}(0, \ldots)\right)
+$$</p>
+        <p>This reduces the number of multiplications because:</p>
+        <ul><li>Instead of <strong>computing both $f_{i-1}(0,\ldots) \cdot (1 - r_i)$</strong> and <strong>$f_{i-1}(1,\ldots) \cdot r_i$</strong> (2 multiplications),</li><li>You compute one multiplication:</li></ul>
+        <p><p>$$
+  r_i \cdot \left(f_{i-1}(1,\ldots) - f_{i-1}(0,\ldots)\right)
+  $$</p></p>
+        <ul><li>And one addition:</li></ul>
+        <p>$$
+      + f_{i-1}(0,\ldots)
+  $$</p>
+        <p>Which saves one multiplication per pair.</p>
+        <h3>🔢 For Dimension $m$, This Yields:</h3>
+        <ul><li>$2^{m-1}$ such <strong>pairs</strong> at level $i$,</li><li>So $2^{m-1}$ additions and only $2^{m-1}$ <strong>single</strong> multiplications,</li><li>Totaling $2^{m-1}$ multiplications at level $i$ instead of $2^m$.</li></ul>
+        <p>This is the source of the <strong>efficiency</strong> in Matryoshka: At level $i$, you do only $2^{m - i}$ multiplications, leading to the total:</p>
+        <p>$$
+\sum_{i=1}^m 2^{m - i} = 2^m - 1 \quad \text{(total multiplications)}
+$$</p>
+        <p>Compared to the naïve method, which uses roughly $m \cdot 2^m$ multiplications.</p>
+        <p>I think this trick is fundalmental to the performance gain.</p>
+        <h3>Playing with this trick with same example</h3>
+        <p>We're given:</p>
+        <ul><li><strong>Field</strong>: $\mathbb{F}_7$</li><li><strong>Function</strong>: $f: \{0,1\}^3 \to \{0,1\}$ with:</li></ul>
+        <table><thead><tr><th>$x_1$</th><th>$x_2$</th><th>$x_3$</th><th>$f(x_1,x_2,x_3)$</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+        <ul><li><strong>Evaluation point</strong>: $r = (r_1, r_2, r_3) = (2, 3, 6) \in \mathbb{F}_7^3$</li></ul>
+        <h3>🔹 Step 1: Eliminate $x_1$</h3>
+        <p>We define:</p>
+        <p>$$
+f_1(x_2,x_3) = f(0,x_2,x_3) + r_1 \cdot (f(1,x_2,x_3) - f(0,x_2,x_3)) \mod 7
+$$</p>
+        <p>Using $r_1 = 2$</p>
+        <table><thead><tr><th>$x_2$</th><th>$x_3$</th><th>$f(0,x_2,x_3)$</th><th>$f(1,x_2,x_3)$</th><th>$f_1(x_2,x_3)$</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>$1 + 2 \cdot (0 - 1) = 1 - 2 = -1 \equiv 6$</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>$0 + 2 \cdot (1 - 0) = 2$</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>$1 + 2 \cdot (-1) = -1 \equiv 6$</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>$1 + 2 \cdot (0) = 1$</td></tr></tbody></table>
+        <p>So:</p>
+        <ul><li>$f_1(0,0) = 6$</li><li>$f_1(0,1) = 2$</li><li>$f_1(1,0) = 6$</li><li>$f_1(1,1) = 1$</li></ul>
+        <h3>🔹 Step 2: Eliminate $x_2$</h3>
+        <p>Use:</p>
+        <p>$$
+f_2(x_3) = f_1(0,x_3) + r_2 \cdot (f_1(1,x_3) - f_1(0,x_3)) \mod 7
+$$</p>
+        <p>with $r_2 = 3$</p>
+        <table><thead><tr><th>$x_3$</th><th>$f_1(0,x_3)$</th><th>$f_1(1,x_3)$</th><th>$f_2(x_3)$</th></tr></thead><tbody><tr><td>0</td><td>6</td><td>6</td><td>$6 + 3(0) = 6$</td></tr><tr><td>1</td><td>2</td><td>1</td><td>$2 + 3(1 - 2) = 2 - 3 = -1 \equiv 6$</td></tr></tbody></table>
+        <h4>🔹 Step 3: Eliminate $x_3$</h4>
+        <p>Use:</p>
+        <p>$$
+f_3 = f_2(0) + r_3 \cdot (f_2(1) - f_2(0)) \mod 7
+$$</p>
+        <p>with $r_3 = 6$:</p>
+        <p>$$
+f_3 = 6 + 6 \cdot (6 - 6) = 6 + 6 \cdot 0 = 6
+$$</p>
+        <h3>✅ Final Result</h3>
+        <p>$$
+\hat{f}(2,3,6) = 6 \in \mathbb{F}_7
+$$</p>
+        <h3>🔢 Multiplication Count</h3>
+        <p>Each use of the trick requires <strong>1 multiplication</strong> per step for each subcase (pair of values).</p>
+        <ul><li>Step 1: 4 multiplications (for each of 4 $(x_2, x_3)$ pairs)</li><li>Step 2: 2 multiplications (one per $x_3$)</li><li>Step 3: 1 multiplication</li></ul>
+        <p><strong>Total: 7 multiplications</strong> — again, matching the optimal $2^3 - 1 = 7$ multiplications.</p>
+        <h4>Reference</h4>
+        <p><a href="https://eccc.weizmann.ac.il/report/2025/090/" target="_blank" rel="noopener noreferrer">https://eccc.weizmann.ac.il/report/2025/090/</a> [page 9] <a href="https://github.com/tcoratger/whir-p3/issues/215" target="_blank" rel="noopener noreferrer">https://github.com/tcoratger/whir-p3/issues/215</a></p>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

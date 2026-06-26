@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building a Kademlia Distributed Hash Table — Developer Uche</title>
+  <meta name="description" content="Building a Kademlia Distributed Hash Table Kademlia is a Distributed Hash Table (DHT) protocol designed for decentralized peer-to-peer (P2P) networks.…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-kademlia-dht.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Building a Kademlia Distributed Hash Table — Developer Uche" />
+  <meta property="og:description" content="Building a Kademlia Distributed Hash Table Kademlia is a Distributed Hash Table (DHT) protocol designed for decentralized peer-to-peer (P2P) networks.…" />
+  <meta property="og:url" content="https://developeruche.com/blog-kademlia-dht.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/kademlia-dht.png" />
+  <meta property="og:image:alt" content="Building a Kademlia Distributed Hash Table — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="networking" />
+  <meta property="article:tag" content="algo" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Building a Kademlia Distributed Hash Table — Developer Uche" />
+  <meta name="twitter:description" content="Building a Kademlia Distributed Hash Table Kademlia is a Distributed Hash Table (DHT) protocol designed for decentralized peer-to-peer (P2P) networks.…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/kademlia-dht.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Building a Kademlia Distributed Hash Table",
+  "description": "Building a Kademlia Distributed Hash Table Kademlia is a Distributed Hash Table (DHT) protocol designed for decentralized peer-to-peer (P2P) networks.…",
+  "image": [
+    "https://developeruche.com/assets/blogs/kademlia-dht.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "networking, algo",
+  "url": "https://developeruche.com/blog-kademlia-dht.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-kademlia-dht.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Building a Kademlia Distributed Hash Table</h1>
+        <img class="post-hero-img" src="assets/blogs/kademlia-dht.png" alt="Building a Kademlia Distributed Hash Table — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 4 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>networking</span>
+          <span>algo</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>Kademlia is a Distributed Hash Table (DHT) protocol designed for decentralized peer-to-peer (P2P) networks. It enables efficient storage and retrieval of key-value pairs without relying on a central authority. It is widely used in file-sharing networks (e.g., BitTorrent’s DHT), blockchain networks, and decentralized applications.</p>
+        <p>Some things you should note:</p>
+        <ol><li>Every node of data has a 160bit or 20bytes unique ID</li><li>The node that is the closest to a key would be responsible for storing this data. the term closest is obtained by the distance metric, this quantify the disstance between nodes. This netwrok make use of the XOR operator to perform this distance metric;<ul><li>d(x, x) = x xor x = 0</li><li>d(x,y) = x xor y &gt; 0</li><li>d(x,y) + d(y, z) = (x xor y) xor (y xor z) = x xor z = d(x, z)</li></ul></li></ol>
+        <p>Every node in the network would need to keep track of a feew nodes, and hope they keep track of others and so on</p>
+        <p>Communication happens over  UDP and the routing table hols;  node -&gt; &lt;ip, udp port&gt;</p>
+        <p>when a node receives any mesage from other nodes in the network, it updates it appropraite k-bucket with the node id.</p>
+        <p>if the routing table is full;</p>
+        <ul><li>node pings the laeast-recently seen node (at the haead)</li><li>if no response, then evict and insert new node at tail</li><li>if respond, n ew node is discarded and first node is moved to the tail (the longer a node is oonnline, the higher the probality that a node would be alive in the furture)</li></ul>
+        <p>These are the apis that i would be implementing;</p>
+        <ol><li>Ping: Probes a node to see if it is online</li><li>Find Node: The node returns &lt;ip.port, node_id&gt; for the k node it know about that are closer to the requested node. noote the intermidate node do not forward the request, they just return the nodes through which wee could reach the target. This lookup continues until the reach the target and complete the desired action.</li><li>STORE: Instruct a node to store the key value pair, a node locates the k-nearest node and send them the RPC</li></ol>
+        <p>An optimization idea: Cache the key vaule pair, so when need, it is first query form the cache, if this is not avaliable in cache, send the request to the network.</p>
+        <hr />
+        <p>Possible resources i might be making use of <a href="https://medium.com/coinmonks/a-brief-overview-of-kademlia-and-its-use-in-various-decentralized-platforms-da08a7f72b8f" target="_blank" rel="noopener noreferrer">https://medium.com/coinmonks/a-brief-overview-of-kademlia-and-its-use-in-various-decentralized-platforms-da08a7f72b8f</a> <a href="https://github.com/vmandke/kademlia" target="_blank" rel="noopener noreferrer">https://github.com/vmandke/kademlia</a> <a href="https://medium.com/@vmandke/kademlia-89142a8c2627" target="_blank" rel="noopener noreferrer">https://medium.com/@vmandke/kademlia-89142a8c2627</a> <a href="https://github.com/f0lg0/kademlia-dht/tree/main/src" target="_blank" rel="noopener noreferrer">https://github.com/f0lg0/kademlia-dht/tree/main/src</a> <a href="https://www.scs.stanford.edu/~dm/home/papers/kpos.pdf" target="_blank" rel="noopener noreferrer">https://www.scs.stanford.edu/~dm/home/papers/kpos.pdf</a></p>
+        <h2>Reading the paper.</h2>
+        <ol><li>Each node has a 160 bit node id.Every message transmitted contains the node id.</li><li>The Keys too are 160bit id similar to the node id.</li><li>To publish and find hkey,valuei pairs, Kademlia relies on a notion of distance between two identifiers. Given two 160-bit identifiers, x and y, Kademlia defines the distance between them as their bitwise exclusive or (XOR) interpreted as an integer, d(x, y) = x ⊕ y.</li><li>This implemenation would be having 160 k-bucket mapping to every bit, the bucket size I would be making use of is 20. When a Kademlia node receives any message (request or reply) from another node, it updates the appropriate k-bucket for the sender’s node ID. If the sending node already exists in the recipient’s kbucket, the recipient moves it to the tail of the list. If the node is not already in the appropriate k-bucket and the bucket has fewer than k entries, then the recipient just inserts the new sender at the tail of the list. If the appropriate k-bucket is full, however, then the recipient pings the k-bucket’s least-recently seen node to decide what to do. If the least-recently seen node fails to respond, it is evicted from the k-bucket and the new sender inserted at the tail. Otherwise, if the least-recently seen node responds, it is moved to the tail of the list, and the new sender’s contact is discarded.-buckets effectively implement a least-recently seen eviction policy, except that live nodes are never removed from the list.</li></ol>
+        <p>Still a work in progress, but this is the link to the implemention:  <a href="https://github.com/developeruche/kademlia-dht-rust" target="_blank" rel="noopener noreferrer">https://github.com/developeruche/kademlia-dht-rust</a></p>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

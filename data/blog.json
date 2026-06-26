@@ -55,7 +55,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/HJX8bvAz1x",
+    "link": "blog-multiset-check-iop.html",
     "highlight": true,
     "thumbnail": "assets/blogs/multiset-check-iop.png"
   },
@@ -65,7 +65,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BJX_RT3Ule",
+    "link": "blog-matryoshka-mle.html",
     "highlight": true,
     "thumbnail": "assets/blogs/matryoshka-mle.png"
   },
@@ -75,7 +75,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/ryqo14f7-x",
+    "link": "blog-jagged-mle.html",
     "highlight": true,
     "thumbnail": "assets/blogs/jagged-mle.png"
   },
@@ -85,7 +85,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/SkWiQX8--l",
+    "link": "blog-ron-mle-optimization.html",
     "highlight": true,
     "thumbnail": "assets/blogs/ron-mle-optimization.png"
   },
@@ -95,7 +95,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BJ-hB-Lb-e",
+    "link": "blog-mle-direct-evaluation.html",
     "highlight": true,
     "thumbnail": "assets/blogs/mle-direct-evaluation.png"
   },
@@ -105,7 +105,7 @@
       "lecture note",
       "cryptography"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/S11ZKNpJeg",
+    "link": "blog-fields-extension-fields.html",
     "highlight": true,
     "thumbnail": "assets/blogs/fields-extension-fields.png"
   },
@@ -116,7 +116,7 @@
       "zero knowledge",
       "cryptography"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/HkdDT4Kzyl",
+    "link": "blog-groth16.html",
     "highlight": true,
     "thumbnail": "assets/blogs/groth16.png"
   },
@@ -126,7 +126,7 @@
       "snarks",
       "zero knowledge"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BkhzajEfye",
+    "link": "blog-r1cs-to-qap.html",
     "highlight": true,
     "thumbnail": "assets/blogs/r1cs-to-qap.png"
   },
@@ -136,7 +136,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BkCdZ1tGJg",
+    "link": "blog-permutation-check-iop.html",
     "highlight": true,
     "thumbnail": "assets/blogs/permutation-check-iop.png"
   },
@@ -146,7 +146,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/B1GexOrGkl",
+    "link": "blog-product-check-iop.html",
     "highlight": true,
     "thumbnail": "assets/blogs/product-check-iop.png"
   },
@@ -157,7 +157,7 @@
       "zero knowledge",
       "evm"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BJbNXVJeWl",
+    "link": "blog-zk-rollups-eip4844-blobs.html",
     "highlight": true,
     "thumbnail": "assets/blogs/zk-rollups-eip4844-blobs.png"
   },
@@ -167,7 +167,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/HkBLGkjyll",
+    "link": "blog-eof-deep-dive.html",
     "highlight": true,
     "thumbnail": "assets/blogs/eof-deep-dive.png"
   },
@@ -177,7 +177,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BJ3ZKCj6Jg",
+    "link": "blog-state-read-write-opcodes.html",
     "highlight": true,
     "thumbnail": "assets/blogs/state-read-write-opcodes.png"
   },
@@ -209,7 +209,7 @@
       "blockchain",
       "protocol"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/Bk-DGd8Qyl",
+    "link": "blog-eip2771-gasless-relayer.html",
     "highlight": true,
     "thumbnail": "assets/blogs/eip2771-gasless-relayer.png"
   },
@@ -219,7 +219,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/BJQTekokex",
+    "link": "blog-evm-jumpdest.html",
     "highlight": true,
     "thumbnail": "assets/blogs/evm-jumpdest.png"
   },
@@ -230,7 +230,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/r1mC2oDrZx",
+    "link": "blog-eip7928-block-access-lists.html",
     "highlight": true,
     "thumbnail": "assets/blogs/eip7928-block-access-lists.png"
   },
@@ -240,7 +240,7 @@
       "protocol",
       "blockchain"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/HJD7M2tebg",
+    "link": "blog-epf-dev-log.html",
     "highlight": true,
     "thumbnail": "assets/blogs/epf-dev-log.png"
   },
@@ -251,7 +251,7 @@
       "protocol",
       "blockchain"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/Byhbp7y9xx",
+    "link": "blog-hybrid-ethereum-riscv.html",
     "highlight": true,
     "thumbnail": "assets/blogs/hybrid-ethereum-riscv.png"
   },
@@ -261,7 +261,7 @@
       "networking",
       "algo"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/Sy2ZEn32Je",
+    "link": "blog-kademlia-dht.html",
     "highlight": true,
     "thumbnail": "assets/blogs/kademlia-dht.png"
   },
@@ -272,7 +272,7 @@
       "algo",
       "cryptography"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/H1BJhOHylx",
+    "link": "blog-merkle-patricia-trie.html",
     "highlight": true,
     "thumbnail": "assets/blogs/merkle-patricia-trie.png"
   },

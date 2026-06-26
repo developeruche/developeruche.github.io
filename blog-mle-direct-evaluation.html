@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multilinear Polynomial Extension and Direct Evaluation — Developer Uche</title>
+  <meta name="description" content="Multilinear Polynomial Extension and Direct evaluation A multilinear polynomial is a polynomial in multiple variables where each variable appears with…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-mle-direct-evaluation.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Multilinear Polynomial Extension and Direct Evaluation — Developer Uche" />
+  <meta property="og:description" content="Multilinear Polynomial Extension and Direct evaluation A multilinear polynomial is a polynomial in multiple variables where each variable appears with…" />
+  <meta property="og:url" content="https://developeruche.com/blog-mle-direct-evaluation.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/mle-direct-evaluation.png" />
+  <meta property="og:image:alt" content="Multilinear Polynomial Extension and Direct Evaluation — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="zero knowledge" />
+  <meta property="article:tag" content="algo" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Multilinear Polynomial Extension and Direct Evaluation — Developer Uche" />
+  <meta name="twitter:description" content="Multilinear Polynomial Extension and Direct evaluation A multilinear polynomial is a polynomial in multiple variables where each variable appears with…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/mle-direct-evaluation.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Multilinear Polynomial Extension and Direct Evaluation",
+  "description": "Multilinear Polynomial Extension and Direct evaluation A multilinear polynomial is a polynomial in multiple variables where each variable appears with…",
+  "image": [
+    "https://developeruche.com/assets/blogs/mle-direct-evaluation.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "zero knowledge, algo",
+  "url": "https://developeruche.com/blog-mle-direct-evaluation.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-mle-direct-evaluation.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Multilinear Polynomial Extension and Direct Evaluation</h1>
+        <img class="post-hero-img" src="assets/blogs/mle-direct-evaluation.png" alt="Multilinear Polynomial Extension and Direct Evaluation — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 7 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>zero knowledge</span>
+          <span>algo</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>A multilinear polynomial is a polynomial in multiple variables where each variable appears with degree at most 1.</p>
+        <p>Say we have a m-variate functions that maps a string of "m" boolean vectors to a field element $F$. $f: \{0, 1\}^m \to  F$.</p>
+        <p>The extension of the m-variate function mean to say rather than mapping just a string of boolean to a field element we would like to be able to map any field element to another field element. we can express this mathematically as $\hat{f}: F^m \to F$</p>
+        <h4>Goal for this note</h4>
+        <p>Document how given, an m-variate function and some oracle query points $z \in F^m$, we could compute $\hat{f}(z)$ using only;</p>
+        <ul><li>$2^{m+1}$ multiplication</li><li>$2^m$ addtions</li><li>$O(m)$ additional operations</li><li>The amount of space used is coresponding to $O(m)$ field elements</li></ul>
+        <p>before going further, would drop down here a formal/complete mathematical defination of a MLE;</p>
+        <h3>Definition</h3>
+        <p>Let $F$ be a finite field and $m \in \mathbb{N}$ be an integer. For every function $f: \{0,1\}^m \to F$, there exists a <strong>unique</strong> multilinear polynomial $\tilde{f}: F^m \to F$ such that:</p>
+        <ol><li>$\tilde{f}$ is multilinear (each variable has degree at most 1)</li><li>$\tilde{f}$ agrees with $f$ on the Boolean hypercube: $\tilde{f}(b) = f(b)$ for all $b \in \{0,1\}^m$</li></ol>
+        <p>We call $\tilde{f}$ the <strong>multilinear extension</strong> (MLE) of $f$.</p>
+        <p>The multilinear extension $\tilde{f}$ can be expressed explicitly as:</p>
+        <p>$$
+\tilde{f}(z) = \sum_{b \in \{0,1\}^m} \text{eq}(z, b) \cdot f(b)
+$$</p>
+        <p>where:</p>
+        <ul><li>$z = (z_1, z_2, \ldots, z_m) \in F^m$ is an arbitrary point in $F^m$</li><li>$b = (b_1, b_2, \ldots, b_m) \in \{0,1\}^m$ ranges over all vertices of the Boolean hypercube</li><li>The <strong>equality indicator function</strong> is defined as:</li></ul>
+        <p>$$
+\text{eq}(z, b) = \prod_{i=1}^{m} \text{eq}_1(z_i, b_i)
+$$</p>
+        <ul><li>The <strong>univariate equality indicator</strong> is:</li></ul>
+        <p>$$
+\text{eq}_1(z_i, b_i) = z_i \cdot b_i + (1 - z_i) \cdot (1 - b_i)
+$$</p>
+        <h3>Interpretation</h3>
+        <p>The function $\text{eq}_1(z_i, b_i)$ acts as an interpolating factor:</p>
+        <ul><li>When $z_i = b_i$, we have $\text{eq}_1(z_i, b_i) = 1$</li><li>When $z_i \neq b_i$ (and both are in $\{0,1\}$), we have $\text{eq}_1(z_i, b_i) = 0$</li></ul>
+        <p>Therefore, $\text{eq}(z, b)$ serves as a <strong>Lagrange basis polynomial</strong> that equals 1 when $z = b$ and equals 0 when $z$ equals any other Boolean vector. This makes the MLE a weighted combination of the function values at Boolean points, where the weights are the multilinear Lagrange basis polynomials.</p>
+        <h3>Example</h3>
+        <p>Let's work through a concrete example with $f: \{0,1\}^3 \to F$. Based on the sequence in your notes, the function maps inputs to the values $1$ through $8$. We will evaluate the MLE at the point $z = (2, 3, 4)$.</p>
+        <table><thead><tr><th>$(b_1, b_2, b_3)$</th><th>$f(b_1, b_2, b_3)$</th></tr></thead><tbody><tr><td>$(0,0,0)$</td><td>$1$</td></tr><tr><td>$(0,0,1)$</td><td>$2$</td></tr><tr><td>$(0,1,0)$</td><td>$3$</td></tr><tr><td>$(0,1,1)$</td><td>$4$</td></tr><tr><td>$(1,0,0)$</td><td>$5$</td></tr><tr><td>$(1,0,1)$</td><td>$6$</td></tr><tr><td>$(1,1,0)$</td><td>$7$</td></tr><tr><td>$(1,1,1)$</td><td>$8$</td></tr></tbody></table>
+        <p><strong>Step 1: Write the MLE Formula</strong></p>
+        <p>$$
+\tilde{f}(z_1, z_2, z_3) = \sum_{b \in \{0,1\}^3} \text{eq}(z, b) \cdot f(b)
+$$</p>
+        <p>This expands to the sum of 8 terms:</p>
+        <p>$$
+\begin{aligned}
+\tilde{f}(z) 
+&= \text{eq}(z, 000)\cdot 1 + \text{eq}(z, 001)\cdot 2 + \text{eq}(z, 010)\cdot 3 + \text{eq}(z, 011)\cdot 4 \\
+&\quad + \text{eq}(z, 100)\cdot 5 + \text{eq}(z, 101)\cdot 6 + \text{eq}(z, 110)\cdot 7 + \text{eq}(z, 111)\cdot 8
+\end{aligned}
+$$</p>
+        <p><strong>Step 2: Compute Each $\text{eq}(z, b)$ Term</strong></p>
+        <p>We use the simplified coordinate form: if $b_i=1$, use $z_i$; if $b_i=0$, use $(1-z_i)$. Evaluated at $z = (2, 3, 4)$:</p>
+        <p><strong>For $b = (0, 0, 0)$:</strong> <p>$$
+\text{eq}(z, 000) = (1-z_1)(1-z_2)(1-z_3) = (1-2)(1-3)(1-4) = (-1)(-2)(-3) = -6
+$$</p></p>
+        <p><strong>For $b = (0, 0, 1)$:</strong> <p>$$
+\text{eq}(z, 001) = (1-z_1)(1-z_2)(z_3) = (1-2)(1-3)(4) = (-1)(-2)(4) = 8
+$$</p></p>
+        <p><strong>For $b = (0, 1, 0)$:</strong> <p>$$
+\text{eq}(z, 010) = (1-z_1)(z_2)(1-z_3) = (1-2)(3)(1-4) = (-1)(3)(-3) = 9
+$$</p></p>
+        <p><strong>For $b = (0, 1, 1)$:</strong> <p>$$
+\text{eq}(z, 011) = (1-z_1)(z_2)(z_3) = (1-2)(3)(4) = (-1)(3)(4) = -12
+$$</p></p>
+        <p><strong>For $b = (1, 0, 0)$:</strong> <p>$$
+\text{eq}(z, 100) = (z_1)(1-z_2)(1-z_3) = (2)(1-3)(1-4) = (2)(-2)(-3) = 12
+$$</p></p>
+        <p><strong>For $b = (1, 0, 1)$:</strong> <p>$$
+\text{eq}(z, 101) = (z_1)(1-z_2)(z_3) = (2)(1-3)(4) = (2)(-2)(4) = -16
+$$</p></p>
+        <p><strong>For $b = (1, 1, 0)$:</strong> <p>$$
+\text{eq}(z, 110) = (z_1)(z_2)(1-z_3) = (2)(3)(1-4) = (2)(3)(-3) = -18
+$$</p></p>
+        <p><strong>For $b = (1, 1, 1)$:</strong> <p>$$
+\text{eq}(z, 111) = (z_1)(z_2)(z_3) = (2)(3)(4) = 24
+$$</p></p>
+        <p><strong>Step 3: Substitute and Solve</strong></p>
+        <p>Now we multiply the computed weights (Lagrange basis) by the function values $f(b)$ and sum them up:</p>
+        <p>$$
+\begin{aligned}
+\tilde{f}(2, 3, 4) &= (-6 \cdot 1) + (8 \cdot 2) + (9 \cdot 3) + (-12 \cdot 4) \\
+&\quad + (12 \cdot 5) + (-16 \cdot 6) + (-18 \cdot 7) + (24 \cdot 8) \\
+\\
+&= -6 + 16 + 27 - 48 + 60 - 96 - 126 + 192 \\
+\\
+&= 19
+\end{aligned}
+$$</p>
+        <p><strong>Step 4: Verification</strong></p>
+        <p>We can verify this result by observing that the input values $1, 2, \dots, 8$ follow a linear pattern. The polynomial form for this specific function is: <p>$$f(z) = 4z_1 + 2z_2 + z_3 + 1$$</p></p>
+        <p>Testing this simpler polynomial against our evaluation point $z=(2,3,4)$: <p>$$
+4(2) + 2(3) + 4 + 1 = 8 + 6 + 4 + 1 = 19
+$$</p></p>
+        <p>The results match, confirming the Direct Evaluation method.</p>
+        <h2>Rust Implementation: Direct Evaluation</h2>
+        <p>To make this concept concrete, we implement the algorithm using Rust. We utilize the <code>ark_ff</code> library, which provides the generic <code>Field</code> traits used across the standard Zero-Knowledge Proof ecosystem (Groth16, Plonk, etc.).</p>
+        <p>The implementation follows the <strong>Direct Evaluation</strong> strategy, literally translating the summation formula: <p>$$\tilde{f}(z) = \sum_{b \in \{0,1\}^m} \text{eq}(z, b) \cdot f(b)$$</p></p>
+        <h3>1\. Generating the Hypercube</h3>
+        <p>The domain of our function $f$ is the boolean hypercube $\{0,1\}^m$. We represent these inputs as vectors of bits.</p>
+        <p>The function <code>generate_hypercube_vec</code> iterates from $0$ to $2^m - 1$. We use bitwise shifting <code>(i &gt;&gt; bit_index) &amp; 1</code> to extract the boolean path for every possible input $b$.</p>
+        <pre><code>pub fn generate_hypercube_vec(m: usize) -&gt; Vec&lt;Vec&lt;u8&gt;&gt; {
+    // ... allocates and populates the boolean hypercube ...
+}</code></pre>
+        <p><em>Note: We pre-allocate memory using <code>Vec::with_capacity</code> to prevent expensive reallocations as the hypercube grows exponentially with $m$.</em></p>
+        <h3>2\. Computing Lagrange Basis Polynomials (<code>eq_funcs</code>)</h3>
+        <p>This is the core of the MLE. We need to compute the weight (the <code>eq</code> term) for every point in the hypercube.</p>
+        <p>This function implements the product form of the indicator function: <p>$$\text{eq}(z, b) = \prod_{i=1}^{m} (z_i \cdot b_i + (1 - z_i)(1 - b_i))$$</p></p>
+        <p>In the code, we simplify this conditional logic:</p>
+        <ul><li>If the hypercube bit $b_i$ is <strong>1</strong>, the term is $z_i$.</li><li>If the hypercube bit $b_i$ is <strong>0</strong>, the term is $(1 - z_i)$.</li></ul>
+        <pre><code>// Iterate over every point 'b' in the hypercube
+for b in bh {
+    let mut product_term = F::one();
+    for (i, &amp;bit) in b.iter().enumerate() {
+        // Select z_i or (1 - z_i) based on the current bit
+        let term = if bit == 1 {
+            points[i] 
+        } else {
+            F::one() - points[i]
+        };
+        product_term *= term;
+    }
+    evals.push(product_term);
+}</code></pre>
+        <h3>3\. The Dot Product (<code>mle_eval_direct</code>)</h3>
+        <p>Finally, to get the value $\tilde{f}(z)$, we compute the weighted sum of all evaluations. This is effectively a dot product between:</p>
+        <ol><li>The vector of Lagrange basis evaluations ($\text{eq}(z, b)$).</li><li>The vector of original function evaluations ($f(b)$).</li></ol>
+        <p>&lt;!-- end list --&gt;</p>
+        <pre><code>pub fn mle_eval_direct&lt;F: Field&gt;(points: &amp;[F], evals: &amp;[F]) -&gt; F {
+    let eq_s = eq_funcs(points); // Get weights
+    let mut res = F::zero();
+
+    // Sum_{b} ( f(b) * eq(z, b) )
+    for (i, eval) in evals.iter().enumerate() {
+        res += *eval * eq_s[i];
+    }
+    res
+}</code></pre>
+        <h3>Complexity Note</h3>
+        <p>This direct implementation allows us to clearly see the math in action.</p>
+        <ul><li><strong>Space Complexity:</strong> $O(m \cdot 2^m)$ to store the hypercube explicitly.</li><li><strong>Time Complexity:</strong> $O(m \cdot 2^m)$ multiplications, as we re-compute the product chain for every row in the hypercube.</li></ul>
+        <p>In production ZK systems (like Spartan or HyperPlonk), we typically optimize this using Dynamic Programming (memoization) to achieve $O(2^m)$ time complexity, allowing us to evaluate the MLE in linear time relative to the size of the evaluation vector. But this would cause a strain on memory increasing the amount of memory needed for proof gen in these protocols, in large protocols like zkVM, this would not cut it, we would need obtain this speed-up without claiming the memory cost, Ron proposed an approach to get this done, <a href="https://eprint.iacr.org/2024/1103.pdf" target="_blank" rel="noopener noreferrer">here</a>. This next article would be exploring his ideas and prototype a RUST implementation also providing some benchmark report.</p>
+        <p><a href="https://hackmd.io/@0xdeveloperuche/SkWiQX8--l" target="_blank" rel="noopener noreferrer">Part 2: Ron's Optimization for Multilinear Extension Evaluation</a></p>
+        <p><strong>References:</strong></p>
+        <ol><li><em>Rothblum</em>, <a href="https://eprint.iacr.org/2024/1103.pdf" target="_blank" rel="noopener noreferrer">A Note on Efficient Computation of the Multilinear Extension</a></li><li><em>Developeruche</em>, <a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/exps/eff-mle/src/direct.rs" target="_blank" rel="noopener noreferrer">Rust Impl</a></li></ol>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
