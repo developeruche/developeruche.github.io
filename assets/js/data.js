@@ -164,7 +164,7 @@ export function linkRow(links) {
 }
 
 /* ── Universal card ────────────────────────────────────────────────────── */
-// opts: { title, tags, body, links, href, featured }
+// opts: { title, tags, body, links, href, featured, noMedia }
 export function card(opts) {
   const body = el('div', { class: 'card-body' }, [
     el('h3', { class: 'card-title', text: opts.title }),
@@ -173,7 +173,14 @@ export function card(opts) {
     linkRow(opts.links),
   ]);
 
-  const cls = 'info-card card' + (opts.featured ? ' card--featured' : '');
+  const cls = 'info-card card'
+    + (opts.featured ? ' card--featured' : '')
+    + (opts.noMedia ? ' card--no-media' : '');
+
+  // Cards without an image slot (e.g. projects, publications) are body-only.
+  if (opts.noMedia) {
+    return el('article', { class: cls }, [body]);
+  }
 
   if (opts.href) {
     // Whole-card link variant (e.g. blog → external). Keep inner link buttons usable.

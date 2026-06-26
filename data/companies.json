@@ -1,7 +1,10 @@
 [
-  { "name": "", "logo": null },
-  { "name": "", "logo": null },
-  { "name": "", "logo": null },
-  { "name": "", "logo": null },
-  { "name": "", "logo": null }
+  { "name": "Ethereum Foundation", "logo": "assets/companies/ethereum-foundation.png", "nature": "Research Engineer · Protocol Fellowship & Internship" },
+  { "name": "MyAI", "logo": "assets/companies/myai.png", "nature": "Senior Blockchain Engineer · Full-time" },
+  { "name": "Scroll", "logo": "assets/companies/scroll.png", "nature": "Smart Contract Engineer · Contract" },
+  { "name": "Polytope Labs", "logo": "assets/companies/polytope.png", "nature": "Rust / Blockchain Engineer · Internship" },
+  { "name": "AfriOne", "logo": "assets/companies/afrione.png", "nature": "Smart Contract Dev & Architect · Contract" },
+  { "name": "Nethermind", "logo": "assets/companies/nethermind.png", "nature": "Smart Contract Developer · Internship" },
+  { "name": "Nahmii", "logo": "assets/companies/nahmii.png", "nature": "Smart Contract Engineer · Contract" },
+  { "name": "Web3Bridge", "logo": "assets/companies/web3bridge.png", "nature": "Smart Contract Engineer & Mentor" }
 ]

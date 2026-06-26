@@ -6,7 +6,7 @@ import {
 
 mountLayout();
 
-const projCard = (p) => card({ title: p.name, tags: p.tags, body: p.description, links: p.links, thumbnail: p.thumbnail });
+const projCard = (p) => card({ title: p.name, tags: p.tags, body: p.description, links: p.links, noMedia: true });
 
 (async function init() {
   const filterHost = document.getElementById('filter-host');

@@ -205,6 +205,8 @@ body::before {
   grid-template-columns: 1fr;
   gap: var(--space-md);
 }
+/* Vertical list layout — one full-width card per row at every breakpoint. */
+.card-grid--list { grid-template-columns: 1fr !important; }
 
 /* ── Universal card ────────────────────────────────────────────────────── */
 .info-card.card {
@@ -221,6 +223,10 @@ body::before {
   transform: translateY(-3px);
 }
 .card--featured { border-left: var(--border-2) solid var(--color-accent); }
+/* Body-only card (projects, publications): no image slot. */
+.card--no-media .card-body { padding: var(--space-md); }
+/* Abstract spans the full card width (padding preserved by .card-body). */
+.card--no-media .card-copy { max-width: none; }
 
 .card-media, .card-media-link {
   position: relative;
@@ -355,7 +361,21 @@ body::before {
   padding-top: var(--space-md);
 }
 .companies-label { color: var(--color-text-muted); font-size: var(--text-xs); margin-bottom: var(--space-sm); display: block; }
-.companies-row { display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: center; }
+.companies-row { display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: flex-start; }
+.company-item { display: flex; flex-direction: column; gap: var(--space-5); width: 120px; }
+.company-name {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  text-align: center;
+  line-height: var(--leading-snug);
+}
+.company-nature {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  text-align: center;
+  text-transform: none;
+}
 .company-logo {
   position: relative;
   width: 120px; height: 48px;
