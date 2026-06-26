@@ -30,15 +30,18 @@ Usage:
 Prints a JSON summary (slug, paths, read_time, local_md) to stdout.
 """
 import argparse
+import glob
+import html
 import json
 import os
 import re
 import ssl
 import sys
 import urllib.request
-from datetime import date
+from datetime import date, datetime, timezone
 
 UA = "Mozilla/5.0 (compatible; developeruche-add-blog/1.0)"
+SITE_URL = "https://developeruche.com"  # canonical domain (see CNAME)
 
 # Prefer certifi's CA bundle if available; otherwise fall back to an unverified
 # context (these are public images on a static personal site).
@@ -132,6 +135,76 @@ def upsert_blog_json(root: str, title, tags, highlight, thumbnail, link):
         f.write("\n")
 
 
+def make_description(md: str) -> str:
+    """First meaningful prose, stripped of markdown/math, ~155 chars."""
+    text = re.sub(r"```.*?```", " ", md, flags=re.S)         # code fences
+    text = re.sub(r"\$\$.*?\$\$", " ", text, flags=re.S)      # block math
+    text = re.sub(r"\$[^$]*\$", " ", text)                    # inline math
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", text)         # images
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)      # links -> text
+    text = re.sub(r"[#>*`_~|]", " ", text)                    # md punctuation
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) > 155:
+        text = text[:152].rsplit(" ", 1)[0] + "…"
+    return text
+
+
+def build_jsonld(title, desc, tags, page, og_image, iso_date):
+    obj = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": title,
+        "description": desc,
+        "image": [og_image],
+        "datePublished": iso_date,
+        "dateModified": iso_date,
+        "inLanguage": "en",
+        "keywords": ", ".join(tags),
+        "url": f"{SITE_URL}/{page}",
+        "mainEntityOfPage": {"@type": "WebPage", "@id": f"{SITE_URL}/{page}"},
+        "author": {
+            "@type": "Person",
+            "name": "Developer Uche",
+            "url": SITE_URL,
+            "sameAs": [
+                "https://github.com/developeruche",
+                "https://x.com/developeruche",
+                "https://www.linkedin.com/in/developeruche",
+            ],
+        },
+        "publisher": {
+            "@type": "Person",
+            "name": "Developer Uche",
+            "url": SITE_URL,
+        },
+    }
+    return json.dumps(obj, indent=2, ensure_ascii=False)
+
+
+def regenerate_sitemap(root: str):
+    """Rebuild sitemap.xml from all top-level *.html pages."""
+    # blog-post.html is the dummy scaffold/reference — keep it out of the index.
+    exclude = {"blog-post.html"}
+    pages = sorted(os.path.basename(p) for p in glob.glob(os.path.join(root, "*.html"))
+                   if os.path.basename(p) not in exclude)
+    now = datetime.now(timezone.utc).date().isoformat()
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for p in pages:
+        loc = SITE_URL + "/" + ("" if p == "index.html" else p)
+        prio = "1.0" if p == "index.html" else ("0.8" if p in ("blog.html", "projects.html", "publications.html") else "0.6")
+        lines += ["  <url>", f"    <loc>{loc}</loc>", f"    <lastmod>{now}</lastmod>",
+                  f"    <priority>{prio}</priority>", "  </url>"]
+    lines.append("</urlset>")
+    with open(os.path.join(root, "sitemap.xml"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+    robots = os.path.join(root, "robots.txt")
+    if not os.path.exists(robots):
+        with open(robots, "w", encoding="utf-8") as f:
+            f.write(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--title", required=True)
@@ -167,28 +240,50 @@ def main():
     page = f"blog-{slug}.html"
     upsert_blog_json(root, a.title, tags, highlight, thumb_rel, page)
 
-    # 5. page shell from template
+    # 5. page shell from template (with full SEO head)
     tpl_path = os.path.join(os.path.dirname(__file__), "..", "templates", "post.html.template")
     tpl = open(os.path.abspath(tpl_path), encoding="utf-8").read()
-    desc = re.sub(r"\s+", " ", re.sub(r"[#>*`_\[\]]", "", md)).strip()[:155]
-    tags_html = "\n".join(f"          <span>{t}</span>" for t in tags) or "          "
+
+    iso_date = date.today().isoformat()
+    canonical = f"{SITE_URL}/{page}"
+    og_image = f"{SITE_URL}/{thumb_rel}"            # absolute URL (required by OG)
+    desc = make_description(md)
+    desc_attr = html.escape(desc, quote=True)
+    title_attr = html.escape(a.title, quote=True)
     hero_alt = f"{a.title} — thumbnail"
+    hero_alt_attr = html.escape(hero_alt, quote=True)
+
+    tags_html = "\n".join(f"          <span>{html.escape(t)}</span>" for t in tags) or "          "
+    article_tags = "\n".join(
+        f'  <meta property="article:tag" content="{html.escape(t, quote=True)}" />' for t in tags
+    )
+    jsonld = build_jsonld(a.title, desc, tags, page, og_image, iso_date)
+
     out = (tpl
-           .replace("{{TITLE}}", a.title)
-           .replace("{{DESCRIPTION}}", desc)
+           .replace("{{TITLE}}", title_attr)
+           .replace("{{DESCRIPTION}}", desc_attr)
+           .replace("{{CANONICAL}}", canonical)
+           .replace("{{OG_IMAGE}}", og_image)
            .replace("{{HERO_SRC}}", thumb_rel)
-           .replace("{{HERO_ALT}}", hero_alt)
-           .replace("{{DATE}}", date.today().isoformat())
+           .replace("{{HERO_ALT}}", hero_alt_attr)
+           .replace("{{ARTICLE_TAGS}}", article_tags)
+           .replace("{{JSONLD}}", jsonld)
+           .replace("{{DATE}}", iso_date)
            .replace("{{READ_TIME}}", str(read_time))
            .replace("{{TAGS_HTML}}", tags_html))
     with open(os.path.join(root, page), "w", encoding="utf-8") as f:
         f.write(out)
 
+    # 6. sitemap.xml + robots.txt (site-level SEO)
+    regenerate_sitemap(root)
+
     print(json.dumps({
         "slug": slug, "page": page, "thumbnail": thumb_rel,
+        "canonical": canonical, "og_image": og_image,
         "read_time": read_time, "tags": tags, "highlight": highlight,
         "local_md": local_md, "images_downloaded": mapping,
         "body_marker": "<!-- BODY:REPLACE_ME -->",
+        "sitemap": "regenerated", "description": desc,
     }, indent=2))
 
 

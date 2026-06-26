@@ -129,6 +129,32 @@ Rules:
   (`preview_start` with the `static` launch config, then open
   `/blog-<slug>.html` and `/blog.html`). Check the console for errors.
 
+## SEO (handled automatically)
+The page shell the script writes is SEO-complete — you don't add meta tags by
+hand. Each generated post includes:
+- Unique `<title>`, `<meta name="description">` (auto-extracted from the body,
+  stripped of markdown/math, ≤155 chars), `author`, and
+  `robots: index, follow, max-image-preview:large`.
+- `<link rel="canonical">` and `og:url` pointing at `https://developeruche.com/…`
+  (the canonical domain from `CNAME`).
+- **Open Graph + Twitter** cards with **absolute** image URLs (relative URLs
+  break social previews), `og:image:alt`, `article:published_time`, and one
+  `article:tag` per tag.
+- **JSON-LD `BlogPosting`** structured data (headline, description, image,
+  datePublished/Modified, author `Person` with `sameAs` socials, publisher,
+  `mainEntityOfPage`, keywords) — this is what drives Google rich results and
+  AI/LLM answer engines in 2026.
+- Semantic `<article>`, a real `<time datetime>` element, lazy-loaded images,
+  and a single `<h1>` (the title) with `<h2>+` in the body.
+- It also **regenerates `sitemap.xml`** (all top-level pages, dummy excluded)
+  and creates `robots.txt` if missing.
+
+What you still control for ranking quality: pick an accurate **title** and
+**tags**, and make sure the **first paragraph** of the markdown reads as a good
+search snippet (it becomes the description). If you want a custom description
+later, edit the `<meta name="description">`, `og:description`,
+`twitter:description`, and the JSON-LD `description` together.
+
 ## Conventions & gotchas
 - **Pages live at repo root** (`blog-<slug>.html`) so the relative `assets/...`,
   `blog.html`, and `./assets/js/layout.js` paths resolve exactly like
