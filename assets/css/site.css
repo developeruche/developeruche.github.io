@@ -431,9 +431,60 @@ body::before {
 .post { max-width: var(--container-narrow); margin: 0 auto; padding-top: calc(var(--header-offset) + var(--space-md)); }
 .post-title { font-family: var(--font-heading); font-size: var(--text-section); line-height: var(--leading-tight); letter-spacing: var(--tracking-wide); }
 .post-meta { color: var(--color-text-muted); font-size: var(--text-sm); margin-top: var(--space-sm); }
+.post-hero-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin-top: var(--space-lg);
+  border: var(--border-1) solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card-hover);
+}
 .post-body { text-transform: none; color: var(--color-text-muted); margin-top: var(--space-lg); }
 .post-body p { margin-bottom: var(--space-md); max-width: var(--container-prose); }
-.post-body h2 { font-family: var(--font-heading); font-size: var(--text-2xl); color: var(--color-text); text-transform: uppercase; margin: var(--space-lg) 0 var(--space-sm); letter-spacing: 1px; }
+.post-body h1, .post-body h2, .post-body h3, .post-body h4 {
+  font-family: var(--font-heading); color: var(--color-text);
+  text-transform: uppercase; letter-spacing: 1px; line-height: var(--leading-snug);
+}
+.post-body h1 { font-size: var(--text-section); margin: var(--space-lg) 0 var(--space-md); }
+.post-body h2 { font-size: var(--text-2xl); margin: var(--space-lg) 0 var(--space-sm); }
+.post-body h3 { font-size: var(--text-xl); margin: var(--space-md) 0 var(--space-sm); }
+.post-body h4 { font-size: var(--text-md); margin: var(--space-md) 0 var(--space-sm); }
+.post-body ul, .post-body ol { max-width: var(--container-prose); margin: 0 0 var(--space-md); padding-left: var(--space-md); }
+.post-body li { margin-bottom: var(--space-8); }
+.post-body a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.post-body a:hover { text-shadow: var(--glow-accent-md); }
+.post-body strong { color: var(--color-text); font-weight: var(--font-weight-bold); }
+.post-body blockquote {
+  margin: 0 0 var(--space-md); padding: var(--space-sm) var(--space-md);
+  border-left: var(--border-2) solid var(--color-accent);
+  background: var(--color-surface); color: var(--color-text-muted);
+  max-width: var(--container-prose);
+}
+.post-body code {
+  font-family: var(--font-ui); font-size: var(--text-sm);
+  background: var(--color-white-a05); border: var(--border-1) solid var(--color-border);
+  border-radius: var(--radius-xs); padding: var(--space-2) var(--space-5);
+}
+.post-body pre {
+  background: var(--color-surface); border: var(--border-1) solid var(--color-border);
+  border-radius: var(--radius-sm); padding: var(--space-md);
+  overflow-x: auto; margin: 0 0 var(--space-md); font-size: var(--text-sm);
+}
+.post-body pre code { background: none; border: none; padding: 0; }
+.post-body img {
+  width: 100%; height: auto; margin: var(--space-md) 0;
+  border: var(--border-1) solid var(--color-border); border-radius: var(--radius-sm);
+}
+.post-body hr { border: none; border-top: var(--border-1) dashed var(--color-border); margin: var(--space-lg) 0; }
+/* KaTeX display math: keep wide equations from breaking the layout on mobile. */
+.post-body .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--space-5) 0; max-width: 100%; }
+.post-body .katex { color: var(--color-text); }
+.post-body table {
+  width: 100%; border-collapse: collapse; margin: 0 0 var(--space-md); font-size: var(--text-sm);
+}
+.post-body th, .post-body td { border: var(--border-1) solid var(--color-border); padding: var(--space-8) var(--space-12); text-align: left; }
+.post-body th { color: var(--color-text); background: var(--color-surface); }
 .back-link { color: var(--color-accent); font-size: var(--text-sm); font-weight: var(--font-weight-bold); display: inline-block; margin-bottom: var(--space-md); }
 
 /* ── Reveal animations ─────────────────────────────────────────────────── */

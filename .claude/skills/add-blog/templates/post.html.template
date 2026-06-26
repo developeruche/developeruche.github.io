@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- DUMMY TEMPLATE: scaffold for future in-site blog posts. Not linked from
-       cards yet (blog cards currently open their external source directly). -->
-  <title>Post Title — Developer Uche</title>
-  <meta name="description" content="A reusable blog post detail template." />
+  <title>{{TITLE}} — Developer Uche</title>
+  <meta name="description" content="{{DESCRIPTION}}" />
   <link rel="icon" href="assets/favicon.ico" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Post Title — Developer Uche" />
-  <meta property="og:image" content="assets/main/developeruche.jpg" />
+  <meta property="og:title" content="{{TITLE}} — Developer Uche" />
+  <meta property="og:description" content="{{DESCRIPTION}}" />
+  <meta property="og:image" content="{{HERO_SRC}}" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,23 +26,16 @@
       <a class="back-link" href="blog.html">← Back to blogs</a>
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
-        <h1 class="post-title">Deconstructing the 1.5 GHz zkVM</h1>
-        <img class="post-hero-img" src="assets/blogs/zisk-1-5ghz-zkvm.png" alt="Deconstructing the 1.5 GHz zkVM — blueprint thumbnail" />
-        <p class="post-meta">// Developer Uche · 2026-06-26 · 8 min read</p>
+        <h1 class="post-title">{{TITLE}}</h1>
+        <img class="post-hero-img" src="{{HERO_SRC}}" alt="{{HERO_ALT}}" />
+        <p class="post-meta">// Developer Uche · {{DATE}} · {{READ_TIME}} min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
-          <span>Zero Knowledge</span><span>zkVM</span><span>Performance</span>
+{{TAGS_HTML}}
         </div>
       </header>
 
       <div class="post-body">
-        <p>This is placeholder body content for the reusable blog post template. Replace it with real prose when in-site posts are wired up. Paragraphs use sentence case and the muted body color for comfortable reading.</p>
-        <h2>Section Heading</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
-        <h2>Another Section</h2>
-        <p>Sunt in culpa qui officia deserunt mollit anim id est laborum. The template inherits all design-system tokens, so type, spacing, and color stay on-system automatically.</p>
-        <p>Math renders via KaTeX — inline like $e^{i\pi} + 1 = 0$ and as a block:</p>
-        $$\hat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\, e^{-2\pi i x \xi}\, dx$$
+<!-- BODY:REPLACE_ME -->
       </div>
 
       <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>

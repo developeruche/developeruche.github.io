@@ -1,198 +1,289 @@
 [
   {
     "title": "Deconstructing the 1.5 GHz zkVM: How ZisK Redefined the Limits of Trace Generation",
-    "tags": ["zero knowledge", "zkVM"],
+    "tags": [
+      "zero knowledge",
+      "zkVM"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/rkd1vBsElx",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/zisk-1-5ghz-zkvm.png"
   },
   {
     "title": "Understanding the Winternitz One-Time Signature Scheme: A Deep Dive into Post-Quantum Cryptography",
-    "tags": ["PQ cryptography", "cryptography"],
+    "tags": [
+      "PQ cryptography",
+      "cryptography"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/Bk8UzubUel",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/winternitz-ots.png"
   },
   {
     "title": "Building Blocks of Modern Zero-Knowledge Proofs: An Engineering Perspective",
-    "tags": ["zero knowledge", "cryptography"],
+    "tags": [
+      "zero knowledge",
+      "cryptography"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/By10JQ6Myx",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/zk-building-blocks.png"
   },
   {
     "title": "Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1)",
-    "tags": ["cryptography", "zero knowledge"],
+    "tags": [
+      "cryptography",
+      "zero knowledge"
+    ],
     "link": "https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-1-6fd7bd920bce",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/kzg-airdrop-part-1.png"
   },
   {
     "title": "Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 2)",
-    "tags": ["cryptography", "zero knowledge"],
+    "tags": [
+      "cryptography",
+      "zero knowledge"
+    ],
     "link": "https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-2-8ed1a4539c5a",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/kzg-airdrop-part-2.png"
   },
   {
     "title": "The Multiset Check IOP",
-    "tags": ["zero knowledge", "snarks"],
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/HJX8bvAz1x",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/multiset-check-iop.png"
   },
   {
     "title": "The Matryoshka MLE Algorithm",
-    "tags": ["zero knowledge", "algo"],
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BJX_RT3Ule",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/matryoshka-mle.png"
   },
   {
     "title": "Jagged Multilinear Extension (Stacked MLE)",
-    "tags": ["zero knowledge", "algo"],
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/ryqo14f7-x",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/jagged-mle.png"
   },
   {
     "title": "Ron's Optimization for Multilinear Extension Evaluation",
-    "tags": ["zero knowledge", "algo"],
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/SkWiQX8--l",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/ron-mle-optimization.png"
   },
   {
     "title": "Multilinear Polynomial Extension and Direct Evaluation",
-    "tags": ["zero knowledge", "algo"],
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BJ-hB-Lb-e",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/mle-direct-evaluation.png"
   },
   {
     "title": "Lecture Notes: Fields and Extension Fields in Cryptography",
-    "tags": ["lecture note", "cryptography"],
+    "tags": [
+      "lecture note",
+      "cryptography"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/S11ZKNpJeg",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/fields-extension-fields.png"
   },
   {
     "title": "The Groth16 Protocol",
-    "tags": ["snarks", "zero knowledge", "cryptography"],
+    "tags": [
+      "snarks",
+      "zero knowledge",
+      "cryptography"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/HkdDT4Kzyl",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/groth16.png"
   },
   {
     "title": "R1CS to QAP",
-    "tags": ["snarks", "zero knowledge"],
+    "tags": [
+      "snarks",
+      "zero knowledge"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BkhzajEfye",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/r1cs-to-qap.png"
   },
   {
     "title": "Permutation Check Polynomial IOP",
-    "tags": ["zero knowledge", "snarks"],
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BkCdZ1tGJg",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/permutation-check-iop.png"
   },
   {
     "title": "ProductCheck Polynomial Interactive Oracle Proof",
-    "tags": ["zero knowledge", "snarks"],
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/B1GexOrGkl",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/product-check-iop.png"
   },
   {
     "title": "How ZK-Rollups Work After EIP-4844: From calldata to Blobs",
-    "tags": ["blockchain", "zero knowledge", "evm"],
+    "tags": [
+      "blockchain",
+      "zero knowledge",
+      "evm"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BJbNXVJeWl",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/zk-rollups-eip4844-blobs.png"
   },
   {
     "title": "EVM Object Format (EOF) Deep Dive",
-    "tags": ["evm", "blockchain"],
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/HkBLGkjyll",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/eof-deep-dive.png"
   },
   {
     "title": "If State Read/Write Opcodes Aren't Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State?",
-    "tags": ["evm", "blockchain"],
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BJ3ZKCj6Jg",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/state-read-write-opcodes.png"
   },
   {
     "title": "Deep Dive into Abstract Account Wallet EIP-4337",
-    "tags": ["smart contract", "blockchain", "protocol"],
+    "tags": [
+      "smart contract",
+      "blockchain",
+      "protocol"
+    ],
     "link": "https://developeruche.medium.com/deep-dive-into-abstract-account-wallet-eip4337-b7ae60dbf9a7",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/eip4337-account-abstraction.png"
   },
   {
     "title": "Chronicle: Blockchain Indexer Built in Rust - Blazing Fast",
-    "tags": ["blockchain", "infrastructure"],
+    "tags": [
+      "blockchain",
+      "infrastructure"
+    ],
     "link": "https://developeruche.medium.com/chronicle-blockchain-indexer-built-in-rust-blazing-fast-fff45ba60a97",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/chronicle-indexer.png"
   },
   {
     "title": "Building EIP2771 Gasless Relayer",
-    "tags": ["smart contract", "blockchain", "protocol"],
+    "tags": [
+      "smart contract",
+      "blockchain",
+      "protocol"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/Bk-DGd8Qyl",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/eip2771-gasless-relayer.png"
   },
   {
     "title": "What Does EVM's JUMPDEST Do?",
-    "tags": ["evm", "blockchain"],
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/BJQTekokex",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/evm-jumpdest.png"
   },
   {
     "title": "A Deep Dive into EIP-7928 and Block-Level Access Lists",
-    "tags": ["protocol", "evm", "blockchain"],
+    "tags": [
+      "protocol",
+      "evm",
+      "blockchain"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/r1mC2oDrZx",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/eip7928-block-access-lists.png"
   },
   {
     "title": "Ethereum Protocol Fellowship Development Log: Project Summary",
-    "tags": ["protocol", "blockchain"],
+    "tags": [
+      "protocol",
+      "blockchain"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/HJD7M2tebg",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/epf-dev-log.png"
   },
   {
     "title": "A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine",
-    "tags": ["evm", "protocol", "blockchain"],
+    "tags": [
+      "evm",
+      "protocol",
+      "blockchain"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/Byhbp7y9xx",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/hybrid-ethereum-riscv.png"
   },
   {
     "title": "Building a Kademlia Distributed Hash Table",
-    "tags": ["networking", "algo"],
+    "tags": [
+      "networking",
+      "algo"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/Sy2ZEn32Je",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/kademlia-dht.png"
   },
   {
     "title": "Merkle Patricia Trie",
-    "tags": ["blockchain", "algo", "cryptography"],
+    "tags": [
+      "blockchain",
+      "algo",
+      "cryptography"
+    ],
     "link": "https://hackmd.io/@0xdeveloperuche/H1BJhOHylx",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/merkle-patricia-trie.png"
   },
   {
     "title": "Understanding Ethereum State Trie",
-    "tags": ["evm", "blockchain"],
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
     "link": "https://developeruche.medium.com/merkle-tree-and-the-blockchain-f40cc58650b7",
     "highlight": true,
-    "thumbnail": null
+    "thumbnail": "assets/blogs/ethereum-state-trie.png"
   }
 ]
