@@ -45,7 +45,7 @@
       "cryptography",
       "zero knowledge"
     ],
-    "link": "https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-2-8ed1a4539c5a",
+    "link": "blog-kzg-polynomial-commitment-part-2.html",
     "highlight": true,
     "thumbnail": "assets/blogs/kzg-airdrop-part-2.png"
   },
@@ -188,7 +188,7 @@
       "blockchain",
       "protocol"
     ],
-    "link": "https://developeruche.medium.com/deep-dive-into-abstract-account-wallet-eip4337-b7ae60dbf9a7",
+    "link": "blog-eip-4337-account-abstraction.html",
     "highlight": true,
     "thumbnail": "assets/blogs/eip4337-account-abstraction.png"
   },
@@ -198,7 +198,7 @@
       "blockchain",
       "infrastructure"
     ],
-    "link": "https://developeruche.medium.com/chronicle-blockchain-indexer-built-in-rust-blazing-fast-fff45ba60a97",
+    "link": "blog-chronicle-rust-blockchain-indexer.html",
     "highlight": true,
     "thumbnail": "assets/blogs/chronicle-indexer.png"
   },
@@ -277,12 +277,12 @@
     "thumbnail": "assets/blogs/merkle-patricia-trie.png"
   },
   {
-    "title": "Understanding Ethereum State Trie",
+    "title": "Merkle Tree and the Blockchain",
     "tags": [
       "evm",
       "blockchain"
     ],
-    "link": "https://developeruche.medium.com/merkle-tree-and-the-blockchain-f40cc58650b7",
+    "link": "blog-merkle-tree-blockchain.html",
     "highlight": true,
     "thumbnail": "assets/blogs/ethereum-state-trie.png"
   }

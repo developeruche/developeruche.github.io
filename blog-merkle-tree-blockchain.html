@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merkle Tree and the Blockchain — Developer Uche</title>
+  <meta name="description" content="Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-merkle-tree-blockchain.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Merkle Tree and the Blockchain — Developer Uche" />
+  <meta property="og:description" content="Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…" />
+  <meta property="og:url" content="https://developeruche.com/blog-merkle-tree-blockchain.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/ethereum-state-trie.png" />
+  <meta property="og:image:alt" content="Merkle Tree and the Blockchain — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="evm" />
+  <meta property="article:tag" content="blockchain" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Merkle Tree and the Blockchain — Developer Uche" />
+  <meta name="twitter:description" content="Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/ethereum-state-trie.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Merkle Tree and the Blockchain",
+  "description": "Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…",
+  "image": [
+    "https://developeruche.com/assets/blogs/ethereum-state-trie.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "evm, blockchain",
+  "url": "https://developeruche.com/blog-merkle-tree-blockchain.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-merkle-tree-blockchain.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Merkle Tree and the Blockchain</h1>
+        <img class="post-hero-img" src="assets/blogs/ethereum-state-trie.png" alt="Merkle Tree and the Blockchain — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 1 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>evm</span>
+          <span>blockchain</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+        <p>The Merkle tree is an important component of the blockchain that makes the blockchain work and perform efficiently. A Merkle tree is basically an efficient storage and verification system which can take in a large chunk of data and provides a functionality where one of the chunks of data can prove that it is a part of the data chunk without fetching the full data chunk.</p>
+        <p>The Merkle tree employs a cryptographic hashing function to carry out this functionality, and it is important to know that the simplest form of a Merkle tree is a binary Merkle tree.</p>
+
+        <h2>How is a Merkle tree used in the blockchain?</h2>
+        <p>The Merkle tree has some implementations in the blockchain, but I will state two and explain one.</p>
+        <ol>
+          <li>Block header computation and block transaction proof</li>
+          <li>NFT minting whitelisting</li>
+        </ol>
+
+        <h3>Block Header Computation</h3>
+        <p>A block, in simple terms, can be said to be a sum of transactions — meaning a block can contain any amount of transactions depending on the blockchain's specification. So let's paint this scenario: a block containing ten thousand transactions. To prove that one transaction (a) is part of these ten thousand transactions, we would have to fetch all of them and loop through each one to see if transaction (a) is part of the set. As observed, this process is very inefficient, with a time complexity of O(n) and a total waste of computation power and storage. A Merkle tree, on the other hand, can solve this problem with a time complexity of log(n) while also saving computational power and storage. Now I guess you're wondering how this Merkle tree works, seeing that it is this powerful.</p>
+
+        <h3>Technically, How Does a Merkle Tree Work?</h3>
+        <p>Consider this example: an array of transactions <code>[0,1,2,3,4,5,6,7]</code>. To compute a Merkle tree from this array, each of these transactions is first hashed using a hashing function <code>h</code>, resulting in a new array: <code>[h(0), h(1), h(2), h(3), h(4), h(5), h(6), h(7)]</code>. Now a process similar to a binary tree algorithm is carried out: index 0 and index 1 are summed and hashed, so do index 2 and 3, then index 4 and 5, and so on, until this result is achieved: <code>[h(0+1), h(2+3), h(4+5), h(6+7)]</code>. The same process is carried out again to achieve <code>[h(0+1+2+3), h(4+5+6+7)]</code>, and again to return <code>[h(0+1+2+3+4+5+6+7)]</code>. This output is regarded as the Merkle root. Using the Merkle root, a member of the transaction array — transaction (a) — can be proven to really be a member of the array without fetching all the members.</p>
+
+        <h3>Benefits of Merkle Trees</h3>
+        <ol>
+          <li>Validate data integrity</li>
+          <li>Take up very little disk space</li>
+          <li>Transmit tiny proofs across networks</li>
+          <li>Efficient and non-time-costly verification</li>
+        </ol>
+
+        <h3>Why is a Merkle Tree Essential to the Blockchain?</h3>
+        <ol>
+          <li>Without it, verifying that a transaction was mined in a block would be very time-consuming and computationally costly.</li>
+        </ol>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
