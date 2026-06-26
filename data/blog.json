@@ -5,7 +5,7 @@
       "zero knowledge",
       "zkVM"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/rkd1vBsElx",
+    "link": "blog-zisk-zkvm-trace-generation.html",
     "highlight": true,
     "thumbnail": "assets/blogs/zisk-1-5ghz-zkvm.png"
   },
@@ -15,7 +15,7 @@
       "PQ cryptography",
       "cryptography"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/Bk8UzubUel",
+    "link": "blog-winternitz-one-time-signature.html",
     "highlight": true,
     "thumbnail": "assets/blogs/winternitz-ots.png"
   },
@@ -25,7 +25,7 @@
       "zero knowledge",
       "cryptography"
     ],
-    "link": "https://hackmd.io/@0xdeveloperuche/By10JQ6Myx",
+    "link": "blog-zero-knowledge-proof-building-blocks.html",
     "highlight": true,
     "thumbnail": "assets/blogs/zk-building-blocks.png"
   },
@@ -35,7 +35,7 @@
       "cryptography",
       "zero knowledge"
     ],
-    "link": "https://developeruche.medium.com/understanding-polynomial-commitment-kzg-using-airdrop-distribution-part-1-6fd7bd920bce",
+    "link": "blog-kzg-polynomial-commitment-part-1.html",
     "highlight": true,
     "thumbnail": "assets/blogs/kzg-airdrop-part-1.png"
   },

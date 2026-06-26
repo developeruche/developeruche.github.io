@@ -60,6 +60,12 @@ python3 .claude/skills/add-blog/scripts/new_blog.py \
   --root "$(pwd)"
 ```
 
+**Slug / URL:** by default a **short, SEO-friendly** slug is derived from the
+title — stop-words dropped, capped to ~6 words / 50 chars so the URL isn't
+truncated mid-word in search results. For long titles, pass an explicit
+`--slug "zisk-zkvm-trace-generation"` to control the URL (front-load the real
+keywords; the full title still lives in `<title>`/`<h1>`).
+
 It prints a JSON summary. Note especially:
 - `slug` and `page` (e.g. `blog-the-title.html`),
 - `local_md` — the markdown with remote image URLs **rewritten to local paths**

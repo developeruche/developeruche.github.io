@@ -58,10 +58,28 @@ EXT_BY_TYPE = {
 }
 
 
-def slugify(title: str) -> str:
-    s = title.lower().strip()
-    s = re.sub(r"[^a-z0-9]+", "-", s)
-    return re.sub(r"-{2,}", "-", s).strip("-")[:80] or "post"
+# Stop-words dropped from auto-generated slugs (they add no SEO value and just
+# lengthen the URL). Skipped entirely when an explicit slug is provided.
+_STOP = {
+    "a", "an", "the", "and", "or", "of", "to", "in", "on", "for", "with",
+    "is", "are", "was", "were", "be", "how", "what", "why", "when", "into",
+    "from", "as", "at", "by", "it", "its", "this", "that", "vs", "via",
+}
+
+
+def slugify(title: str, override: str = None) -> str:
+    """SEO-friendly slug. With `override`, slugify it verbatim (keep all words).
+    Otherwise drop stop-words and cap to ~6 words / 50 chars so URLs stay short,
+    keyword-front-loaded, and don't get truncated mid-word in search results."""
+    src = override if override else title
+    words = [w for w in re.sub(r"[^a-z0-9]+", " ", src.lower()).split() if w]
+    if not override:
+        kept = [w for w in words if w not in _STOP] or words
+        words = kept[:6]
+        slug = "-".join(words)[:50].rstrip("-")
+    else:
+        slug = "-".join(words)
+    return re.sub(r"-{2,}", "-", slug).strip("-") or "post"
 
 
 def download(url: str, dest_noext: str) -> str:
@@ -212,11 +230,14 @@ def main():
     ap.add_argument("--highlight", default="false")
     ap.add_argument("--tags", default="")
     ap.add_argument("--md", required=True)
+    ap.add_argument("--slug", default=None,
+                    help="Explicit SEO slug (recommended for long titles). "
+                         "If omitted, a short slug is derived from the title.")
     ap.add_argument("--root", default=os.getcwd())
     a = ap.parse_args()
 
     root = os.path.abspath(a.root)
-    slug = slugify(a.title)
+    slug = slugify(a.title, a.slug)
     highlight = str(a.highlight).strip().lower() in ("true", "1", "yes")
     tags = [t.strip() for t in a.tags.split(",") if t.strip()]
 
