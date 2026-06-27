@@ -1,6 +1,6 @@
 import { mountLayout } from './layout.js';
 import {
-  fetchJSON, card, createFilterBar, filterItems,
+  fetchJSON, card, createFilterBar, filterItems, PROJECT_CATEGORIES,
   readTagsFromURL, writeTagsToURL, observeReveals, stateMessage,
 } from './data.js';
 
@@ -24,13 +24,13 @@ const projCard = (p) => card({ title: p.name, tags: p.tags, body: p.description,
     return;
   }
 
-  const bar = createFilterBar(items, apply);
+  const bar = createFilterBar(items, apply, PROJECT_CATEGORIES);
   filterHost.appendChild(bar.mount);
   bar.setSelected(readTagsFromURL());
 
   function apply(selected) {
     writeTagsToURL(selected);
-    const filtered = filterItems(items, selected);
+    const filtered = filterItems(items, selected, bar.categories);
     const os = filtered.filter((p) => p.type === 'contribution');
     const personal = filtered.filter((p) => p.type === 'personal');
 

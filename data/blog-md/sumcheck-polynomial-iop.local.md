@@ -97,7 +97,7 @@ This is the computation done by the prover and sends the result (the sum) to ver
 
 
 
-![sum check protocol image](https://i.ibb.co/b5M0wDp/sum-check-protocol.png)
+![sum check protocol image](assets/blogs/sumcheck-polynomial-iop/img-1.png)
 
 ### The Protocol
 1. The Prover and the verifier agrees on the `Polynomial` ($f$) and `Sum`. This is done practically by sending the polynomial alongside the computed sum to the verifier.

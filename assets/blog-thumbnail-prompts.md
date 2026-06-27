@@ -547,3 +547,45 @@ Background diagram motif: an account state tree of hashed nodes rooting into a
 single state root, thin navy strokes, low contrast.
 Generous margins, lots of paper showing through, AA contrast, spell title exactly.
 ```
+
+---
+
+## 29. SumCheck Polynomial IOP
+**File:** `assets/blog/sumcheck-polynomial-iop.png`
+
+```
+A 16:9 light "terminal / blueprint" thumbnail in the developeruche design system.
+Background: warm off-white paper #F4F2EC with a faint navy engineering grid
+(#1B3A6B ~12%), crosshatch and dashed construction lines. Ink: dark navy #0B1A2E
+strokes; single accent navy #1B3A6B; muted navy-gray #54627A detail. ONLY these
+colors. Flat 2D vector, no neon/3D/photo. All-caps pixel/monospace lettering.
+Small "// DEVELOPERUCHE — BLOG" label and a "→" accent glyph.
+Title as the focal point, bold all-caps monospace navy, wrapped 2 lines:
+"SumCheck Polynomial Interactive Proof"
+Background diagram motif: nested summation (sigma) symbols over a boolean
+hypercube collapsing round by round — a tree of partial sums reducing to a single
+value T, with small univariate round-polynomial curves along the way, thin navy
+strokes, low contrast.
+Generous margins, lots of paper showing through, AA contrast, spell title exactly.
+```
+
+---
+
+## 30. ZeroCheck Polynomial IOP
+**File:** `assets/blog/zerocheck-polynomial-iop.png`
+
+```
+A 16:9 light "terminal / blueprint" thumbnail in the developeruche design system.
+Background: warm off-white paper #F4F2EC with a faint navy engineering grid
+(#1B3A6B ~12%), crosshatch and dashed construction lines. Ink: dark navy #0B1A2E
+strokes; single accent navy #1B3A6B; muted navy-gray #54627A detail. ONLY these
+colors. Flat 2D vector, no neon/3D/photo. All-caps pixel/monospace lettering.
+Small "// DEVELOPERUCHE — BLOG" label and a "→" accent glyph.
+Title as the focal point, bold all-caps monospace navy, wrapped 2 lines:
+"ZeroCheck Polynomial Interactive Oracle Proof"
+Background diagram motif: a polynomial curve crossing the horizontal axis exactly
+at every marked point of a domain D (the vanishing polynomial's roots), with a
+small Z_D(X) factor product and a quotient/remainder division sketch, thin navy
+strokes, low contrast.
+Generous margins, lots of paper showing through, AA contrast, spell title exactly.
+```

@@ -22,7 +22,8 @@ the browser.
 
 ## Inputs to collect
 - **Title** — the post title (string).
-- **Thumbnail** — a URL to the cover image.
+- **Thumbnail** — a URL to the cover image, **or** a path to an already-local
+  image (e.g. `assets/blogs/foo.png`); local paths are used as-is, not downloaded.
 - **Highlight** — `true` or `false` (whether it appears in home-page highlights).
 - **Markdown** — the full post body. If the user pasted it inline, save it to a
   temp file first (e.g. `/tmp/<something>.md`).
@@ -74,9 +75,19 @@ It prints a JSON summary. Note especially:
 - `body_marker` — the literal string in the page you must replace.
 
 ### 3. Convert the body markdown → HTML
-Read `local_md` and convert it to clean HTML. Then open the generated
-`blog-<slug>.html` and **replace the line containing
-`<!-- BODY:REPLACE_ME -->`** (inside `<div class="post-body">`) with your HTML.
+Use the shared converter script — it implements all the mapping/escaping/LaTeX
+rules below and is hardened against real-world markdown (nested + tab-indented
+lists, `•` bullets, headings/`---` without blank lines, paragraph-then-list
+blocks, bare-URL autolinking):
+
+```bash
+python3 .claude/skills/add-blog/scripts/md_to_body.py <slug>.local.md > /tmp/body.html
+```
+
+Then open the generated `blog-<slug>.html` and **replace the line containing
+`<!-- BODY:REPLACE_ME -->`** (inside `<div class="post-body">`) with that HTML.
+(`md_to_body.py` is shared verbatim with the **add-blog-page** skill — keep the
+two copies identical when you change either.) The mapping it follows:
 
 Mapping rules (these classes are already styled in `assets/css/site.css` under
 `.post-body`, so output **plain semantic HTML — no inline styles, no class

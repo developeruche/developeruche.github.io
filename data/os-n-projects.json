@@ -1,11 +1,36 @@
 [
   {
+    "name": "Witnet",
+    "type": "personal",
+    "description": "Witnet is a lightweight, high-performance HTTP-like TCP server framework built explicitly for ultra-fast transfers of \"Execution Witnesses\" between Execution Clients and Provers.",
+    "tags": [
+      "Rust",
+      "Networking",
+      "zkVM"
+    ],
+    "links": [
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/witnet"
+      }
+    ],
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "name": "Alloy",
     "type": "contribution",
     "description": "Connects applications to blockchains. A rewrite of ethers-rs from the ground up, featuring high performance and excellent docs.",
-    "tags": ["Rust", "Ethereum", "library"],
+    "tags": [
+      "Rust",
+      "Ethereum",
+      "library"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/alloy-rs/alloy/commits?author=developeruche" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/alloy-rs/alloy/commits?author=developeruche"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -14,9 +39,15 @@
     "name": "REVM",
     "type": "contribution",
     "description": "A high-performance, high-fidelity Ethereum Virtual Machine implementation written entirely in Rust.",
-    "tags": ["Rust", "EVM"],
+    "tags": [
+      "Rust",
+      "EVM"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/bluealloy/revm/commits?author=developeruche" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/bluealloy/revm/commits?author=developeruche"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -25,9 +56,16 @@
     "name": "ERE",
     "type": "contribution",
     "description": "Unified zkVM Interface & Toolkit. Compile. Execute. Prove. Verify. One ergonomic Rust API for multiple zero-knowledge virtual machines.",
-    "tags": ["Rust", "zkVM", "Zero-Knowledge"],
+    "tags": [
+      "Rust",
+      "zkVM",
+      "Zero-Knowledge"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/eth-act/ere/commits?author=developeruche" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/eth-act/ere/commits?author=developeruche"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -36,9 +74,17 @@
     "name": "ZKBoost",
     "type": "contribution",
     "description": "Simple HTTP API wrapper on top of Ere allowing developers to execute, verify, and create zkVM proofs by calling standard HTTP endpoints.",
-    "tags": ["Rust", "zkVM", "Zero-Knowledge", "API"],
+    "tags": [
+      "Rust",
+      "zkVM",
+      "Zero-Knowledge",
+      "API"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/eth-act/zkboost/commits?author=developeruche" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/eth-act/zkboost/commits?author=developeruche"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -47,9 +93,15 @@
     "name": "OpenZeppelin Rust Contracts",
     "type": "contribution",
     "description": "A library for secure smart contract development written in Rust.",
-    "tags": ["Rust", "Smart Contract"],
+    "tags": [
+      "Rust",
+      "Smart Contract"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/OpenZeppelin/rust-contracts-stylus/commits?author=developeruche" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/OpenZeppelin/rust-contracts-stylus/commits?author=developeruche"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -58,9 +110,16 @@
     "name": "Scroll SDK",
     "type": "contribution",
     "description": "Utility SDK for handling anything bridging in the scroll Ecosystem.",
-    "tags": ["SDK", "Bridging", "Layer 2"],
+    "tags": [
+      "SDK",
+      "Bridging",
+      "Layer 2"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/developeruche/scroll-sdks" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/developeruche/scroll-sdks"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -69,9 +128,16 @@
     "name": "Hyperbridge",
     "type": "contribution",
     "description": "First fully permissionless and decentralized cross-chain protocol powered by interoperability proofs. Allows anyone to run a relayer without staking or whitelisting.",
-    "tags": ["Protocol", "Interoperability", "Cross-chain"],
+    "tags": [
+      "Protocol",
+      "Interoperability",
+      "Cross-chain"
+    ],
     "links": [
-      { "label": "VIEW PRs", "url": "https://github.com/polytope-labs/hyperbridge/commits?author=developeruche" }
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/polytope-labs/hyperbridge/commits?author=developeruche"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -80,9 +146,16 @@
     "name": "Hybrid Blockchain Framework",
     "type": "personal",
     "description": "A modern framework for developing, deploying, and interacting with RISC-V-based smart contracts on Ethereum, featuring dual VM integration.",
-    "tags": ["Rust", "RISC-V", "EVM"],
+    "tags": [
+      "Rust",
+      "RISC-V",
+      "EVM"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/hybrid" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/hybrid"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -91,9 +164,16 @@
     "name": "RISC-V EVM (Rust)",
     "type": "personal",
     "description": "Experimental implementation of a RISC-V based Ethereum Virtual Machine exploring technical feasibility and performance implications.",
-    "tags": ["Rust", "EVM", "Experiment"],
+    "tags": [
+      "Rust",
+      "EVM",
+      "Experiment"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/riscv-evm-experiment" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/riscv-evm-experiment"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -102,9 +182,16 @@
     "name": "RISC-V Assembler & Emulator",
     "type": "personal",
     "description": "A Rust implementation of a RISC-V (RV32IM) assembler alongside a simple emulator aiming to understand RISC-V architecture for zkVM applications.",
-    "tags": ["Rust", "CLI", "Architecture"],
+    "tags": [
+      "Rust",
+      "CLI",
+      "Architecture"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/riscv-assembler" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/riscv-assembler"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -113,9 +200,15 @@
     "name": "Chronicle Indexer",
     "type": "personal",
     "description": "Blazing fast indexing software that parses transactions, smart contracts, and parachain events.",
-    "tags": ["Rust", "Indexer"],
+    "tags": [
+      "Rust",
+      "Indexer"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/chronicle" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/chronicle"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -124,9 +217,15 @@
     "name": "Gas Relay",
     "type": "personal",
     "description": "A secure and efficient Gas Relay implementation based on ERC-2771 enabling seamless meta-transactions and covered gas costs.",
-    "tags": ["ERC-2771", "Meta-TX"],
+    "tags": [
+      "ERC-2771",
+      "Meta-TX"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/gas-relay" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/gas-relay"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -135,10 +234,19 @@
     "name": "Pallet DEX",
     "type": "personal",
     "description": "Custom DEX pallet using the Polkadot SDK based on the Uniswap V2 implementation. Published on crates.io.",
-    "tags": ["Polkadot SDK", "DEX"],
+    "tags": [
+      "Polkadot SDK",
+      "DEX"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/pallet-dex" },
-      { "label": "CRATES.IO", "url": "https://crates.io/crates/pallet-dex-v2" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/pallet-dex"
+      },
+      {
+        "label": "CRATES.IO",
+        "url": "https://crates.io/crates/pallet-dex-v2"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -147,9 +255,15 @@
     "name": "Light Tornado Cash",
     "type": "personal",
     "description": "Educational implementation of Tornado Cash built to learn Groth16 zero-knowledge proofs and circuit compilation.",
-    "tags": ["Groth16", "Zero-Knowledge"],
+    "tags": [
+      "Groth16",
+      "Zero-Knowledge"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/light-tornodo-cash" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/light-tornodo-cash"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -158,9 +272,15 @@
     "name": "Open Gateway",
     "type": "personal",
     "description": "Decentralized payment gateway system that facilitates secure and efficient handling of payments in native ETH or ERC20 tokens.",
-    "tags": ["Solidity", "Payments"],
+    "tags": [
+      "Solidity",
+      "Payments"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/open-gateway" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/open-gateway"
+      }
     ],
     "highlight": true,
     "thumbnail": null
@@ -169,9 +289,15 @@
     "name": "RISC-V Emulator",
     "type": "personal",
     "description": "A simple attempt to create a RISC-V emulator in Rust with the goal of understanding the architecture and its application in zkVM.",
-    "tags": ["Rust", "Architecture"],
+    "tags": [
+      "Rust",
+      "Architecture"
+    ],
     "links": [
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/riscv-emulator" }
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/riscv-emulator"
+      }
     ],
     "highlight": true,
     "thumbnail": null

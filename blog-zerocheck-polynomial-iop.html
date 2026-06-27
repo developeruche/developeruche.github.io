@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeroCheck Polynomial Interactive Oracle Proof — Developer Uche</title>
+  <meta name="description" content="ZeroCheck Polynomial Interactive Oracle Proof The ZeroCheck PIOP (Polynomial Interactive Oracle Protocol) is a subprotocol used in zero-knowledge proof…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog-zerocheck-polynomial-iop.html" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="ZeroCheck Polynomial Interactive Oracle Proof — Developer Uche" />
+  <meta property="og:description" content="ZeroCheck Polynomial Interactive Oracle Proof The ZeroCheck PIOP (Polynomial Interactive Oracle Protocol) is a subprotocol used in zero-knowledge proof…" />
+  <meta property="og:url" content="https://developeruche.com/blog-zerocheck-polynomial-iop.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/zerocheck-polynomial-iop.png" />
+  <meta property="og:image:alt" content="ZeroCheck Polynomial Interactive Oracle Proof — thumbnail" />
+  <meta property="article:published_time" content="2026-06-27" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="zero knowledge" />
+  <meta property="article:tag" content="snarks" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="ZeroCheck Polynomial Interactive Oracle Proof — Developer Uche" />
+  <meta name="twitter:description" content="ZeroCheck Polynomial Interactive Oracle Proof The ZeroCheck PIOP (Polynomial Interactive Oracle Protocol) is a subprotocol used in zero-knowledge proof…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/zerocheck-polynomial-iop.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ZeroCheck Polynomial Interactive Oracle Proof",
+  "description": "ZeroCheck Polynomial Interactive Oracle Proof The ZeroCheck PIOP (Polynomial Interactive Oracle Protocol) is a subprotocol used in zero-knowledge proof…",
+  "image": [
+    "https://developeruche.com/assets/blogs/zerocheck-polynomial-iop.png"
+  ],
+  "datePublished": "2026-06-27",
+  "dateModified": "2026-06-27",
+  "inLanguage": "en",
+  "keywords": "zero knowledge, snarks",
+  "url": "https://developeruche.com/blog-zerocheck-polynomial-iop.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog-zerocheck-polynomial-iop.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">ZeroCheck Polynomial Interactive Oracle Proof</h1>
+        <img class="post-hero-img" src="assets/blogs/zerocheck-polynomial-iop.png" alt="ZeroCheck Polynomial Interactive Oracle Proof — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-27">2026-06-27</time> · 3 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>zero knowledge</span>
+          <span>snarks</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>The ZeroCheck PIOP (Polynomial Interactive Oracle Protocol) is a subprotocol used in zero-knowledge proof systems to verify that a polynomial evaluates to zero over a specific domain. It is a critical building block in many zero-knowledge proof systems, particularly in protocols like Plonk, to check consistency or enforce certain constraints.</p>
+        <h3>Purpose of ZeroCheck PIOP</h3>
+        <p>In a zero-knowledge proof, the prover often needs to demonstrate that a polynomial $f(X)$:</p>
+        <ul><li>Either evaluates to zero on certain inputs, such as all elements in a domain $D$,</li><li>Or satisfies specific conditions implying that some computation is correct.</li></ul>
+        <p>For instance:</p>
+        <ol><li>$f(X) = 0$ might encode the correctness of a relation.</li><li>$f(X) = 0$ over all $X \in D$ might verify consistency with a pre-specified structure.</li></ol>
+        <p>This ensures that the prover’s claims about the polynomial are consistent with the protocol’s constraints.</p>
+        <h3>How ZeroCheck PIOP Works</h3>
+        <p>The protocol is structured in several rounds of interaction between the prover and verifier. Here’s the general approach:</p>
+        <ol><li>Input: The prover holds a polynomial $f(X)$ and claims it satisfies  $f(X) = 0$  over a domain $D$.</li><li>Polynomial Reduction:<ul><li>The prover reduces $f(X)$ modulo a vanishing polynomial $Z_D(X)$, which vanishes (evaluates to zero) at all points in $D$:</li></ul></li></ol>
+        <p>$$ Z_D(X) = \prod_{x \in D} (X - x) $$</p>
+        <ul><li>The prover expresses $f(X)$ as: $f(X) = Z_D(X) \cdot q(X) + r(X)$,</li></ul>
+        <p>where:</p>
+        <ul><li>$q(X)$  is the quotient polynomial.</li><li>$r(X)$  is the remainder polynomial with degree  $\text{deg}(r) < \text{deg}(Z_D)$.</li></ul>
+        <ol><li>Verifier Query:<ul><li>The verifier checks whether $r(X) = 0$. This involves:</li><li>Sampling random challenge points  $\alpha$  from the field.</li><li>Asking the prover for evaluations of  $f(X)$,  $Z_D(X)$, and  $q(X)$ at  $\alpha$.</li></ul></li></ol>
+        <ol><li>Verification:<ul><li>Using the prover’s responses, the verifier confirms:</li></ul> $f(\alpha) = Z_D(\alpha) \cdot q(\alpha) + r(\alpha)$.</li><li>If $r(X) = 0$, then  $f(X)$  is divisible by  $Z_D(X)$, and the claim  $f(X) = 0$  over  $D$  holds.</li></ol>
+        <p><em>This relation works fine here and the polynomial is a Univariate polynomial, would like to establish such relationship but over a multilinear polynomial this time. How can we achieve this?</em></p>
+        <hr />
+        <h2>ZeroCheck: Multilinear polynomials</h2>
+        <p><em>This finds application in HyperPlonk (a multi-linear expression of the plonk protocol)</em></p>
+        <p>Given a polynomial $w(x_1, x_2, x_3)$, prove $w$ is a zero polynomial (a poly that evaluates to <code>zero</code> for every input variables).</p>
+        <p>Making use of the <code>Schwartz-Zipple lemma</code>. prover can prove sufficently that $w$ is a zero polynomial if $w(r_1,r_2,r_3)$ = 0, where $\{r_1,r_2,r_3\}$ are random field elements.</p>
+        <p>Prover builds a polynomial $f$ and proves $f$'s is $0$ via <code>SumCheck</code> $f(x_1,x_2,x_3) = w(r_1,r_2,r_3) \cdot eq((x_1,x_2,x_3), (r_1,r_2,r_3))$</p>
+        <p>where; $eq(\vec{x},\vec{y}) = \prod_{i=1}^{3} (x_iy_i + (1 - x_i)(1 - y_i))$ $eq(\vec{x},\vec{y})$ is $1$ if $\vec{x}= \vec{y}$; else $0$;</p>
+        <p>Next: <a href="blog-permutation-check-iop.html">Permutation Check Polynomial IOP</a></p>
+        <p>reference:  Zhenfei Zhang: <a href="https://www.youtube.com/watch?v=kAD5aBnZHvU" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=kAD5aBnZHvU</a></p>
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

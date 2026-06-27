@@ -60,12 +60,67 @@ export function deriveTags(items) {
     .map(([key, display]) => ({ key, display }));
 }
 
+/* ── Categories: a small, curated set of broad filters ─────────────────────
+   Instead of one filter chip per raw tag (dozens of them — poor UX), the filter
+   bar groups tags into a handful of broad categories. Cards still show their
+   detailed tags; only the FILTER is generalized. Each category lists the tag
+   keys (lowercase) it absorbs. Any present tag NOT covered here is gathered into
+   an auto "Other" chip, so new tags stay filterable without code changes. */
+export const BLOG_CATEGORIES = [
+  { key: 'zero-knowledge', display: 'Zero-Knowledge', match: ['zero knowledge', 'snarks', 'zkvm', 'algo'] },
+  { key: 'cryptography', display: 'Cryptography', match: ['cryptography', 'pq cryptography', 'lecture note'] },
+  { key: 'evm', display: 'EVM & Contracts', match: ['evm', 'smart contract'] },
+  { key: 'blockchain', display: 'Blockchain & Protocol', match: ['blockchain', 'protocol', 'infrastructure', 'networking'] },
+];
+
+export const PROJECT_CATEGORIES = [
+  { key: 'rust', display: 'Rust', match: ['rust'] },
+  { key: 'zero-knowledge', display: 'Zero-Knowledge', match: ['zero-knowledge', 'zkvm', 'groth16'] },
+  { key: 'evm', display: 'EVM & Contracts', match: ['evm', 'smart contract', 'solidity', 'erc-2771', 'meta-tx', 'dex', 'payments'] },
+  { key: 'protocols', display: 'Protocols & Interop', match: ['protocol', 'interoperability', 'cross-chain', 'bridging', 'layer 2', 'ethereum', 'polkadot sdk'] },
+  { key: 'systems', display: 'Systems & Tooling', match: ['cli', 'indexer', 'library', 'sdk', 'api', 'networking', 'architecture', 'experiment', 'risc-v'] },
+];
+
+// Resolve the categories actually usable for a dataset: drop categories with no
+// matching items, and append an "Other" category for any present-but-uncovered
+// tags. Returns [{ key, display, set: Set<tagKey> }].
+export function deriveCategories(items, categories) {
+  const present = new Set();
+  items.forEach((it) => (it.tags || []).forEach((t) => present.add(tagKey(t))));
+
+  const covered = new Set();
+  const out = [];
+  categories.forEach((c) => {
+    const set = new Set(c.match.map(tagKey).filter((k) => present.has(k)));
+    c.match.forEach((m) => covered.add(tagKey(m)));
+    if (set.size) out.push({ key: c.key, display: c.display, set });
+  });
+
+  const other = new Set([...present].filter((k) => !covered.has(k)));
+  if (other.size) out.push({ key: 'other', display: 'Other', set: other });
+  return out;
+}
+
 /* ── Filtering ─────────────────────────────────────────────────────────── */
 
-// selectedKeys: array of lowercase tag keys. Empty = show all.
-export function filterItems(items, selectedKeys) {
+// selectedKeys: array of selected keys (raw tag keys, or category keys when
+// `derivedCategories` is supplied). Empty = show all.
+export function filterItems(items, selectedKeys, derivedCategories) {
   if (!selectedKeys || selectedKeys.length === 0) return items;
   const sel = new Set(selectedKeys);
+
+  // Category mode: a selected category matches an item if any of the item's tags
+  // is in that category's tag set.
+  if (derivedCategories && derivedCategories.length) {
+    const byKey = new Map(derivedCategories.map((c) => [c.key, c.set]));
+    const chosen = [...sel].map((k) => byKey.get(k)).filter(Boolean);
+    return items.filter((item) => {
+      const keys = (item.tags || []).map(tagKey);
+      const test = (set) => keys.some((k) => set.has(k));
+      return FILTER_MODE === 'AND' ? chosen.every(test) : chosen.some(test);
+    });
+  }
+
   return items.filter((item) => {
     const keys = (item.tags || []).map(tagKey);
     if (FILTER_MODE === 'AND') return [...sel].every((k) => keys.includes(k));
@@ -233,8 +288,12 @@ export function stateMessage(container, kind, msg) {
    Builds a horizontal, keyboard-operable chip bar. `All` clears selection.
    onChange(selectedKeys) fires on every toggle.
    Returns { mount, setCount, getSelected, setSelected }. */
-export function createFilterBar(items, onChange) {
-  const tags = deriveTags(items);
+export function createFilterBar(items, onChange, categories) {
+  // When a category config is passed, the bar shows broad category chips
+  // (curated, few) instead of one chip per raw tag (many). `derived` is exposed
+  // so callers can hand it to filterItems.
+  const derived = categories ? deriveCategories(items, categories) : null;
+  const tags = derived || deriveTags(items);
   let selected = new Set();
 
   const bar = el('div', { class: 'filter-bar', role: 'group', 'aria-label': 'Filter by tag' });
@@ -271,6 +330,7 @@ export function createFilterBar(items, onChange) {
 
   return {
     mount: bar,
+    categories: derived, // null in raw-tag mode; pass to filterItems in category mode
     setCount: (n, total) => { count.textContent = `// ${n}/${total}`; },
     getSelected: () => [...selected],
     setSelected: (keys) => { selected = new Set(keys); render(); },

@@ -1,6 +1,6 @@
 import { mountLayout } from './layout.js';
 import {
-  fetchJSON, card, createFilterBar, filterItems,
+  fetchJSON, card, createFilterBar, filterItems, BLOG_CATEGORIES,
   readTagsFromURL, writeTagsToURL, observeReveals, stateMessage,
 } from './data.js';
 
@@ -21,13 +21,13 @@ const blogCard = (b) => card({ title: b.title, tags: b.tags, href: b.link, thumb
     return;
   }
 
-  const bar = createFilterBar(items, apply);
+  const bar = createFilterBar(items, apply, BLOG_CATEGORIES);
   filterHost.appendChild(bar.mount);
   bar.setSelected(readTagsFromURL());
 
   function apply(selected) {
     writeTagsToURL(selected);
-    const filtered = filterItems(items, selected);
+    const filtered = filterItems(items, selected, bar.categories);
     grid.innerHTML = '';
     if (!filtered.length) { stateMessage(grid, 'empty', '// No posts match these tags.'); }
     filtered.forEach((b) => {

@@ -1,5 +1,25 @@
 [
   {
+    "title": "ZeroCheck Polynomial Interactive Oracle Proof",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog-zerocheck-polynomial-iop.html",
+    "highlight": true,
+    "thumbnail": "assets/blogs/zerocheck-polynomial-iop.png"
+  },
+  {
+    "title": "SumCheck Polynomial Interactive Proof",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog-sumcheck-polynomial-iop.html",
+    "highlight": true,
+    "thumbnail": "assets/blogs/sumcheck-polynomial-iop.png"
+  },
+  {
     "title": "Deconstructing the 1.5 GHz zkVM: How ZisK Redefined the Limits of Trace Generation",
     "tags": [
       "zero knowledge",

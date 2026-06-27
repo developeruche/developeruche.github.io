@@ -243,9 +243,15 @@ def main():
 
     md = open(a.md, encoding="utf-8").read()
 
-    # 1. thumbnail
-    thumb = download(a.thumbnail, os.path.join(root, "assets", "blogs", f"{slug}-cover"))
-    thumb_rel = os.path.relpath(thumb, root).replace(os.sep, "/")
+    # 1. thumbnail — download if remote, else use the existing local file as-is
+    if is_remote(a.thumbnail):
+        thumb = download(a.thumbnail, os.path.join(root, "assets", "blogs", f"{slug}-cover"))
+        thumb_rel = os.path.relpath(thumb, root).replace(os.sep, "/")
+    else:
+        cand = a.thumbnail if os.path.isabs(a.thumbnail) else os.path.join(root, a.thumbnail)
+        if not os.path.exists(cand):
+            raise SystemExit(f"ERROR: local thumbnail not found: {a.thumbnail}")
+        thumb_rel = os.path.relpath(cand, root).replace(os.sep, "/")
 
     # 2. body images
     md_local, mapping = process_images(md, slug, root)

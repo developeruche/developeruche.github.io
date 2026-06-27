@@ -51,9 +51,18 @@ What it changed in `data/blog.json` for that entry: `highlight`, `link`
 **Title and tags are left untouched.**
 
 ### 2. Convert the body markdown → HTML
-Identical to add-blog. Read `local_md`, convert to clean semantic HTML using the
-`.post-body` conventions (no inline styles, no classes), and replace the line
-containing `<!-- BODY:REPLACE_ME -->` inside `<div class="post-body">`.
+Identical to add-blog. Use the shared converter (kept verbatim in both skills):
+
+```bash
+python3 .claude/skills/add-blog-page/scripts/md_to_body.py <slug>.local.md > /tmp/body.html
+```
+
+It emits clean semantic HTML following the `.post-body` conventions (no inline
+styles, no classes) and handles nested/tab-indented/`•` lists, headings and
+`---` without blank lines, paragraph-then-list blocks, LaTeX passthrough, and
+bare-URL autolinking. Then replace the line containing `<!-- BODY:REPLACE_ME -->`
+inside `<div class="post-body">` with that HTML. (Keep this copy identical to
+`add-blog/scripts/md_to_body.py`.)
 
 See the **add-blog** SKILL.md "Convert the body" section for the full mapping
 table. Key reminders:
