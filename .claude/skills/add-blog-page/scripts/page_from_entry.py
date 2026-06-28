@@ -59,7 +59,11 @@ def find_entry(data, title):
 
 
 def slug_from_link(link):
-    m = re.match(r"^blog-(.+)\.html$", str(link or "").strip())
+    s = str(link or "").strip()
+    m = re.match(r"^blog/([a-z0-9-]+)/(?:index\.html)?$", s)  # new: /blog/<slug>/
+    if m:
+        return m.group(1)
+    m = re.match(r"^blog-(.+)\.html$", s)                      # legacy: blog-<slug>.html
     return m.group(1) if m else None
 
 
@@ -100,7 +104,8 @@ def main():
         slug = nb.slugify(title, a.slug)
     else:
         slug = slug_from_link(entry.get("link")) or nb.slugify(title)
-    page = f"blog-{slug}.html"
+    page = f"blog/{slug}/index.html"
+    link = f"blog/{slug}/"
 
     # 3. hero thumbnail (use entry's; download if remote)
     thumb = entry.get("thumbnail")
@@ -122,7 +127,7 @@ def main():
 
     # 5. update the entry in place (title/tags untouched)
     entry["highlight"] = highlight
-    entry["link"] = page
+    entry["link"] = link
     entry["thumbnail"] = thumb_rel
     data[idx] = entry
     with open(bj_path, "w", encoding="utf-8") as f:
@@ -133,8 +138,9 @@ def main():
     tpl = open(os.path.join(os.path.dirname(_HELPER), "..", "templates",
                             "post.html.template"), encoding="utf-8").read()
     iso_date = date.today().isoformat()
-    canonical = f"{nb.SITE_URL}/{page}"
+    canonical = f"{nb.SITE_URL}/blog/{slug}/"
     og_image = f"{nb.SITE_URL}/{thumb_rel}"
+    hero_src = "/" + thumb_rel if not thumb_rel.startswith("/") else thumb_rel
     desc = nb.make_description(md)
     words = len(re.findall(r"\w+", re.sub(r"```.*?```", "", md, flags=re.S)))
     read_time = max(1, round(words / 200))
@@ -142,7 +148,7 @@ def main():
     tags_html = "\n".join(f"          <span>{html.escape(t)}</span>" for t in tags) or "          "
     article_tags = "\n".join(
         f'  <meta property="article:tag" content="{html.escape(t, quote=True)}" />' for t in tags)
-    jsonld = nb.build_jsonld(title, desc, tags, page, og_image, iso_date)
+    jsonld = nb.build_jsonld(title, desc, tags, link, og_image, iso_date)
     hero_alt = f"{title} — thumbnail"
 
     out = (tpl
@@ -150,21 +156,23 @@ def main():
            .replace("{{DESCRIPTION}}", html.escape(desc, quote=True))
            .replace("{{CANONICAL}}", canonical)
            .replace("{{OG_IMAGE}}", og_image)
-           .replace("{{HERO_SRC}}", thumb_rel)
+           .replace("{{HERO_SRC}}", hero_src)
            .replace("{{HERO_ALT}}", html.escape(hero_alt, quote=True))
            .replace("{{ARTICLE_TAGS}}", article_tags)
            .replace("{{JSONLD}}", jsonld)
            .replace("{{DATE}}", iso_date)
            .replace("{{READ_TIME}}", str(read_time))
            .replace("{{TAGS_HTML}}", tags_html))
-    with open(os.path.join(root, page), "w", encoding="utf-8") as f:
+    page_path = os.path.join(root, "blog", slug, "index.html")
+    os.makedirs(os.path.dirname(page_path), exist_ok=True)
+    with open(page_path, "w", encoding="utf-8") as f:
         f.write(out)
 
     # 7. sitemap + robots
     nb.regenerate_sitemap(root)
 
     print(json.dumps({
-        "matched_title": title, "slug": slug, "page": page,
+        "matched_title": title, "slug": slug, "page": page, "link": link,
         "thumbnail": thumb_rel, "og_image": og_image, "canonical": canonical,
         "tags": tags, "highlight": highlight, "read_time": read_time,
         "local_md": local_md, "images_downloaded": mapping,

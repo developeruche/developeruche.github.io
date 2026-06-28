@@ -200,19 +200,31 @@ def build_jsonld(title, desc, tags, page, og_image, iso_date):
 
 
 def regenerate_sitemap(root: str):
-    """Rebuild sitemap.xml from all top-level *.html pages."""
-    # blog-post.html is the dummy scaffold/reference — keep it out of the index.
-    exclude = {"blog-post.html"}
-    pages = sorted(os.path.basename(p) for p in glob.glob(os.path.join(root, "*.html"))
-                   if os.path.basename(p) not in exclude)
+    """Rebuild sitemap.xml: root pages + every /blog/<slug>/ post.
+    Posts live at blog/<slug>/index.html (served as /blog/<slug>/)."""
+    exclude = {"blog-post.html"}  # dummy scaffold/reference
+    root_pages = sorted(
+        os.path.basename(p) for p in glob.glob(os.path.join(root, "*.html"))
+        if os.path.basename(p) not in exclude
+        and not re.match(r"^blog-[a-z0-9-]+\.html$", os.path.basename(p)))
+    blog_dirs = sorted(
+        os.path.relpath(os.path.dirname(p), root).replace(os.sep, "/") + "/"
+        for p in glob.glob(os.path.join(root, "blog", "*", "index.html")))
     now = datetime.now(timezone.utc).date().isoformat()
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for p in pages:
+
+    def url(loc, prio):
+        lines.extend(["  <url>", f"    <loc>{loc}</loc>",
+                      f"    <lastmod>{now}</lastmod>",
+                      f"    <priority>{prio}</priority>", "  </url>"])
+
+    for p in root_pages:
         loc = SITE_URL + "/" + ("" if p == "index.html" else p)
         prio = "1.0" if p == "index.html" else ("0.8" if p in ("blog.html", "projects.html", "publications.html") else "0.6")
-        lines += ["  <url>", f"    <loc>{loc}</loc>", f"    <lastmod>{now}</lastmod>",
-                  f"    <priority>{prio}</priority>", "  </url>"]
+        url(loc, prio)
+    for d in blog_dirs:
+        url(f"{SITE_URL}/{d}", "0.6")
     lines.append("</urlset>")
     with open(os.path.join(root, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
@@ -263,17 +275,20 @@ def main():
     words = len(re.findall(r"\w+", re.sub(r"```.*?```", "", md, flags=re.S)))
     read_time = max(1, round(words / 200))
 
-    # 4. blog.json
-    page = f"blog-{slug}.html"
-    upsert_blog_json(root, a.title, tags, highlight, thumb_rel, page)
+    # 4. blog.json — link is the clean /blog/<slug>/ path (relative for the
+    # root listing pages that consume it).
+    link = f"blog/{slug}/"
+    upsert_blog_json(root, a.title, tags, highlight, thumb_rel, link)
 
     # 5. page shell from template (with full SEO head)
     tpl_path = os.path.join(os.path.dirname(__file__), "..", "templates", "post.html.template")
     tpl = open(os.path.abspath(tpl_path), encoding="utf-8").read()
 
+    page = f"blog/{slug}/index.html"                 # actual file path
     iso_date = date.today().isoformat()
-    canonical = f"{SITE_URL}/{page}"
+    canonical = f"{SITE_URL}/blog/{slug}/"
     og_image = f"{SITE_URL}/{thumb_rel}"            # absolute URL (required by OG)
+    hero_src = "/" + thumb_rel if not thumb_rel.startswith("/") else thumb_rel
     desc = make_description(md)
     desc_attr = html.escape(desc, quote=True)
     title_attr = html.escape(a.title, quote=True)
@@ -284,28 +299,30 @@ def main():
     article_tags = "\n".join(
         f'  <meta property="article:tag" content="{html.escape(t, quote=True)}" />' for t in tags
     )
-    jsonld = build_jsonld(a.title, desc, tags, page, og_image, iso_date)
+    jsonld = build_jsonld(a.title, desc, tags, f"blog/{slug}/", og_image, iso_date)
 
     out = (tpl
            .replace("{{TITLE}}", title_attr)
            .replace("{{DESCRIPTION}}", desc_attr)
            .replace("{{CANONICAL}}", canonical)
            .replace("{{OG_IMAGE}}", og_image)
-           .replace("{{HERO_SRC}}", thumb_rel)
+           .replace("{{HERO_SRC}}", hero_src)
            .replace("{{HERO_ALT}}", hero_alt_attr)
            .replace("{{ARTICLE_TAGS}}", article_tags)
            .replace("{{JSONLD}}", jsonld)
            .replace("{{DATE}}", iso_date)
            .replace("{{READ_TIME}}", str(read_time))
            .replace("{{TAGS_HTML}}", tags_html))
-    with open(os.path.join(root, page), "w", encoding="utf-8") as f:
+    page_path = os.path.join(root, "blog", slug, "index.html")
+    os.makedirs(os.path.dirname(page_path), exist_ok=True)
+    with open(page_path, "w", encoding="utf-8") as f:
         f.write(out)
 
     # 6. sitemap.xml + robots.txt (site-level SEO)
     regenerate_sitemap(root)
 
     print(json.dumps({
-        "slug": slug, "page": page, "thumbnail": thumb_rel,
+        "slug": slug, "page": page, "link": link, "thumbnail": thumb_rel,
         "canonical": canonical, "og_image": og_image,
         "read_time": read_time, "tags": tags, "highlight": highlight,
         "local_md": local_md, "images_downloaded": mapping,

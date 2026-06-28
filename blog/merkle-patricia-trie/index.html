@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merkle Patricia Trie — Developer Uche</title>
+  <meta name="description" content="Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog/merkle-patricia-trie/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Merkle Patricia Trie — Developer Uche" />
+  <meta property="og:description" content="Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…" />
+  <meta property="og:url" content="https://developeruche.com/blog/merkle-patricia-trie/" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/merkle-patricia-trie.png" />
+  <meta property="og:image:alt" content="Merkle Patricia Trie — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="blockchain" />
+  <meta property="article:tag" content="algo" />
+  <meta property="article:tag" content="cryptography" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Merkle Patricia Trie — Developer Uche" />
+  <meta name="twitter:description" content="Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/merkle-patricia-trie.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Merkle Patricia Trie",
+  "description": "Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…",
+  "image": [
+    "https://developeruche.com/assets/blogs/merkle-patricia-trie.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "blockchain, algo, cryptography",
+  "url": "https://developeruche.com/blog/merkle-patricia-trie/",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog/merkle-patricia-trie/"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Merkle Patricia Trie</h1>
+        <img class="post-hero-img" src="/assets/blogs/merkle-patricia-trie.png" alt="Merkle Patricia Trie — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 8 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>blockchain</span>
+          <span>algo</span>
+          <span>cryptography</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p><a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/primitives/mpt/src" target="_blank" rel="noopener noreferrer">rust-implementation</a></p>
+        <p><strong>What is a Merkle Patricia Trie?</strong></p>
+        <p>At its core, a Merkle Patricia Trie is a specialized tree-like data structure that efficiently stores key-value pairs. It cleverly combines two concepts:</p>
+        <ul><li><strong>Merkle Tree:</strong> This means the structure uses cryptographic hashes to ensure data integrity. Each node in the tree is identified by the hash of its contents. The <code>root_hash</code> of the entire trie serves as a unique fingerprint representing <em>all</em> the data stored within it. If even a single bit of data changes anywhere in the trie, the <code>root_hash</code> will change deterministically. This is crucial for systems like blockchains (e.g., Ethereum) where you need to verify state consistency efficiently.</li><li><strong>Patricia Trie (Radix Trie):</strong> This part optimizes storage and retrieval, especially when keys share common prefixes. Instead of storing entire keys at each node, paths are compressed. Keys are broken down into smaller units (in this implementation, "nibbles" - 4-bit values), and the structure branches based on these units. Nodes only store the <em>unique</em> parts of the paths.</li></ul>
+        <p><strong>In essence:</strong> It's a secure (Merkle) and space-efficient (Patricia) way to map keys to values, producing a single hash that represents the entire collection.</p>
+        <p><strong>Key Components in the Code:</strong></p>
+        <ul><li><strong><code>Nibble</code> and <code>NibblePath</code>:</strong> Keys are not stored as raw bytes directly in the node paths. They are first converted into a sequence of <code>Nibble</code>s (0-15) using <code>bytes_to_nibbles</code>. A <code>[6, 1, 6, 2]</code> <code>NibblePath</code> corresponds to the bytes <code>b"ab"</code>. This 4-bit unit is fundamental because it dictates the branching factor (16) in <code>Branch</code> nodes.</li><li><strong><code>Db</code> (Database):</strong> This <code>Arc&lt;RwLock&lt;HashMap&lt;H256, Vec&lt;u8&gt;&gt;&gt;&gt;</code> represents the underlying storage. In a real MPT (like in Ethereum), this would be a persistent key-value database (like LevelDB or RocksDB). Here, it's an in-memory HashMap. It stores <em>serialized</em> node data (<code>Vec&lt;u8&gt;</code>) keyed by the node's hash (<code>H256</code>). The <code>Arc&lt;RwLock&gt;</code> makes it thread-safe for shared access.</li><li><strong><code>H256</code> (Hash):</strong> Represents a 256-bit (32-byte) hash, calculated using <code>Keccak256</code> in this code (<code>calculate_hash_internal</code>). <strong>Important Note:</strong> This code uses <code>bincode</code> for serialization <em>before</em> hashing. Standard Ethereum MPTs use RLP (Recursive Length Prefix) encoding. Therefore, the hashes generated by this code <strong>will not</strong> match the hashes produced by an Ethereum client for the same data.</li><li><strong><code>MerklePatriciaTrie</code> Struct:</strong> Holds the current <code>root_hash</code> (the entry point and overall state identifier) and a reference (<code>Db</code>) to the storage.</li></ul>
+        <p><strong>Node Types (<code>Node</code> Enum):</strong></p>
+        <p>The structure of the trie is defined by these node types:</p>
+        <ul><li><strong><code>Node::Empty</code>:</strong> Represents a null or empty slot. This is the state of the trie before any data is inserted, and it's also used in <code>Branch</code> nodes where a particular nibble path doesn't lead anywhere. It has a predefined hash (<code>EMPTY_NODE_HASH</code>).</li><li><strong><code>Node::Leaf { path, value }</code>:</strong> Represents the termination of a key's path.<ul><li><code>path</code>: Contains the <em>remaining</em> nibbles of the key path specific to this leaf, after any shared prefixes handled by parent Extension or Branch nodes.</li><li><code>value</code>: The actual value associated with the full key.</li><li><em>Example:</em> If you insert <code>("do", "verb")</code> into an empty trie, the root might point directly to a <code>Leaf { path: [6, 4, 6, f], value: b"verb".to_vec() }</code>.</li></ul></li><li><strong><code>Node::Extension { path, next_node_hash }</code>:</strong> Acts as a shortcut for paths that don't branch.<ul><li><code>path</code>: A shared sequence of nibbles common to all keys passing through this node.</li><li><code>next_node_hash</code>: The hash of the <em>next</em> node (which could be another Extension, a Branch, or a Leaf) where the path continues or terminates. It <em>doesn't</em> store a value itself.</li><li><em>Example:</em> If you only have keys like <code>("ether", "crypto")</code> and <code>("ethereum", "blockchain")</code>, you might have an <code>Extension { path: [6, 5, 7, 4, 6, 8], next_node_hash: HASH_OF_BRANCH }</code> representing the shared "ether" part, pointing to a <code>Branch</code> where " " and "eum" diverge.</li></ul></li><li><strong><code>Node::Branch { children, value }</code>:</strong> Represents a point where a path diverges into multiple possibilities (up to 16).<ul><li><code>children</code>: An array of 16 <code>Option&lt;H256&gt;</code>. Each index (0-15) corresponds to a nibble. If <code>children[i]</code> is <code>Some(hash)</code>, it means there's a child node reachable by taking the nibble <code>i</code>, and <code>hash</code> is its identifier. <code>None</code> indicates no path exists for that nibble.</li><li><code>value</code>: An <code>Option&lt;Vec&lt;u8&gt;&gt;</code>. This allows a key to terminate <em>exactly</em> at this branch point.</li><li><em>Example (from <code>main</code>):</em> After inserting <code>("dog", "puppy")</code> and <code>("do", "verb")</code>:<ul><li><code>do</code> -&gt; <code>[6, 4, 6, f]</code></li><li><code>dog</code> -&gt; <code>[6, 4, 6, 7]</code></li><li>They share <code>[6, 4, 6]</code>. The trie might form a structure leading to a <code>Branch</code> node representing the divergence after <code>[6, 4, 6]</code>.</li><li>This <code>Branch</code> might have <code>value: Some(b"verb".to_vec())</code> because "do" terminates here.</li><li>Its <code>children[7]</code> (the nibble for 'g') would contain <code>Some(HASH_OF_DOG_LEAF)</code>. The <code>HASH_OF_DOG_LEAF</code> would point to a <code>Leaf { path: [], value: b"puppy".to_vec() }</code> (empty remaining path as 'g' was the last nibble).</li></ul></li></ul></li></ul>
+        <p><strong>How Operations Work (<code>get</code> and <code>put</code>):</strong></p>
+        <ul><li><strong><code>get(key)</code> (Retrieval):</strong><ol><li>Convert the <code>key</code> into a <code>NibblePath</code>.</li><li>Start at the <code>root_hash</code>.</li><li>Recursively (<code>recursive_get</code>) fetch the node corresponding to the current hash from the <code>db</code>.</li><li>Based on the node type:<ul><li><code>Empty</code>: Key not found -&gt; <code>None</code>.</li><li><code>Leaf</code>: If the leaf's <code>path</code> matches the <em>remaining</em> <code>NibblePath</code>, return the <code>value</code>. Otherwise -&gt; <code>None</code>.</li><li><code>Extension</code>: If the <code>NibblePath</code> starts with the extension's <code>path</code>, consume that part of the path and recurse using the <code>next_node_hash</code> and the rest of the <code>NibblePath</code>. Otherwise -&gt; <code>None</code>.</li><li><code>Branch</code>:<ul><li>If the <code>NibblePath</code> is now empty, return the branch's optional <code>value</code>.</li><li>Otherwise, take the <em>next</em> nibble from the <code>NibblePath</code>, look up the corresponding <code>child_hash</code> in the <code>children</code> array. If <code>Some(hash)</code>, recurse using that <code>hash</code> and the rest of the <code>NibblePath</code>. If <code>None</code> -&gt; <code>None</code>.</li></ul></li></ul></li></ol></li><li><strong><code>put(key, value)</code> (Insertion/Update):</strong><ol><li>Convert <code>key</code> to <code>NibblePath</code>.</li><li>Start at the <code>root_hash</code>.</li><li>Recursively (<code>recursive_put</code>) traverse the trie similar to <code>get</code>.</li><li>When the correct position/node is reached, modify the trie structure. This is the complex part involving several cases:<ul><li><strong>Inserting into <code>Empty</code>:</strong> Creates a new <code>Leaf</code> node.</li><li><strong>Inserting into <code>Leaf</code>:</strong><ul><li>If keys match exactly: Update the value if different, creating a <em>new</em> Leaf node (with a new hash).</li><li>If keys diverge: Replace the <code>Leaf</code> with a new <code>Branch</code> (and potentially an <code>Extension</code> if there was a common prefix). The original leaf data and the new data are placed appropriately within or below the new <code>Branch</code>.</li></ul></li><li><strong>Inserting into <code>Extension</code>:</strong><ul><li>If the path matches the extension fully: Recurse down to the <code>next_node_hash</code>.</li><li>If the path diverges within the extension: Split the <code>Extension</code>. Create a new <code>Branch</code> at the divergence point, and potentially a new <code>Extension</code> leading to it.</li></ul></li><li><strong>Inserting into <code>Branch</code>:</strong><ul><li>If the path ends here: Update the <code>value</code> of the <code>Branch</code>.</li><li>If the path continues: Recurse down the appropriate child path (creating it if it's <code>None</code>).</li></ul></li></ul></li><li><strong>Crucially:</strong> Whenever a node is modified or created, it's serialized and stored (<code>store_node</code>), generating a <em>new hash</em>. This new hash is returned upwards.</li><li>Parent nodes (Branches/Extensions) update their <code>children</code> or <code>next_node_hash</code> with the <em>new</em> hash received from the recursive call. This process repeats up to the root.</li><li>The final hash returned by the top-level <code>recursive_put</code> call becomes the <em>new</em> <code>root_hash</code> of the entire trie.</li></ol></li></ul>
+        <p><strong>Example Walkthrough (from <code>main</code>):</strong></p>
+        <ol><li><strong><code>trie.put(b"dog", b"puppy")</code></strong>: <code>dog</code> -&gt; <code>[6,4,6,f,6,7]</code>. Trie is likely empty. Creates a <code>Leaf</code> node, stores it, updates <code>root_hash</code>.</li><li><strong><code>trie.put(b"doge", b"coin")</code></strong>: <code>doge</code> -&gt; <code>[6,4,6,f,6,7,6,5]</code>.<ul><li>Traverses to the <code>Leaf</code> for "dog".</li><li>Finds common prefix <code>[6,4,6,f,6,7]</code>.</li><li>Replaces the <code>Leaf</code> node:<ul><li>A new <code>Branch</code> node is created.</li><li>The <code>Branch</code> gets the value <code>"puppy"</code> (since "dog" terminates here).</li><li>The <code>children[6]</code> slot (for the 'e' nibble) points to a <em>new</em> <code>Leaf { path: [5], value: "coin" }</code>.</li></ul></li><li>If the original "dog" Leaf wasn't the direct root, an <code>Extension</code> node might be created/updated to point to this new <code>Branch</code>.</li><li>New nodes are stored, hashes propagate up, <code>root_hash</code> changes.</li></ul></li><li><strong><code>trie.put(b"do", b"verb")</code></strong>: <code>do</code> -&gt; <code>[6,4,6,f]</code>.<ul><li>Traverses the trie. Let's assume it encounters an <code>Extension</code> node with path <code>[6,4,6,f,6,7]</code> (leading to the "dog"/"doge" structure).</li><li>The path "do" (<code>[6,4,6,f]</code>) diverges <em>within</em> this extension path.</li><li>The <code>Extension</code> is split:<ul><li>A new <code>Branch</code> node is created representing the divergence point after <code>[6,4,6,f]</code>.</li><li>This <code>Branch</code> gets the value <code>Some("verb")</code> (since "do" terminates here).</li><li>Its <code>children[6]</code> slot (for the next nibble 'g' in "dog") points to a <em>new</em> node (likely another Extension or Branch) representing the rest of the original "dog"/"doge" structure (e.g., <code>Extension { path: [7], next_node_hash: HASH_OF_DOG_BRANCH }</code>).</li></ul></li><li>If the original split Extension wasn't the root, a <em>new</em> <code>Extension</code> node might be created with path <code>[6,4,6,f]</code> pointing to the new <code>Branch</code>.</li><li>Again, new nodes, new hashes, new <code>root_hash</code>.</li></ul></li></ol>
+        <p>This process of node creation, splitting, and hash propagation ensures the trie remains consistent and the <code>root_hash</code> accurately reflects its entire state after each modification.</p>
+      </div>
+
+      <a class="back-link" href="/blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

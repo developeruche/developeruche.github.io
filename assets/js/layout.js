@@ -10,11 +10,13 @@ const SOCIALS = {
   linkedin: 'https://www.linkedin.com/in/developeruche',
 };
 
+// Root-absolute hrefs so the shared header/footer work at any URL depth
+// (e.g. blog posts served from /blog/<slug>/), not just root-level pages.
 const NAV = [
-  { key: 'home', label: 'Home', href: 'index.html' },
-  { key: 'projects', label: 'Projects', href: 'projects.html' },
-  { key: 'blog', label: 'Blogs', href: 'blog.html' },
-  { key: 'publications', label: 'Publications', href: 'publications.html' },
+  { key: 'home', label: 'Home', href: '/index.html' },
+  { key: 'projects', label: 'Projects', href: '/projects.html' },
+  { key: 'blog', label: 'Blogs', href: '/blog.html' },
+  { key: 'publications', label: 'Publications', href: '/publications.html' },
 ];
 
 function renderHeader(active) {
@@ -27,8 +29,8 @@ function renderHeader(active) {
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
-      <a class="nav-brand" href="index.html" aria-label="Developer Uche — home">
-        <img src="assets/main/logo.png" alt="" width="32" height="32" />
+      <a class="nav-brand" href="/index.html" aria-label="Developer Uche — home">
+        <img src="/assets/main/logo.png" alt="" width="32" height="32" />
         <span class="logo-word">developeruche</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Sections">${links}</nav>

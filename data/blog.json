@@ -5,7 +5,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "blog-zerocheck-polynomial-iop.html",
+    "link": "blog/zerocheck-polynomial-iop/",
     "highlight": true,
     "thumbnail": "assets/blogs/zerocheck-polynomial-iop.png"
   },
@@ -15,7 +15,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "blog-sumcheck-polynomial-iop.html",
+    "link": "blog/sumcheck-polynomial-iop/",
     "highlight": true,
     "thumbnail": "assets/blogs/sumcheck-polynomial-iop.png"
   },
@@ -25,7 +25,7 @@
       "zero knowledge",
       "zkVM"
     ],
-    "link": "blog-zisk-zkvm-trace-generation.html",
+    "link": "blog/zisk-zkvm-trace-generation/",
     "highlight": true,
     "thumbnail": "assets/blogs/zisk-1-5ghz-zkvm.png"
   },
@@ -35,7 +35,7 @@
       "PQ cryptography",
       "cryptography"
     ],
-    "link": "blog-winternitz-one-time-signature.html",
+    "link": "blog/winternitz-one-time-signature/",
     "highlight": true,
     "thumbnail": "assets/blogs/winternitz-ots.png"
   },
@@ -45,7 +45,7 @@
       "zero knowledge",
       "cryptography"
     ],
-    "link": "blog-zero-knowledge-proof-building-blocks.html",
+    "link": "blog/zero-knowledge-proof-building-blocks/",
     "highlight": true,
     "thumbnail": "assets/blogs/zk-building-blocks.png"
   },
@@ -55,7 +55,7 @@
       "cryptography",
       "zero knowledge"
     ],
-    "link": "blog-kzg-polynomial-commitment-part-1.html",
+    "link": "blog/kzg-polynomial-commitment-part-1/",
     "highlight": true,
     "thumbnail": "assets/blogs/kzg-airdrop-part-1.png"
   },
@@ -65,7 +65,7 @@
       "cryptography",
       "zero knowledge"
     ],
-    "link": "blog-kzg-polynomial-commitment-part-2.html",
+    "link": "blog/kzg-polynomial-commitment-part-2/",
     "highlight": true,
     "thumbnail": "assets/blogs/kzg-airdrop-part-2.png"
   },
@@ -75,7 +75,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "blog-multiset-check-iop.html",
+    "link": "blog/multiset-check-iop/",
     "highlight": true,
     "thumbnail": "assets/blogs/multiset-check-iop.png"
   },
@@ -85,7 +85,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "blog-matryoshka-mle.html",
+    "link": "blog/matryoshka-mle/",
     "highlight": true,
     "thumbnail": "assets/blogs/matryoshka-mle.png"
   },
@@ -95,7 +95,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "blog-jagged-mle.html",
+    "link": "blog/jagged-mle/",
     "highlight": true,
     "thumbnail": "assets/blogs/jagged-mle.png"
   },
@@ -105,7 +105,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "blog-ron-mle-optimization.html",
+    "link": "blog/ron-mle-optimization/",
     "highlight": true,
     "thumbnail": "assets/blogs/ron-mle-optimization.png"
   },
@@ -115,7 +115,7 @@
       "zero knowledge",
       "algo"
     ],
-    "link": "blog-mle-direct-evaluation.html",
+    "link": "blog/mle-direct-evaluation/",
     "highlight": true,
     "thumbnail": "assets/blogs/mle-direct-evaluation.png"
   },
@@ -125,7 +125,7 @@
       "lecture note",
       "cryptography"
     ],
-    "link": "blog-fields-extension-fields.html",
+    "link": "blog/fields-extension-fields/",
     "highlight": true,
     "thumbnail": "assets/blogs/fields-extension-fields.png"
   },
@@ -136,7 +136,7 @@
       "zero knowledge",
       "cryptography"
     ],
-    "link": "blog-groth16.html",
+    "link": "blog/groth16/",
     "highlight": true,
     "thumbnail": "assets/blogs/groth16.png"
   },
@@ -146,7 +146,7 @@
       "snarks",
       "zero knowledge"
     ],
-    "link": "blog-r1cs-to-qap.html",
+    "link": "blog/r1cs-to-qap/",
     "highlight": true,
     "thumbnail": "assets/blogs/r1cs-to-qap.png"
   },
@@ -156,7 +156,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "blog-permutation-check-iop.html",
+    "link": "blog/permutation-check-iop/",
     "highlight": true,
     "thumbnail": "assets/blogs/permutation-check-iop.png"
   },
@@ -166,7 +166,7 @@
       "zero knowledge",
       "snarks"
     ],
-    "link": "blog-product-check-iop.html",
+    "link": "blog/product-check-iop/",
     "highlight": true,
     "thumbnail": "assets/blogs/product-check-iop.png"
   },
@@ -177,7 +177,7 @@
       "zero knowledge",
       "evm"
     ],
-    "link": "blog-zk-rollups-eip4844-blobs.html",
+    "link": "blog/zk-rollups-eip4844-blobs/",
     "highlight": true,
     "thumbnail": "assets/blogs/zk-rollups-eip4844-blobs.png"
   },
@@ -187,7 +187,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "blog-eof-deep-dive.html",
+    "link": "blog/eof-deep-dive/",
     "highlight": true,
     "thumbnail": "assets/blogs/eof-deep-dive.png"
   },
@@ -197,7 +197,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "blog-state-read-write-opcodes.html",
+    "link": "blog/state-read-write-opcodes/",
     "highlight": true,
     "thumbnail": "assets/blogs/state-read-write-opcodes.png"
   },
@@ -208,7 +208,7 @@
       "blockchain",
       "protocol"
     ],
-    "link": "blog-eip-4337-account-abstraction.html",
+    "link": "blog/eip-4337-account-abstraction/",
     "highlight": true,
     "thumbnail": "assets/blogs/eip4337-account-abstraction.png"
   },
@@ -218,7 +218,7 @@
       "blockchain",
       "infrastructure"
     ],
-    "link": "blog-chronicle-rust-blockchain-indexer.html",
+    "link": "blog/chronicle-rust-blockchain-indexer/",
     "highlight": true,
     "thumbnail": "assets/blogs/chronicle-indexer.png"
   },
@@ -229,7 +229,7 @@
       "blockchain",
       "protocol"
     ],
-    "link": "blog-eip2771-gasless-relayer.html",
+    "link": "blog/eip2771-gasless-relayer/",
     "highlight": true,
     "thumbnail": "assets/blogs/eip2771-gasless-relayer.png"
   },
@@ -239,7 +239,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "blog-evm-jumpdest.html",
+    "link": "blog/evm-jumpdest/",
     "highlight": true,
     "thumbnail": "assets/blogs/evm-jumpdest.png"
   },
@@ -250,7 +250,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "blog-eip7928-block-access-lists.html",
+    "link": "blog/eip7928-block-access-lists/",
     "highlight": true,
     "thumbnail": "assets/blogs/eip7928-block-access-lists.png"
   },
@@ -260,7 +260,7 @@
       "protocol",
       "blockchain"
     ],
-    "link": "blog-epf-dev-log.html",
+    "link": "blog/epf-dev-log/",
     "highlight": true,
     "thumbnail": "assets/blogs/epf-dev-log.png"
   },
@@ -271,7 +271,7 @@
       "protocol",
       "blockchain"
     ],
-    "link": "blog-hybrid-ethereum-riscv.html",
+    "link": "blog/hybrid-ethereum-riscv/",
     "highlight": true,
     "thumbnail": "assets/blogs/hybrid-ethereum-riscv.png"
   },
@@ -281,7 +281,7 @@
       "networking",
       "algo"
     ],
-    "link": "blog-kademlia-dht.html",
+    "link": "blog/kademlia-dht/",
     "highlight": true,
     "thumbnail": "assets/blogs/kademlia-dht.png"
   },
@@ -292,7 +292,7 @@
       "algo",
       "cryptography"
     ],
-    "link": "blog-merkle-patricia-trie.html",
+    "link": "blog/merkle-patricia-trie/",
     "highlight": true,
     "thumbnail": "assets/blogs/merkle-patricia-trie.png"
   },
@@ -302,7 +302,7 @@
       "evm",
       "blockchain"
     ],
-    "link": "blog-merkle-tree-blockchain.html",
+    "link": "blog/merkle-tree-blockchain/",
     "highlight": true,
     "thumbnail": "assets/blogs/ethereum-state-trie.png"
   }

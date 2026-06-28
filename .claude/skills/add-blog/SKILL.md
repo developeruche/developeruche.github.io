@@ -10,11 +10,13 @@ title, a thumbnail URL, a highlight flag, and the post body in markdown, this
 skill produces:
 
 1. A new entry in `data/blog.json` (so it shows up on `blog.html` and, if
-   highlighted, on the home page).
+   highlighted, on the home page). Its `link` is the clean URL `blog/<slug>/`.
 2. Downloaded image assets in `assets/blogs/` (thumbnail + every inline image).
-3. A standalone styled detail page `blog-<slug>.html` that follows the
-   `blog-post.html` design (shared nav/footer, blueprint/terminal aesthetic,
-   `.post-*` styles).
+3. A standalone styled detail page at **`blog/<slug>/index.html`** (served as the
+   extensionless URL **`/blog/<slug>/`**) that follows the `blog-post.html` design
+   (shared nav/footer, blueprint/terminal aesthetic, `.post-*` styles). All its
+   asset/page references are **root-absolute** (`/assets/...`, `/blog.html`) so
+   they resolve from the nested path.
 
 The site has **no build step** — pages are plain static HTML. So this skill
 *pre-renders* the markdown to HTML at authoring time rather than rendering it in
@@ -68,7 +70,8 @@ truncated mid-word in search results. For long titles, pass an explicit
 keywords; the full title still lives in `<title>`/`<h1>`).
 
 It prints a JSON summary. Note especially:
-- `slug` and `page` (e.g. `blog-the-title.html`),
+- `slug`, `page` (the file written, `blog/<slug>/index.html`), and `link` (the
+  clean served URL `blog/<slug>/`, stored in blog.json),
 - `local_md` — the markdown with remote image URLs **rewritten to local paths**
   (`assets/blogs/<slug>/img-N.ext`). **Use this file**, not the original, when
   converting the body.
@@ -84,8 +87,9 @@ blocks, bare-URL autolinking):
 python3 .claude/skills/add-blog/scripts/md_to_body.py <slug>.local.md > /tmp/body.html
 ```
 
-Then open the generated `blog-<slug>.html` and **replace the line containing
-`<!-- BODY:REPLACE_ME -->`** (inside `<div class="post-body">`) with that HTML.
+Then open the generated `blog/<slug>/index.html` and **replace the line
+containing `<!-- BODY:REPLACE_ME -->`** (inside `<div class="post-body">`) with
+that HTML.
 (`md_to_body.py` is shared verbatim with the **add-blog-page** skill — keep the
 two copies identical when you change either.) The mapping it follows:
 
@@ -142,9 +146,9 @@ Rules:
   ls assets/blogs/<slug>* ; python3 -c "import json;print(json.load(open('data/blog.json'))[0]['title'])"
   ```
 - Serve and check the page renders with images, on-system styling, and that the
-  card on `blog.html` links to `blog-<slug>.html`. Use the preview tools
+  card on `blog.html` links to `/blog/<slug>/`. Use the preview tools
   (`preview_start` with the `static` launch config, then open
-  `/blog-<slug>.html` and `/blog.html`). Check the console for errors.
+  `/blog/<slug>/` and `/blog.html`). Check the console for errors.
 
 ## SEO (handled automatically)
 The page shell the script writes is SEO-complete — you don't add meta tags by
@@ -173,11 +177,12 @@ later, edit the `<meta name="description">`, `og:description`,
 `twitter:description`, and the JSON-LD `description` together.
 
 ## Conventions & gotchas
-- **Pages live at repo root** (`blog-<slug>.html`) so the relative `assets/...`,
-  `blog.html`, and `./assets/js/layout.js` paths resolve exactly like
-  `blog-post.html`. Do not move them into a subfolder.
+- **Posts live at `blog/<slug>/index.html`**, served as the clean URL
+  `/blog/<slug>/`. Their asset/page references are **root-absolute**
+  (`/assets/...`, `/blog.html`, `/assets/js/layout.js`) so they resolve from the
+  nested path. `blog-post.html` stays at root as the untouched dummy reference.
 - The card link uses `blog.json`'s `link` field; the script sets it to
-  `blog-<slug>.html`. Blog cards open links in a new tab (existing behavior).
+  `blog/<slug>/`. Blog cards open links in a new tab (existing behavior).
 - Re-running with the same title **replaces** that post's `blog.json` entry
   (idempotent) but leaves old image files in place — clean up manually if a slug
   changes.

@@ -8,7 +8,7 @@
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="{{CANONICAL}}" />
-  <link rel="icon" href="assets/favicon.ico" />
+  <link rel="icon" href="/assets/favicon.ico" />
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
@@ -35,15 +35,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
-  <link rel="stylesheet" href="assets/css/tokens.css" />
-  <link rel="stylesheet" href="assets/css/site.css" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
 
   <main id="main">
     <article class="post container">
-      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <a class="back-link" href="/blog.html">← Back to blogs</a>
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">{{TITLE}}</h1>
@@ -58,13 +58,13 @@
 <!-- BODY:REPLACE_ME -->
       </div>
 
-      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+      <a class="back-link" href="/blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>
   </main>
 
   <div id="site-footer"></div>
   <script type="module">
-    import { mountLayout } from './assets/js/layout.js';
+    import { mountLayout } from '/assets/js/layout.js';
     mountLayout();
   </script>
   <!-- KaTeX auto-render: typeset math in the post body after load -->

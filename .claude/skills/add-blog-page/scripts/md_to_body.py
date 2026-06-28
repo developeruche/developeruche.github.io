@@ -155,9 +155,11 @@ def convert(md):
         s = re.sub(r"`([^`]+?)`", lambda m: stash("<code>" + esc(m.group(1)) + "</code>"), s)
         # escape stray html
         s = esc(s)
-        # images
+        # images (root-absolute src so posts work from /blog/<slug>/ depth)
+        def _img_src(u):
+            return "/" + u if u.startswith("assets/") else u
         s = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)",
-                   lambda m: f'<img src="{m.group(2)}" alt="{m.group(1)}" loading="lazy" />', s)
+                   lambda m: f'<img src="{_img_src(m.group(2))}" alt="{m.group(1)}" loading="lazy" />', s)
         # links
         def link(m):
             t, u = m.group(1), m.group(2)
