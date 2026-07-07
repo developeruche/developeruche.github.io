@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) — Developer Uche</title>
+  <meta name="description" content="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) In this dynamic world of cryptocurrencies, airdrops have become a popular…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog/kzg-polynomial-commitment-part-1/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) — Developer Uche" />
+  <meta property="og:description" content="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) In this dynamic world of cryptocurrencies, airdrops have become a popular…" />
+  <meta property="og:url" content="https://developeruche.com/blog/kzg-polynomial-commitment-part-1/" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/kzg-airdrop-part-1.png" />
+  <meta property="og:image:alt" content="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="cryptography" />
+  <meta property="article:tag" content="zero knowledge" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) — Developer Uche" />
+  <meta name="twitter:description" content="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) In this dynamic world of cryptocurrencies, airdrops have become a popular…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/kzg-airdrop-part-1.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1)",
+  "description": "Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) In this dynamic world of cryptocurrencies, airdrops have become a popular…",
+  "image": [
+    "https://developeruche.com/assets/blogs/kzg-airdrop-part-1.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "cryptography, zero knowledge",
+  "url": "https://developeruche.com/blog/kzg-polynomial-commitment-part-1/",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog/kzg-polynomial-commitment-part-1/"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1)</h1>
+        <img class="post-hero-img" src="/assets/blogs/kzg-airdrop-part-1.png" alt="Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1) — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 3 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>cryptography</span>
+          <span>zero knowledge</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+        <p>In this dynamic world of cryptocurrencies, airdrops have become a popular method for distributing tokens to a wide audience. However, traditional airdrop methods often work fine, but we could make it better (more efficient for the claimers). Traditional airdrops employ a Merkle proof system whose verification has a complexity of O(log n) and, as the saying goes, "we only care about verification complexity, the provers can burn down their servers". In this article, we explore a revolutionary approach using KZG polynomial commitment, focusing on its application in airdrop distribution.</p>
+        <p>This article is divided into 2 posts. This very post introduces you to how airdrops are done in production using one of the biggest airdrops in the DeFi space, Optimism's Airdrop, with a little lazy twist. Let's make a deep dive.</p>
+
+        <h2>Airdropping with the Merkle Proof System</h2>
+        <p>We would be airdropping tokens of varying amounts to over 200k valid addresses used in Optimism's airdrop using the Merkle Proof System. But first, let's discuss what a Merkle tree is and how it operates.</p>
+        <p>A Merkle tree is a way to organize data in a tree structure for efficient verification and integrity checks. In blockchain, it's like a puzzle where each piece of data (like a valid user address) is a puzzle piece, and the Merkle tree combines these pieces in a way that makes it easy to prove if a specific piece belongs to the puzzle without showing the entire puzzle. It helps ensure data hasn't been tampered with, and it's a key part of blockchain's security. With this, a user is able to prove that their address is part of the valid users' addresses and be sure of the integrity of the airdrop recipients after the commitment (Merkle root) has been done.</p>
+        <p>I advise you watch the video: <a href="https://www.youtube.com/watch?v=n6nEPaE7KZ8" target="_blank" rel="noopener noreferrer">youtube.com/watch?v=n6nEPaE7KZ8</a></p>
+
+        <h2>Let's Airdrop!</h2>
+        <p>This airdrop has two stages: creating the tree and proofs, then verifying the proofs.</p>
+        <p>The airdrop data is structured as the address to be airdropped and the amount to be airdropped. But this poses a problem: how do we make this a leaf in the Merkle tree? To solve this, we hash the address and the amount together to get the leaf that is added to the Merkle tree.</p>
+        <pre><code>const encodedData = defaultAbiCoder.encode(
+  ['address', 'uint256'],
+  [
+    row[0],
+    row[1].trim()
+  ]);
+
+const hash = keccak256(encodedData);
+leaves.push(hash);</code></pre>
+        <p>Now that we have all these leaves, we can build the tree.</p>
+        <pre><code>const merkleTree = new MerkleTree(leaves, keccak256, { sortPairs: true });
+const rootHash = merkleTree.getHexRoot();</code></pre>
+        <p>After getting the tree and its root, the root is stored in the verifying smart contract and is used to verify any user's claim. Storing the root in the smart contract gives credibility that the valid set of addresses for this airdrop has not been manipulated after this "commitment".</p>
+        <p>We can now explore the later stage: the verification stage and payout. The verification phase happens in the smart contract — a function takes in the data to construct a leaf, plus a proof that the constructed leaf is a member of the tree whose root is stored in the smart contract, and then makes the payout. This is how the function looks:</p>
+        <pre><code>function claim(bytes32[] calldata proof, address _to, uint256 _amount) external {
+    address requestor = msg.sender;
+
+    if (!verify(proof, requestor, _amount)) revert InvalidProof();
+    if (claimed[requestor]) revert AlreadyClaimed();
+    claimed[requestor] = true;
+
+    handlePayment(_to, _amount);
+}</code></pre>
+        <p>Here is an example of how this smart contract function would be called:</p>
+        <pre><code>let claimCall = contract.claim(
+  [
+    "0x8bc39765f21e398418940c7f1c88ccb9fdff6601d645f71c61feb5d805a24203",
+    "0xa3f7c983f98efe6c38c82451dbbbca59caf529e9c4818c9cc92b1bf648e7cb6b",
+    "0x1c3599af9db3dc400adcddd39d6c28b15056d4be06e1c6186025f08fd8008493",
+    "0x904a2fcb4c2b1d75f584dd2e470c53bbd1b12e1474174928d68261766602a4d2"
+    // ...18 proof elements total
+  ],
+  "0xcB67fF716717FCe7aCE371804eae96C1c88A81dC",
+  ethers.parseEther("amount")
+);</code></pre>
+        <p>To emphasize the efficiency of this algorithm: this tree, having over 260k leaves, only needs 18 leaves to prove the membership of a leaf (complexity of O(log n)).</p>
+        <p>With this knowledge, we'll explore achieving the same objective in "constant time" using KZG commitment.</p>
+        <blockquote>"To verify a KZG commitment, we would need just one point in G2 of a BLS12-381 elliptic curve…" — think about it.</blockquote>
+
+        <h2>Explore How This Is Achieved (Part 2)</h2>
+        <p>Continue to <a href="/blog/kzg-polynomial-commitment-part-2/">Part 2: Understanding Polynomial Commitment (KZG) using Airdrop Distribution</a>.</p>
+
+        <h2>Code for the Merkle Proof Airdrop</h2>
+        <p>The sample Solidity contract and the script for generating the tree, root, and proof are available in <a href="https://github.com/developeruche/merkle-airdrop-verify" target="_blank" rel="noopener noreferrer">this repository</a>.</p>
+      </div>
+
+      <a class="back-link" href="/blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

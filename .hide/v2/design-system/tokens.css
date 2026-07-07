@@ -1,0 +1,191 @@
+/* ============================================================================
+   DEVELOPER UCHE — DESIGN TOKENS
+   Extracted from the v2 portfolio site (styles.css + inline HTML styles),
+   re-themed to a LIGHT palette: off-white paper, navy ink, and black.
+   Aesthetic: light terminal / blueprint — mono type, navy on off-white.
+
+   Naming convention
+   -----------------
+   --color-<hue>-<step>   primitive    (raw value, never used directly in UI)
+   --color-<role>         semantic     (points at a primitive; use THIS in UI)
+   --space-*, --radius-*, --shadow-*, --font-*, --text-*, --motion-*
+
+   This file is LIGHT-MODE (off-white / navy / black). The original glow-on-
+   black scheme is preserved as an optional [data-theme="dark"] block at the
+   bottom. Component CSS is unchanged — only color/gradient/shadow tokens moved,
+   so the structural system (mono type, pills, dashed dividers) is untouched.
+   ============================================================================ */
+
+:root {
+  /* ── COLOR · PRIMITIVES ─────────────────────────────────────────────────
+     Light-mode palette: off-white paper, a navy "ink" scale, and black.
+     Navy steps are stepped by lightness so neutrals stay on-hue. */
+  --color-offwhite:        #F4F2EC; /* paper — page background               */
+  --color-offwhite-raised: #FCFBF8; /* lifted paper — cards/surfaces         */
+  --color-white:           #FFFFFF; /* pure white (rare, max-light strokes)  */
+  --color-navy-900:        #0B1A2E; /* very dark navy — primary "ink" text   */
+  --color-navy-700:        #1B3A6B; /* navy blue — THE accent                */
+  --color-navy-500:        #54627A; /* navy-gray — muted / body text         */
+  --color-navy-200:        #C9D0DB; /* light navy-gray — borders/dividers    */
+  --color-navy-100:        #E7EAF0; /* faint navy tint — chip fills          */
+  --color-black:           #000000; /* true black — max-contrast emphasis    */
+
+  /* ── COLOR · SEMANTIC ──────────────────────────────────────────────────
+     Use these in components, not the primitives above. */
+  --color-bg:          var(--color-offwhite);        /* app background       */
+  --color-surface:     var(--color-offwhite-raised); /* cards, inputs, chips */
+  --color-border:      var(--color-navy-200);        /* 1px borders/dividers */
+  --color-text:        var(--color-navy-900);        /* headings, strong ink */
+  --color-text-muted:  var(--color-navy-500);        /* body copy, captions  */
+  --color-accent:      var(--color-navy-700);        /* links-hover, labels  */
+  --color-accent-hover:var(--color-navy-900);        /* deepened accent      */
+  --color-on-accent:   var(--color-offwhite);        /* text on navy fills   */
+
+  /* Aliases for the two UNDEFINED vars the source SVGs reference.
+     The original site left these undefined (silent failure); we map them
+     to the nearest intended semantic so SVG art renders as designed. */
+  --text-primary:      var(--color-text);       /* used by inline SVG markup */
+  --text-secondary:    var(--color-text-muted); /* FIX: was undefined        */
+
+  /* Translucent utility colors. In light mode the old yellow "glow" becomes
+     subtle NAVY depth; alpha ramp is based on the accent navy (27,58,107). */
+  --color-accent-a20:  rgba(27, 58, 107, 0.20);
+  --color-accent-a30:  rgba(27, 58, 107, 0.30);
+  --color-accent-a40:  rgba(27, 58, 107, 0.40);
+  --color-accent-a50:  rgba(27, 58, 107, 0.50);
+  --color-accent-a60:  rgba(27, 58, 107, 0.60);
+  --color-white-a05:   rgba(27, 58, 107, 0.05);   /* meta chip fill (navy)    */
+  --color-scrim-80:    rgba(11, 26, 46, 0.12);    /* header fade, card shadow */
+
+  /* ── GRADIENTS ─────────────────────────────────────────────────────────
+     Monochromatic NAVY ramp (was white→gray on the dark theme). Used for the
+     primary button fill, text emphasis, particles, and the footer hairline. */
+  --gradient-mono:     linear-gradient(90deg, #1B3A6B, #54627A);
+  --gradient-header:   linear-gradient(180deg, rgba(244,242,236,0.92) 0%, transparent 100%);
+
+  /* ── TYPOGRAPHY ────────────────────────────────────────────────────────
+     Two Google pixel/mono fonts. Everything is UPPERCASE by default. */
+  --font-heading: 'VT323', monospace;          /* display headings (pixel)   */
+  --font-ui:      'Share Tech Mono', monospace; /* body, UI, buttons          */
+  /* alias used by inline SVG <text> font-family (was undefined in source) */
+  --font-mono:    var(--font-ui);
+
+  --font-weight-normal:  400;   /* headings render at 400 (the font is bold) */
+  --font-weight-bold:    700;   /* btn-primary, .read-more emphasis           */
+
+  /* Type scale — values truly present in the source.
+     Base UI size is an unusually small 13px. */
+  --text-xs:      11px;   /* footer-bottom, meta chips, tag-link             */
+  --text-sm:      12px;   /* read-more, footer caption, mini-card            */
+  --text-base:    13px;   /* body, paragraphs, buttons (DEFAULT)             */
+  --text-md:      14px;   /* nav logo word, subsection-title, inline links   */
+  --text-lg:      16px;   /* newsletter submit arrow                         */
+  --text-xl:      20px;   /* .logo glyph, card-title                         */
+  --text-2xl:     24px;   /* list-item h3                                    */
+  /* Fluid display sizes */
+  --text-hero:    clamp(4rem, 10vw, 8.5rem);  /* .hero-title                 */
+  --text-section: clamp(3rem, 6vw, 5rem);     /* .section-title              */
+
+  --leading-tight:  0.9;   /* h1–h3                                          */
+  --leading-snug:   1.2;   /* list-item h3                                   */
+  --leading-base:   1.5;   /* body                                          */
+
+  --tracking-tight: 0.5px; /* paragraphs                                     */
+  --tracking-wide:  2px;   /* hero-title, subsection-title                   */
+
+  /* ── SPACING ───────────────────────────────────────────────────────────
+     Source scale (rem). Non-linear: roughly a x2 ramp. */
+  --space-xs:  0.5rem;   /*  8px */
+  --space-sm:  1rem;     /* 16px */
+  --space-md:  2rem;     /* 32px */
+  --space-lg:  4rem;     /* 64px */
+  --space-xl:  6rem;     /* 96px */
+
+  /* Ad-hoc px steps the source uses outside the scale. Tokenized here so
+     new work can reference them instead of hardcoding. (RECOMMENDATION:
+     prefer the rem scale above; these exist to match the source 1:1.) */
+  --space-2:   2px;
+  --space-5:   5px;
+  --space-8:   8px;
+  --space-10:  10px;
+  --space-12:  12px;
+  --space-15:  15px;
+  --space-20:  20px;
+  --space-24:  24px;
+  --space-30:  30px;
+
+  /* ── SIZING / LAYOUT ───────────────────────────────────────────────────*/
+  --size-avatar:        32px;    /* nav logo image                          */
+  --size-svg-illu:      150px;   /* card SVG illustrations                   */
+  --container-narrow:   900px;   /* reading column + max info-card width     */
+  --container-prose:    60ch;    /* paragraph max-width                      */
+  --header-offset:      100px;   /* hero top padding under fixed header      */
+  --grid-card-min:      350px;   /* project-grid minmax (primary)           */
+  --grid-card-min-alt:  280px;   /* secondary auto-fit grid                  */
+  --breakpoint-mobile:  768px;   /* the only breakpoint in the source       */
+
+  /* ── BORDER RADIUS ─────────────────────────────────────────────────────
+     No radius token existed; reconstructed from observed values. */
+  --radius-xs:   4px;    /* meta-tag chip                                    */
+  --radius-sm:   8px;    /* mini-card                                        */
+  --radius-md:  16px;    /* info-card                                        */
+  --radius-pill-sm: 20px;/* tag-link pill                                    */
+  --radius-pill: 30px;   /* buttons                                          */
+  --radius-full: 50%;    /* avatar, particles                               */
+
+  /* ── BORDER WIDTH ──────────────────────────────────────────────────────*/
+  --border-1:    1px;    /* default                                         */
+  --border-2:    2px;    /* accent left-rail, connector, animated paths     */
+
+  /* ── SHADOWS / GLOWS ───────────────────────────────────────────────────
+     Light mode: emitted "glow" → soft navy-tinted elevation. The glow-* token
+     NAMES are kept (components reference them) but now read as gentle depth. */
+  --shadow-card-hover:  0 10px 30px var(--color-scrim-80);
+  --glow-accent-sm:     0 1px 2px var(--color-accent-a20);   /* labels       */
+  --glow-accent-md:     0 1px 3px var(--color-accent-a30);   /* link hover   */
+  --glow-accent-lg:     0 2px 6px var(--color-accent-a40);   /* logo         */
+  --glow-inset-accent:  inset 0 0 0 1px var(--color-accent); /* btn 2ary ring*/
+  /* Primary button elevation — now on-system navy (was magenta/cyan drift) */
+  --shadow-btn-primary:        0 2px 8px  var(--color-accent-a30);
+  --shadow-btn-primary-hover:  0 6px 16px var(--color-accent-a50);
+
+  /* ── MOTION ────────────────────────────────────────────────────────────*/
+  --motion-fast:    0.3s;   /* links, buttons, newsletter border            */
+  --motion-medium:  0.4s;   /* info-card border + shadow                    */
+  --motion-slow:    1s;     /* slide-up reveal                              */
+  --motion-slower:  1.5s;   /* fade-in reveal                               */
+  --motion-draw:    2s;     /* SVG stroke-dashoffset draw                   */
+
+  --ease-standard:  ease;
+  --ease-out:       ease-out;
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);  /* reveal easing       */
+  --ease-material:   cubic-bezier(0.4, 0, 0.2, 1);   /* SVG draw easing     */
+
+  /* ── Z-INDEX ───────────────────────────────────────────────────────────*/
+  --z-behind:   -1;    /* particles layer                                   */
+  --z-base:      1;    /* connector line                                    */
+  --z-raised:    2;    /* card content above connectors                     */
+  --z-header:  100;    /* fixed header                                      */
+
+  /* ── EFFECTS ───────────────────────────────────────────────────────────*/
+  --blur-header: blur(5px);   /* backdrop-filter on fixed header            */
+}
+
+/* ============================================================================
+   OPTIONAL DARK THEME — ALT, NOT THE DEFAULT.
+   This light system replaced the original glow-on-black look. If you want a
+   dark variant, attach this to [data-theme="dark"] on <html>. Starting point;
+   tune to taste.
+   ----------------------------------------------------------------------------
+   [data-theme="dark"] {
+     --color-bg:           #0B1A2E;   // very dark navy ground
+     --color-surface:      #14294A;   // raised navy panel
+     --color-border:       #27395A;
+     --color-text:         #F4F2EC;   // off-white ink
+     --color-text-muted:   #9AA6BC;
+     --color-accent:       #C9D0DB;   // light navy-gray accent
+     --color-accent-hover: #FFFFFF;
+     --color-on-accent:    #0B1A2E;
+     --gradient-mono:      linear-gradient(90deg, #F4F2EC, #9AA6BC);
+   }
+   ============================================================================ */

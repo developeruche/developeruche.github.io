@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Python bytecode caches (skill scripts)
+__pycache__/
+*.pyc
+
+# Editor/OS cruft
+*.swp
+.idea/

@@ -1,0 +1,339 @@
+[
+  {
+    "title": "Deconstructing the 1.5 GHz zkVM: How ZisK Redefined the Limits of Trace Generation",
+    "tags": [
+      "zero knowledge",
+      "zkVM"
+    ],
+    "link": "blog/zisk-zkvm-trace-generation/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/zisk-1-5ghz-zkvm.png",
+    "excerpt": "Inside ZisK's AOT compilation and minimal-trace trick that pushed zkVM trace generation past 1 GHz."
+  },
+  {
+    "title": "Ethereum Protocol Fellowship Development Log: Project Summary",
+    "tags": [
+      "protocol",
+      "blockchain"
+    ],
+    "link": "blog/epf-dev-log/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/epf-dev-log.png",
+    "excerpt": "A field log from the EF fellowship — zkVM research, RISC-V experiments, and precompile benchmarking."
+  },
+  {
+    "title": "A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine",
+    "tags": [
+      "evm",
+      "protocol",
+      "blockchain"
+    ],
+    "link": "blog/hybrid-ethereum-riscv/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/hybrid-ethereum-riscv.png",
+    "excerpt": "Swapping the EVM's execution core for RISC-V while keeping backward compatibility intact."
+  },
+  {
+    "title": "Deep Dive into Abstract Account Wallet EIP-4337",
+    "tags": [
+      "smart contract",
+      "blockchain",
+      "protocol"
+    ],
+    "link": "blog/eip-4337-account-abstraction/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/eip4337-account-abstraction.png",
+    "excerpt": "How EIP-4337 turns wallets into programmable smart contracts, bundlers, and paymasters."
+  },
+  {
+    "title": "How ZK-Rollups Work After EIP-4844: From calldata to Blobs",
+    "tags": [
+      "blockchain",
+      "zero knowledge",
+      "evm"
+    ],
+    "link": "blog/zk-rollups-eip4844-blobs/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/zk-rollups-eip4844-blobs.png",
+    "excerpt": "What changed for rollup data availability once EIP-4844 introduced blob transactions."
+  },
+  {
+    "title": "A Deep Dive into EIP-7928 and Block-Level Access Lists",
+    "tags": [
+      "protocol",
+      "evm",
+      "blockchain"
+    ],
+    "link": "blog/eip7928-block-access-lists/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/eip7928-block-access-lists.png",
+    "excerpt": "Pre-declaring what a block touches, to unlock parallel execution and better gas prediction."
+  },
+  {
+    "title": "Chronicle: Blockchain Indexer Built in Rust - Blazing Fast",
+    "tags": [
+      "blockchain",
+      "infrastructure"
+    ],
+    "link": "blog/chronicle-rust-blockchain-indexer/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/chronicle-indexer.png",
+    "excerpt": "A Rust-built, multi-threaded blockchain indexer serving data over GraphQL."
+  },
+  {
+    "title": "Building EIP2771 Gasless Relayer",
+    "tags": [
+      "smart contract",
+      "blockchain",
+      "protocol"
+    ],
+    "link": "blog/eip2771-gasless-relayer/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/eip2771-gasless-relayer.png",
+    "excerpt": "Letting users transact without holding gas, by relaying signed meta-transactions on their behalf."
+  },
+  {
+    "title": "EVM Object Format (EOF) Deep Dive",
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
+    "link": "blog/eof-deep-dive/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/eof-deep-dive.png",
+    "excerpt": "A new container format for EVM bytecode, and why it matters for validation and gas."
+  },
+  {
+    "title": "What Does EVM's JUMPDEST Do?",
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
+    "link": "blog/evm-jumpdest/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/evm-jumpdest.png",
+    "excerpt": "The opcode that keeps EVM control flow honest by marking valid jump targets."
+  },
+  {
+    "title": "If State Read/Write Opcodes Aren't Native VM (WASM/RISC-V) Instructions, How Do Blockchains Read and Write State?",
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
+    "link": "blog/state-read-write-opcodes/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/state-read-write-opcodes.png",
+    "excerpt": "Tracing how state access actually happens when the VM's instruction set has no native storage opcodes."
+  },
+  {
+    "title": "Building Blocks of Modern Zero-Knowledge Proofs: An Engineering Perspective",
+    "tags": [
+      "zero knowledge",
+      "cryptography"
+    ],
+    "link": "blog/zero-knowledge-proof-building-blocks/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/zk-building-blocks.png",
+    "excerpt": "An engineer's tour of the four IOPs — Permutation, ProductCheck, SumCheck, ZeroCheck — that power modern ZK proofs."
+  },
+  {
+    "title": "Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 1)",
+    "tags": [
+      "cryptography",
+      "zero knowledge"
+    ],
+    "link": "blog/kzg-polynomial-commitment-part-1/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/kzg-airdrop-part-1.png",
+    "excerpt": "Airdropping to 200k+ addresses with Merkle proofs, and where their O(log n) verification starts to hurt."
+  },
+  {
+    "title": "Understanding Polynomial Commitment KZG using Airdrop Distribution (Part 2)",
+    "tags": [
+      "cryptography",
+      "zero knowledge"
+    ],
+    "link": "blog/kzg-polynomial-commitment-part-2/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/kzg-airdrop-part-2.png",
+    "excerpt": "Swapping Merkle proofs for a single KZG commitment to verify airdrop claims in constant time."
+  },
+  {
+    "title": "Understanding the Winternitz One-Time Signature Scheme: A Deep Dive into Post-Quantum Cryptography",
+    "tags": [
+      "PQ cryptography",
+      "cryptography"
+    ],
+    "link": "blog/winternitz-one-time-signature/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/winternitz-ots.png",
+    "excerpt": "A hash-chain-based signature scheme that stays secure even against quantum attackers."
+  },
+  {
+    "title": "The Groth16 Protocol",
+    "tags": [
+      "snarks",
+      "zero knowledge",
+      "cryptography"
+    ],
+    "link": "blog/groth16/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/groth16.png",
+    "excerpt": "The pairing-based zk-SNARK that made small, fast, constant-size proofs practical."
+  },
+  {
+    "title": "R1CS to QAP",
+    "tags": [
+      "snarks",
+      "zero knowledge"
+    ],
+    "link": "blog/r1cs-to-qap/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/r1cs-to-qap.png",
+    "excerpt": "Turning arithmetic circuit constraints into a polynomial problem a SNARK can actually prove."
+  },
+  {
+    "title": "Permutation Check Polynomial IOP",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog/permutation-check-iop/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/permutation-check-iop.png",
+    "excerpt": "Proving one sequence is a shuffled version of another, using nothing but polynomial identities."
+  },
+  {
+    "title": "ProductCheck Polynomial Interactive Oracle Proof",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog/product-check-iop/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/product-check-iop.png",
+    "excerpt": "Verifying a product relationship between polynomials without ever revealing them."
+  },
+  {
+    "title": "SumCheck Polynomial Interactive Proof",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog/sumcheck-polynomial-iop/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/sumcheck-polynomial-iop.png",
+    "excerpt": "The interactive protocol that reduces a giant sum over the boolean hypercube to a handful of cheap checks."
+  },
+  {
+    "title": "ZeroCheck Polynomial Interactive Oracle Proof",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog/zerocheck-polynomial-iop/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/zerocheck-polynomial-iop.png",
+    "excerpt": "How provers show a polynomial vanishes on a domain, and why that's the backbone of Plonk-style constraint checks."
+  },
+  {
+    "title": "The Multiset Check IOP",
+    "tags": [
+      "zero knowledge",
+      "snarks"
+    ],
+    "link": "blog/multiset-check-iop/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/multiset-check-iop.png",
+    "excerpt": "Proving two multisets contain exactly the same elements, without revealing either one."
+  },
+  {
+    "title": "Merkle Patricia Trie",
+    "tags": [
+      "blockchain",
+      "algo",
+      "cryptography"
+    ],
+    "link": "blog/merkle-patricia-trie/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/merkle-patricia-trie.png",
+    "excerpt": "The hybrid trie structure Ethereum uses to commit to and prove account and storage state."
+  },
+  {
+    "title": "Merkle Tree and the Blockchain",
+    "tags": [
+      "evm",
+      "blockchain"
+    ],
+    "link": "blog/merkle-tree-blockchain/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/ethereum-state-trie.png",
+    "excerpt": "Why a simple binary hash tree became the backbone of blockchain data integrity and proofs."
+  },
+  {
+    "title": "Building a Kademlia Distributed Hash Table",
+    "tags": [
+      "networking",
+      "algo"
+    ],
+    "link": "blog/kademlia-dht/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/kademlia-dht.png",
+    "excerpt": "How peers find each other in a P2P network using XOR distance and k-buckets."
+  },
+  {
+    "title": "Lecture Notes: Fields and Extension Fields in Cryptography",
+    "tags": [
+      "lecture note",
+      "cryptography"
+    ],
+    "link": "blog/fields-extension-fields/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/fields-extension-fields.png",
+    "excerpt": "A grounding in finite fields and their extensions — the algebra underneath most modern cryptography."
+  },
+  {
+    "title": "The Matryoshka MLE Algorithm",
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
+    "link": "blog/matryoshka-mle/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/matryoshka-mle.png",
+    "excerpt": "A nested, Russian-doll approach to evaluating multilinear extensions more efficiently."
+  },
+  {
+    "title": "Jagged Multilinear Extension (Stacked MLE)",
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
+    "link": "blog/jagged-mle/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/jagged-mle.png",
+    "excerpt": "Handling multilinear extensions over ragged, unevenly sized data without wasting computation."
+  },
+  {
+    "title": "Ron's Optimization for Multilinear Extension Evaluation",
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
+    "link": "blog/ron-mle-optimization/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/ron-mle-optimization.png",
+    "excerpt": "A faster path through the MLE evaluation tree that cuts redundant work."
+  },
+  {
+    "title": "Multilinear Polynomial Extension and Direct Evaluation",
+    "tags": [
+      "zero knowledge",
+      "algo"
+    ],
+    "link": "blog/mle-direct-evaluation/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/mle-direct-evaluation.png",
+    "excerpt": "The basics of extending a function over the boolean hypercube into a multilinear polynomial."
+  }
+]

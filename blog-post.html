@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- DUMMY TEMPLATE: scaffold for future in-site blog posts. Not linked from
+       cards yet (blog cards currently open their external source directly). -->
+  <title>Post Title — Developer Uche</title>
+  <meta name="description" content="A reusable blog post detail template." />
+  <link rel="icon" href="assets/favicon.ico" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Post Title — Developer Uche" />
+  <meta property="og:image" content="assets/main/developeruche.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Deconstructing the 1.5 GHz zkVM</h1>
+        <img class="post-hero-img" src="assets/blogs/zisk-1-5ghz-zkvm.png" alt="Deconstructing the 1.5 GHz zkVM — blueprint thumbnail" />
+        <p class="post-meta">// Developer Uche · 2026-06-26 · 8 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Zero Knowledge</span><span>zkVM</span><span>Performance</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+        <p>This is placeholder body content for the reusable blog post template. Replace it with real prose when in-site posts are wired up. Paragraphs use sentence case and the muted body color for comfortable reading.</p>
+        <h2>Section Heading</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+        <h2>Another Section</h2>
+        <p>Sunt in culpa qui officia deserunt mollit anim id est laborum. The template inherits all design-system tokens, so type, spacing, and color stay on-system automatically.</p>
+        <p>Math renders via KaTeX — inline like $e^{i\pi} + 1 = 0$ and as a block:</p>
+        $$\hat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\, e^{-2\pi i x \xi}\, dx$$
+      </div>
+
+      <a class="back-link" href="blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from './assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

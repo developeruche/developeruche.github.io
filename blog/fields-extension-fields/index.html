@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture Notes: Fields and Extension Fields in Cryptography — Developer Uche</title>
+  <meta name="description" content="Lecture Notes: Fields and Extension Fields in Cryptography Date: April 28, 2025 Target Audience: Cryptography Students 1. Introduction: Why Fields…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog/fields-extension-fields/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Lecture Notes: Fields and Extension Fields in Cryptography — Developer Uche" />
+  <meta property="og:description" content="Lecture Notes: Fields and Extension Fields in Cryptography Date: April 28, 2025 Target Audience: Cryptography Students 1. Introduction: Why Fields…" />
+  <meta property="og:url" content="https://developeruche.com/blog/fields-extension-fields/" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/fields-extension-fields.png" />
+  <meta property="og:image:alt" content="Lecture Notes: Fields and Extension Fields in Cryptography — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="lecture note" />
+  <meta property="article:tag" content="cryptography" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Lecture Notes: Fields and Extension Fields in Cryptography — Developer Uche" />
+  <meta name="twitter:description" content="Lecture Notes: Fields and Extension Fields in Cryptography Date: April 28, 2025 Target Audience: Cryptography Students 1. Introduction: Why Fields…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/fields-extension-fields.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lecture Notes: Fields and Extension Fields in Cryptography",
+  "description": "Lecture Notes: Fields and Extension Fields in Cryptography Date: April 28, 2025 Target Audience: Cryptography Students 1. Introduction: Why Fields…",
+  "image": [
+    "https://developeruche.com/assets/blogs/fields-extension-fields.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "lecture note, cryptography",
+  "url": "https://developeruche.com/blog/fields-extension-fields/",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog/fields-extension-fields/"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">Lecture Notes: Fields and Extension Fields in Cryptography</h1>
+        <img class="post-hero-img" src="/assets/blogs/fields-extension-fields.png" alt="Lecture Notes: Fields and Extension Fields in Cryptography — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 12 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>lecture note</span>
+          <span>cryptography</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p><strong>Lecture Notes: Fields and Extension Fields in Cryptography</strong></p>
+        <p><strong>Date:</strong> April 28, 2025 <strong>Target Audience:</strong> Cryptography Students</p>
+        <p><strong>1. Introduction: Why Fields Matter in Cryptography?</strong></p>
+        <p>Modern cryptography relies heavily on abstract algebra. While concepts like groups are fundamental (think Diffie-Hellman in $(\mathbb{Z}_p^*, \times)$), <strong>fields</strong> provide a richer structure essential for many algorithms.</p>
+        <ul><li><strong>Finite Fields (Galois Fields):</strong> These are the cornerstone. Operations in finite fields are deterministic, efficient to compute, and possess properties that make cryptographic problems (like the Discrete Logarithm Problem) computationally hard.</li><li><strong>Applications:</strong><ul><li><strong>AES (Advanced Encryption Standard):</strong> All byte operations (SubBytes, MixColumns) are defined over the finite field $GF(2^8)$.</li><li><strong>Elliptic Curve Cryptography (ECC):</strong> Points on elliptic curves are defined over finite fields, typically prime fields $GF(p)$ or binary extension fields $GF(2^n)$. Curve arithmetic <em>is</em> field arithmetic.</li><li><strong>Diffie-Hellman Key Exchange:</strong> Can be implemented over the multiplicative group of any finite field, $GF(q)^*$.</li><li><strong>Error-Correcting Codes:</strong> While not strictly crypto, codes like Reed-Solomon are built on polynomial algebra over finite fields and have cryptographic applications (e.g., in some threshold schemes).</li></ul></li></ul>
+        <p>Understanding fields, especially finite fields and how to extend them, is crucial for analysing, implementing, and breaking cryptographic systems.</p>
+        <p><strong>2. Recap: Groups and Rings</strong></p>
+        <p>Before defining fields, let's briefly recall groups and rings.</p>
+        <ul><li><strong>Group:</strong> A set $G$ with a binary operation $*$ ($ (G, *) $) satisfying:<ol><li>Closure: $\forall a, b \in G, a * b \in G$.</li><li>Associativity: $\forall a, b, c \in G, (a * b) * c = a * (b * c)$.</li><li>Identity Element: $\exists e \in G$ such that $\forall a \in G, a * e = e * a = a$.</li><li>Inverse Element: $\forall a \in G, \exists a^{-1} \in G$ such that $a * a^{-1} = a^{-1} * a = e$.</li><li><em>Abelian Group:</em> If the operation $*$ is also commutative ($a * b = b * a$).</li><li><em>Examples:</em> $(\mathbb{Z}, +)$, $(\mathbb{Q}, +)$, $(\mathbb{R}, +)$, $(\mathbb{C}, +)$, $(\mathbb{Z}_n, +)$, $(\mathbb{Q}^*, \times)$, $(\mathbb{R}^*, \times)$, $(\mathbb{C}^*, \times)$, $(\mathbb{Z}_p^*, \times)$ for prime $p$.</li></ol></li></ul>
+        <ul><li><strong>Ring:</strong> A set $R$ with two binary operations, addition ($+$) and multiplication ($\times$) ($ (R, +, \times) $), satisfying:<ol><li>$(R, +)$ is an Abelian group (identity is $0$, inverse of $a$ is $-a$).</li><li>Multiplication is associative: $\forall a, b, c \in R, (a \times b) \times c = a \times (b \times c)$.</li><li>Distributive Laws: $\forall a, b, c \in R$, $a \times (b+c) = (a \times b) + (a \times c)$ and $(a+b) \times c = (a \times c) + (b \times c)$.</li><li><em>Commutative Ring:</em> If multiplication is commutative ($a \times b = b \times a$).</li><li><em>Ring with Unity:</em> If there exists a multiplicative identity $1 \in R$ such that $\forall a \in R, a \times 1 = 1 \times a = a$. (Note: $1 \neq 0$ is usually required).</li><li><em>Integral Domain:</em> A commutative ring with unity ($1 \neq 0$) that has no zero divisors (i.e., if $a \times b = 0$, then $a=0$ or $b=0$).</li><li><em>Examples:</em> $(\mathbb{Z}, +, \times)$ (Integral Domain), $(\mathbb{Q}, +, \times)$, $(\mathbb{R}, +, \times)$, $(\mathbb{C}, +, \times)$, $(\mathbb{Z}_n, +, \times)$ (Commutative ring with unity; Integral Domain only if $n$ is prime).</li></ol></li></ul>
+        <p><strong>3. Fields</strong></p>
+        <p>A field is essentially a structure where you can add, subtract, multiply, and divide (by non-zero elements).</p>
+        <ul><li><strong>Definition:</strong> A set $F$ with two operations, addition ($+$) and multiplication ($\times$) ($ (F, +, \times) $), is a <strong>field</strong> if:<ol><li>$(F, +, \times)$ is a commutative ring with unity $1$ (where $1 \neq 0$).</li><li>Every non-zero element has a multiplicative inverse: $\forall a \in F, a \neq 0, \exists a^{-1} \in F$ such that $a \times a^{-1} = a^{-1} \times a = 1$.</li></ol></li></ul>
+        <ul><li><strong>Equivalent Definition:</strong> A set $F$ is a field if:<ol><li>$(F, +)$ is an Abelian group (identity $0$).</li><li>$(F \setminus \{0\}, \times)$ is an Abelian group (identity $1$).</li><li>Multiplication distributes over addition.</li></ol></li></ul>
+        <ul><li><strong>Key Properties:</strong><ul><li>Fields are always integral domains (no zero divisors). Proof: If $a \times b = 0$ and $a \neq 0$, then $a^{-1}$ exists. $a^{-1} \times (a \times b) = a^{-1} \times 0 \implies (a^{-1} \times a) \times b = 0 \implies 1 \times b = 0 \implies b = 0$.</li></ul></li><li><strong>Examples:</strong> $(\mathbb{Q}, +, \times)$, $(\mathbb{R}, +, \times)$, $(\mathbb{C}, +, \times)$.</li><li><strong>Non-Examples:</strong> $(\mathbb{Z}, +, \times)$ (not all non-zero elements have multiplicative inverses, e.g., $2^{-1} = 1/2 \notin \mathbb{Z}$), $(\mathbb{Z}_n, +, \times)$ for composite $n$ (elements corresponding to factors of $n$ lack multiplicative inverses, and there are zero divisors).</li></ul>
+        <p><strong>4. Finite Fields (Galois Fields)</strong></p>
+        <p>Fields with a finite number of elements are crucial in cryptography.</p>
+        <ul><li><strong>Definition:</strong> A field with a finite number of elements is called a <strong>finite field</strong> or <strong>Galois Field</strong>.</li><li><strong>Notation:</strong> $GF(q)$ or $\mathbb{F}_q$, where $q$ is the number of elements (the <strong>order</strong> or <strong>size</strong> of the field).</li></ul>
+        <ul><li><strong>Theorem:</strong> A finite field $GF(q)$ exists if and only if $q$ is a prime power ($q = p^n$ for some prime $p$ and integer $n \ge 1$).<ul><li>$p$ is the <strong>characteristic</strong> of the field.</li><li>For any prime power $q$, there is essentially only one field of order $q$ (they are all isomorphic).</li></ul></li></ul>
+        <p><strong>4.1. Prime Fields: $GF(p)$ or $\mathbb{F}_p$</strong></p>
+        <p>The simplest finite fields occur when $n=1$, so $q=p$ (a prime).</p>
+        <ul><li><strong>Construction:</strong> The ring $(\mathbb{Z}_p, +, \times)$ (integers modulo $p$) forms a field $GF(p)$.<ul><li>Set: $\{0, 1, 2, \dots, p-1\}$.</li><li>Operations: Addition and multiplication are performed modulo $p$.</li></ul></li><li><strong>Why is $\mathbb{Z}_p$ a field?</strong><ul><li>$(\mathbb{Z}_p, +)$ is an Abelian group.</li><li>$(\mathbb{Z}_p, +, \times)$ is a commutative ring with unity $1$.</li><li><strong>Existence of Multiplicative Inverses:</strong> For any $a \in \{1, 2, \dots, p-1\}$, does $a^{-1} \pmod{p}$ exist? Yes, because $p$ is prime, $\gcd(a, p) = 1$. By the Extended Euclidean Algorithm, we can find integers $x, y$ such that $ax + py = \gcd(a, p) = 1$. Taking this equation modulo $p$, we get $ax \equiv 1 \pmod{p}$. Therefore, $x \pmod{p}$ is the multiplicative inverse $a^{-1}$.</li></ul></li><li><strong>Example: $GF(5)$ or $\mathbb{F}_5$</strong><ul><li>Elements: $\{0, 1, 2, 3, 4\}$.</li><li>Operations: Modulo 5.</li><li>Addition Table (mod 5):</li></ul> <pre><code>        + | 0 1 2 3 4
+        --|---------
+        0 | 0 1 2 3 4
+        1 | 1 2 3 4 0
+        2 | 2 3 4 0 1
+        3 | 3 4 0 1 2
+        4 | 4 0 1 2 3</code></pre><ul><li>Multiplication Table (mod 5):</li></ul> <pre><code>        x | 0 1 2 3 4
+        --|---------
+        0 | 0 0 0 0 0
+        1 | 0 1 2 3 4
+        2 | 0 2 4 1 3  (e.g., 2x3=6=1 mod 5; 2x4=8=3 mod 5)
+        3 | 0 3 1 4 2  (e.g., 3x3=9=4 mod 5)
+        4 | 0 4 3 2 1  (e.g., 4x4=16=1 mod 5)</code></pre><ul><li>Inverses: $1^{-1}=1, 2^{-1}=3, 3^{-1}=2, 4^{-1}=4$. Every non-zero element has an inverse.</li></ul></li></ul>
+        <p><strong>5. Extension Fields: $GF(p^n)$ or $\mathbb{F}_{p^n}$ for $n > 1$</strong></p>
+        <p>How do we construct fields with $p^n$ elements when $n > 1$? We can't just use $\mathbb{Z}_{p^n}$ because it's not a field (it has zero divisors when $n>1$). We need a different approach using polynomial rings.</p>
+        <ul><li><strong>Analogy:</strong> Think about constructing the complex numbers $\mathbb{C}$ from the real numbers $\mathbb{R}$. $\mathbb{R}$ is a field. We want solutions to $x^2 + 1 = 0$, which has no solution in $\mathbb{R}$. We introduce a symbol $i$ such that $i^2 = -1$. Then $\mathbb{C} = \{ a + bi \mid a, b \in \mathbb{R} \}$. Operations are defined using the rule $i^2 = -1$. $x^2+1$ is <em>irreducible</em> over $\mathbb{R}$.</li></ul>
+        <ul><li><strong>General Construction using Polynomials:</strong><ol><li><strong>Base Field:</strong> Start with a prime field $GF(p) = \mathbb{F}_p$.</li><li><strong>Polynomial Ring:</strong> Consider the ring of polynomials with coefficients from $GF(p)$, denoted $GF(p)[x]$ or $\mathbb{F}_p[x]$.<ul><li>Example elements for $\mathbb{F}_2[x]$: $0, 1, x, x+1, x^2, x^2+1, x^2+x, x^2+x+1, \dots$</li></ul></li><li><strong>Irreducible Polynomial:</strong> Find a polynomial $m(x) \in GF(p)[x]$ of degree $n$ that is <strong>irreducible</strong> over $GF(p)$.<ul><li><em>Irreducible:</em> $m(x)$ cannot be factored into a product of two polynomials in $GF(p)[x]$ both having degree less than $n$ (and greater than 0). It's the polynomial analog of a prime number.</li><li><em>Existence:</em> Irreducible polynomials of every degree $n \ge 1$ exist over any finite field $GF(p)$. Finding them can be computationally intensive for large $n$.</li></ul></li><li><strong>Construct the Field:</strong> The extension field $GF(p^n)$ is constructed as the set of polynomials in $GF(p)[x]$ modulo the irreducible polynomial $m(x)$.<ul><li>$GF(p^n) \cong GF(p)[x] / \langle m(x) \rangle$</li><li>The elements of this field can be represented as polynomials of degree strictly less than $n$: $F = \{ a_{n-1}x^{n-1} + a_{n-2}x^{n-2} + \dots + a_1x + a_0 \mid a_i \in GF(p) \}$</li><li>There are $p$ choices for each of the $n$ coefficients ($a_0, \dots, a_{n-1}$), giving $p^n$ distinct elements in total.</li></ul></li><li><strong>Operations in $GF(p^n)$:</strong><ul><li><strong>Addition:</strong> Polynomial addition, where coefficients are added modulo $p$. The degree of the result is always $< n$.<ul><li>Example: In $GF(2^3)$ (using some $m(x)$ of degree 3), $(x^2+1) + (x^2+x) = (1+1)x^2 + x + 1 = 0x^2 + x + 1 = x+1$. (Coeffs mod 2)</li></ul></li><li><strong>Multiplication:</strong> Polynomial multiplication, followed by taking the remainder when divided by the irreducible polynomial $m(x)$. The coefficients are handled modulo $p$.<ul><li>Let $a(x), b(x) \in GF(p^n)$. Compute $c(x) = a(x) \times b(x)$ using standard polynomial multiplication (with coefficients mod $p$).</li><li>The result is $a(x) \times b(x) \pmod{m(x)}$. This is the remainder $r(x)$ when $c(x)$ is divided by $m(x)$, so $c(x) = q(x)m(x) + r(x)$ where $\deg(r(x)) < \deg(m(x)) = n$.</li></ul></li><li><strong>Multiplicative Inverse:</strong> For a non-zero element $a(x)$, its inverse $a(x)^{-1}$ can be found using the <strong>Extended Euclidean Algorithm for Polynomials</strong> over $GF(p)$, finding $s(x), t(x)$ such that $a(x)s(x) + m(x)t(x) = \gcd(a(x), m(x))$. Since $m(x)$ is irreducible and $a(x) \neq 0$ (and $\deg(a(x)) < n$), $\gcd(a(x), m(x)) = 1$ (or a non-zero constant in $GF(p)$, which has an inverse). Then $a(x)s(x) \equiv \gcd \pmod{m(x)}$, and $s(x) \times (\gcd^{-1})$ is the inverse of $a(x)$ modulo $m(x)$.</li></ul></li></ol></li></ul>
+        <ul><li><strong>Example: Constructing $GF(2^3) = \mathbb{F}_8$</strong><ol><li>Base Field: $GF(2) = \mathbb{F}_2 = \{0, 1\}$. (Addition is XOR, Multiplication is AND).</li><li>Polynomial Ring: $\mathbb{F}_2[x]$.</li><li>Irreducible Polynomial: We need a degree 3 irreducible polynomial. Let's test $m(x) = x^3 + x + 1$.<ul><li>Does it have roots in $\mathbb{F}_2$? $m(0) = 0^3+0+1 = 1 \neq 0$. $m(1) = 1^3+1+1 = 1 \neq 0$. Since it's degree 3 and has no roots, it must be irreducible over $\mathbb{F}_2$. (If a polynomial of degree 2 or 3 is reducible, it must have a linear factor, hence a root).</li></ul></li><li>Construct the Field: $GF(2^3) \cong \mathbb{F}_2[x] / \langle x^3 + x + 1 \rangle$.</li><li>Elements: Polynomials of degree &lt; 3 with coefficients in $\mathbb{F}_2$. $\{0, 1, x, x+1, x^2, x^2+1, x^2+x, x^2+x+1\}$. There are $2^3 = 8$ elements. <em>Often represented by coefficient vectors: 000, 001, 010, 011, 100, 101, 110, 111.</em></li><li>Operations: Modulo $x^3+x+1$, coefficients modulo 2.<ul><li><strong>Addition:</strong> $(x^2+1) + (x^2+x) = (1+1)x^2 + x + 1 = x+1$. (Same as XORing coefficient vectors: $101 \oplus 110 = 011$).</li><li><strong>Multiplication:</strong> Let's compute $(x+1) \times (x^2+1)$.<ul><li>$(x+1)(x^2+1) = x(x^2+1) + 1(x^2+1) = x^3+x+x^2+1 = x^3+x^2+x+1$.</li><li>Now reduce modulo $m(x) = x^3+x+1$. We use the relation $x^3+x+1 \equiv 0 \implies x^3 \equiv -x-1 \equiv x+1 \pmod{2}$.</li><li>Substitute $x^3$: $(x+1) + x^2 + x + 1 = x^2 + (1+1)x + (1+1) = x^2$.</li><li>Alternatively, use polynomial long division: $(x^3+x^2+x+1) \div (x^3+x+1)$. Quotient is 1, remainder is $x^2$.</li><li>So, $(x+1) \times (x^2+1) = x^2$ in $GF(2^3)$.</li></ul></li><li><strong>Inverse:</strong> Find the inverse of $x$. Using Extended Euclidean Algorithm for $x$ and $m(x)=x^3+x+1$ over $\mathbb{F}_2$. $x^3+x+1 = (x^2+1) \cdot x + 1$. Rearranging: $1 = (x^3+x+1) - (x^2+1)x$. Taking modulo $m(x)$: $1 \equiv -(x^2+1)x \pmod{m(x)}$. Since $-1 \equiv 1 \pmod 2$, we have $1 \equiv (x^2+1)x \pmod{m(x)}$. Thus, $x^{-1} = x^2+1$. Let's check: $x \times (x^2+1) = x^3+x$. Since $x^3 \equiv x+1 \pmod{m(x)}$, this is $(x+1)+x = (1+1)x + 1 = 1$. Correct.</li></ul></li></ol></li></ul>
+        <p><strong>6. Cryptographic Relevance Revisited</strong></p>
+        <ul><li><strong>AES ($GF(2^8)$):</strong> Uses the field $\mathbb{F}_{2^8}$ constructed using the irreducible polynomial $m(x) = x^8 + x^4 + x^3 + x + 1$.<ul><li>Bytes are treated as elements of this field (polynomials of degree &lt; 8).</li><li><strong>SubBytes:</strong> Applies a mapping $y = b^{-1} + c$ (where $b=0$ maps to $c$), which involves finding multiplicative inverses in $GF(2^8)$.</li><li><strong>MixColumns:</strong> Involves matrix multiplication where the entries are elements of $GF(2^8)$, requiring field addition and multiplication.</li></ul></li><li><strong>ECC ($GF(p)$ or $GF(2^n)$):</strong> Elliptic curve $y^2 = x^3 + ax + b$ (or similar forms).<ul><li>The coordinates $(x, y)$ of points on the curve, and the coefficients $a, b$, are elements of a finite field $GF(q)$.</li><li>The point addition formulas involve field addition, subtraction, multiplication, and division (inverse). The security relies on the difficulty of the Elliptic Curve Discrete Logarithm Problem (ECDLP) in the group of points over the finite field.</li></ul></li><li><strong>Finite Field DLP:</strong> The difficulty of finding $k$ given $g$ and $y=g^k$ in $GF(q)^*$ underlies the security of Diffie-Hellman, DSA, and ElGamal when implemented over finite fields. Larger fields make the DLP harder. Extension fields $GF(p^n)$ offer flexibility in size and structure.</li></ul>
+        <p><strong>7. Summary</strong></p>
+        <ul><li>Fields provide algebraic structures with addition, subtraction, multiplication, and division (by non-zero elements).</li><li>Finite fields (Galois Fields) $GF(q)$ exist only when $q = p^n$ (prime power).</li><li>Prime fields $GF(p)$ are constructed using integers modulo $p$. Operations are modular arithmetic. Finding inverses uses the Extended Euclidean Algorithm.</li><li>Extension fields $GF(p^n)$ for $n>1$ are constructed using polynomials over $GF(p)$ modulo an irreducible polynomial $m(x)$ of degree $n$.<ul><li>Elements are polynomials of degree $< n$.</li><li>Operations involve polynomial arithmetic (coefficients mod $p$) followed by reduction modulo $m(x)$. Finding inverses uses the Extended Euclidean Algorithm for polynomials.</li></ul></li><li>Finite fields, especially $GF(p)$ and $GF(2^n)$, are fundamental building blocks for symmetric ciphers (AES), asymmetric ciphers (ECC), and key exchange protocols (Diffie-Hellman). Their properties enable both efficient computation and cryptographic hardness.</li></ul>
+        <p><strong>Further Topics:</strong> Finding irreducible polynomials, polynomial factorization over finite fields, primitive elements (generators of the multiplicative group $GF(q)^*$), specific arithmetic optimizations in $GF(2^n)$.</p>
+      </div>
+
+      <a class="back-link" href="/blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

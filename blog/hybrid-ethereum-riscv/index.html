@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine — Developer Uche</title>
+  <meta name="description" content="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine This document explores a technical experiment: transitioning Ethereum&#x27;s execution…" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/blog/hybrid-ethereum-riscv/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine — Developer Uche" />
+  <meta property="og:description" content="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine This document explores a technical experiment: transitioning Ethereum&#x27;s execution…" />
+  <meta property="og:url" content="https://developeruche.com/blog/hybrid-ethereum-riscv/" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/hybrid-ethereum-riscv.png" />
+  <meta property="og:image:alt" content="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine — thumbnail" />
+  <meta property="article:published_time" content="2026-06-26" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:tag" content="evm" />
+  <meta property="article:tag" content="protocol" />
+  <meta property="article:tag" content="blockchain" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine — Developer Uche" />
+  <meta name="twitter:description" content="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine This document explores a technical experiment: transitioning Ethereum&#x27;s execution…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/hybrid-ethereum-riscv.png" />
+  <!-- Structured data (schema.org BlogPosting) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine",
+  "description": "A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine This document explores a technical experiment: transitioning Ethereum's execution…",
+  "image": [
+    "https://developeruche.com/assets/blogs/hybrid-ethereum-riscv.png"
+  ],
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-06-26",
+  "inLanguage": "en",
+  "keywords": "evm, protocol, blockchain",
+  "url": "https://developeruche.com/blog/hybrid-ethereum-riscv/",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/blog/hybrid-ethereum-riscv/"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="blog">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/blog.html">← Back to blogs</a>
+      <header>
+        <span class="section-label">// TECHNICAL WRITING</span>
+        <h1 class="post-title">A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine</h1>
+        <img class="post-hero-img" src="/assets/blogs/hybrid-ethereum-riscv.png" alt="A Hybrid Ethereum: Experimenting with a RISC-V Execution Engine — thumbnail" />
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 5 min read</p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>evm</span>
+          <span>protocol</span>
+          <span>blockchain</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>This document explores a technical experiment: transitioning Ethereum's execution sandbox from the EVM to the RISC-V Instruction Set Architecture (ISA). We'll cover the proposed design, the new components required, and the ideologies behind creating a more powerful, backward-compatible Ethereum node.</p>
+        <h3>The Goal</h3>
+        <p>The objective is to design an Ethereum node that uses a <strong>RISC-V VM</strong> as its native execution sandbox. Critically, this new node must remain <strong>fully backward-compatible</strong>, supporting EVM smart contracts deployed both before and after this architectural change. This means EVM and RISC-V contracts must be able to coexist and interact seamlessly.</p>
+        <h2>Ethereum's Current Architecture: The EVM</h2>
+        <p>Today, all smart contract logic on Ethereum runs within the Ethereum Virtual Machine (EVM). The lifecycle of a contract is split into two main phases.</p>
+        <h4>Smart Contract Deployment (<code>CREATE</code>)</h4>
+        <p>Deployment transforms source code (like Solidity) into a live contract on the blockchain. The process involves compiling the code into <strong>init bytecode</strong> (which runs once to set up the contract) and <strong>runtime bytecode</strong> (the final logic stored on-chain). An Externally Owned Account (EOA) or another contract sends a transaction containing this init code. The EVM executes it, and if successful, the runtime bytecode is stored at a newly computed address, making the contract active.</p>
+        <p><img src="/assets/blogs/hybrid-ethereum-riscv/img-1.png" alt="ethereum create tx" loading="lazy" /></p>
+        <h4>Smart Contract Interaction (<code>CALL</code>)</h4>
+        <p>To interact with a deployed contract, a transaction is created with the target address and a <code>data</code> payload specifying the function and arguments. When a validator processes the transaction, the EVM loads the contract's runtime bytecode and executes the requested function. During execution, a contract can read/write to storage, transfer ETH, and even call other contracts. The outcome is either a successful state change or a revert, where all changes are undone but the sender still pays for the gas used.</p>
+        <p><img src="/assets/blogs/hybrid-ethereum-riscv/img-2.png" alt="ethereum call" loading="lazy" /></p>
+        <hr />
+        <h2>The Proposed Hybrid Architecture</h2>
+        <p>The core of this experiment is to replace the EVM with a constrained RISC-V VM. This isn't about running a full Linux distribution on-chain; it's about creating a purpose-built execution sandbox for smart contracts that leverages the power and flexibility of RISC-V. Communication with the blockchain state (storage, precompiles) would be handled via <code>syscalls</code>.</p>
+        <p>For native RISC-V contracts (e.g., written in Rust and compiled to RISC-V), the deployment and interaction flows would be analogous to the current EVM process but would execute directly on the new, more performant RISC-V VM.</p>
+        <p>The real challenge—and the most interesting part of this design—is achieving seamless backward compatibility. How can a RISC-V VM execute old EVM contracts?</p>
+        <h3>Solving for Backward Compatibility</h3>
+        <p>Two primary hurdles must be overcome: differentiating between bytecode types and executing legacy EVM code.</p>
+        <h4>1. Differentiating EVM and RISC-V Bytecode</h4>
+        <p>With both EVM and RISC-V contracts on the same chain, the node needs a way to know which execution environment to use for a given address. Modifying the account schema to add a flag would be a breaking change.</p>
+        <p>A more elegant solution is to leverage a <strong>magic number</strong> at the beginning of the bytecode. Similar to the Ethereum Object Format (EOF) EIP which uses <code>0xEF</code> to identify EOF-formatted contracts, a new prefix could be introduced to flag bytecode as a RISC-V variant. When the node fetches contract code, it can instantly identify the target architecture based on this prefix.</p>
+        <ul><li><code>0xEF...</code> -&gt; EOF-compliant EVM code</li><li><code>0x??...</code> -&gt; <strong>RISC-V code</strong> (with a new designated magic number)</li><li>Anything else -&gt; Legacy EVM code</li></ul>
+        <p>This approach is simple, efficient, and avoids disruptive state changes.</p>
+        <h4>2. Executing EVM Code with a <code>mini-evm</code> Emulator</h4>
+        <p>To run legacy EVM contracts, we introduce a <strong><code>mini-evm</code> emulator</strong>. This is not a full-fledged, separate virtual machine but rather a specialized <strong>system contract or precompile</strong> that lives within the RISC-V VM.</p>
+        <p><img src="/assets/blogs/hybrid-ethereum-riscv/img-3.png" alt="call riscv with evm" loading="lazy" /></p>
+        <p>When a transaction targets an EVM contract, the process is as follows:</p>
+        <ol><li>The node identifies the bytecode as EVM-based (either legacy or EOF).</li><li>Instead of executing it directly, the node invokes the <code>mini-evm</code> system contract.</li><li>The EVM bytecode is passed to the <code>mini-evm</code> as context.</li><li>The <code>mini-evm</code> interprets the EVM bytecode instruction by instruction. When it encounters opcodes that interact with the blockchain state (e.g., <code>SSTORE</code>, <code>SLOAD</code>, <code>CALL</code>, <code>LOG</code>), it makes the corresponding <code>syscall</code> to the parent RISC-V VM to perform the action.</li></ol>
+        <p>This design effectively <strong>translates EVM execution into the native language of the RISC-V environment</strong>. The <code>mini-evm</code> acts as an on-the-fly interpretation layer, ensuring that all state changes, whether initiated from a RISC-V or EVM contract, are handled consistently by the core RISC-V VM.</p>
+        <p>This hybrid model proposes a viable path for evolving Ethereum's execution engine to the more modern and flexible RISC-V ISA without sacrificing the existing ecosystem. By using a <strong>magic number</strong> for bytecode differentiation and a <strong><code>mini-evm</code> emulator</strong> for backward compatibility, the chain can support both legacy and next-generation smart contracts within a single, unified architecture.</p>
+        <p><strong>Potential benefits</strong> of such a switch are significant, including support for mature programming languages like Rust and C++, access to a robust toolchain, and potential performance improvements. However, this experiment also highlights key <strong>challenges</strong> that would need to be addressed, such as designing a fair and comprehensive gas metering model for the complex RISC-V instruction set and ensuring the <code>mini-evm</code> emulator is both highly performant and secure.</p>
+        <p>Ultimately, this experiment demonstrates that a fundamental architectural shift is possible, paving the way for a more powerful and developer-friendly Ethereum in the future.</p>
+      </div>
+
+      <a class="back-link" href="/blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the post body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,459 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Developer Uche | Blockchain Engineer</title>
-    <!-- Fallback fonts similar to PP Neue Bit and PP Supply Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Uche — Blockchain Engineer &amp; Researcher</title>
+  <meta name="description" content="Developer Uche — blockchain engineer & researcher building high-performance, secure infrastructure (Rust, Go) and smart contracts. Currently a Fellow at Ethereum." />
+  <link rel="icon" href="assets/favicon.ico" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Developer Uche — Blockchain Engineer & Researcher" />
+  <meta property="og:description" content="Building high-performance, secure blockchain infrastructure across EVM, ZK, and zkVM. Fellow at Ethereum." />
+  <meta property="og:image" content="assets/main/developeruche.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
 </head>
+<body data-page="home">
+  <div id="site-header"></div>
 
-<body>
-    <header class="header">
-        <div class="header-left">
-            <a href="index.html" class="logo">
-                <img src="developeruche.jpg" alt="Developer Uche Logo" class="logo-img">
-                <span style="font-family: var(--font-ui); font-size: 14px;">developeruche</span>
-            </a>
-            <nav class="nav-links">
-                <a href="index.html" class="active">HOME</a>
-                <a href="projects.html">PROJECTS</a>
-                <a href="blog.html">BLOG</a>
-                <a href="publications.html">PUBLICATIONS</a>
-            </nav>
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-main fade-in">
+          <span class="section-label">// NWELE UCHENNA DAVID</span>
+          <h1 class="hero-title">DEVELOPER <span class="text-gradient">UCHE</span></h1>
+          <p class="hero-role">Blockchain Engineer &amp; Researcher</p>
+          <p class="hero-bio">Experienced building high-performance, secure blockchain infrastructure (Rust, Go) and smart contracts (Solidity, Yul, TypeScript, Rust). Currently a Fellow at Ethereum.</p>
+          <div class="hero-cta">
+            <a class="btn-primary" href="projects.html">View Projects <span aria-hidden="true">→</span></a>
+            <a class="btn-secondary" href="https://github.com/developeruche" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+            <a class="btn-secondary" href="https://x.com/developeruche" target="_blank" rel="noopener noreferrer">X <span aria-hidden="true">↗</span></a>
+            <a class="btn-secondary" href="https://www.linkedin.com/in/developeruche" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
+          </div>
         </div>
-        <div class="header-right">
-            <a href="mailto:developeruche@gmail.com" class="btn-primary" style="padding: 8px 16px;">CONTACT</a>
+        <aside class="hero-aside fade-in">
+          <img class="hero-avatar" src="assets/main/developeruche.jpg" alt="Portrait of Developer Uche" width="320" height="320" />
+          <ul class="stack-list">
+            <li>Core Ethereum Protocol</li>
+            <li>Smart Contract Development</li>
+            <li>ZK Cryptography</li>
+            <li>zkVM &amp; EVM Architecture</li>
+          </ul>
+        </aside>
+      </div>
+
+      <!-- COMPANIES STRIP -->
+      <!--<div class="container companies">
+        <span class="companies-label">// COMPANIES I'VE WORKED WITH</span>
+        <div class="companies-row" id="companies-row"></div>
+      </div>-->
+    </section>
+
+    <!-- BLOG HIGHLIGHT -->
+    <section class="section slide-up">
+      <div class="container">
+        <div class="section-head">
+          <div><span class="section-label">// 01  WRITING</span><h2>Blogs</h2></div>
+          <a class="view-all" href="blog.html">View all blogs <span aria-hidden="true">→</span></a>
         </div>
-    </header>
+        <div class="card-grid card-grid--four" id="blog-grid"></div>
+      </div>
+    </section>
 
-    <main>
-        <section class="hero slide-up">
-            <div class="particles-layer">
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-            </div>
-
-            <h1 class="hero-title">DEVELOPER<br><span class="text-gradient">UCHE</span></h1>
-            <p class="hero-subtitle">// BLOCKCHAIN ENGINEER & RESEARCHER</p>
-            <p style="margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto;">Specializing in
-                Blockchain Protocol Development, Cryptography, and Zero-Knowledge Proofs. Core contributor to mission-critical
-                Ethereum infrastructure. Experienced in building high-performance secure systems in Rust and Solidity
-                applications. 
-                <br>
-                <br> Currently a Fellow at Ethereum.
-            </p>
-
-            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
-                <span class="meta-tags" style="margin: 0;"><span>Blockchain Protocol Development</span><span>Rust</span><span>Solidity</span><span>ZK
-                        Cryptography</span><span>EVM Architecture</span></span>
-            </div>
-
-            <div style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
-                <a href="projects.html" class="btn-primary" aria-label="View Projects">VIEW PROJECTS <span>→</span></a>
-                <a href="https://github.com/developeruche" target="_blank" class="btn-secondary"
-                    aria-label="GitHub">GITHUB</a>
-                <a href="https://x.com/developeruche" target="_blank" class="btn-secondary"
-                    aria-label="Twitter">X.COM</a>
-            </div>
-        </section>
-
-        <!-- Main Content Area with Connector Path -->
-        <section class="cards-section" id="overview">
-
-            <!-- SVG Connector background line running down -->
-            <div class="connector-line-container">
-                <svg class="connector-line" viewBox="0 0 100 800" preserveAspectRatio="none">
-                    <line x1="50" y1="0" x2="50" y2="800" stroke-dasharray="4 4" />
-                </svg>
-            </div>
-
-            <!-- Card 01: Research Highlight -->
-            <div class="info-card slide-up">
-                <div class="card-content">
-                    <p class="section-label">// 01 &nbsp; HIGHLIGHT</p>
-                    <h2 class="section-title">RISC-V EVM<br>EXPERIMENT</h2>
-                    <p>Bridging the gap between RISC-V ISA and the Ethereum Virtual Machine (EVM). Creating a more
-                        efficient, secure, and scalable blockchain VM platform.</p>
-                    <a href="publications.html" class="btn-secondary" style="margin-top: 20px;">READ RESEARCH
-                        <span>→</span></a>
-                </div>
-                <div class="card-art fade-in">
-                    <!-- Contextual SVG: RISC-V to EVM Bridge -->
-                    <svg class="svg-illustration glow-node" viewBox="0 0 100 100">
-                        <defs>
-                            <linearGradient id="bridgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="var(--accent-glow)" stop-opacity="0.8" />
-                                <stop offset="100%" stop-color="var(--text-secondary)" stop-opacity="0.2" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Left Block: RISC-V -->
-                        <polygon points="20,30 40,40 40,60 20,70 10,50" fill="none" stroke="var(--text-primary)"
-                            stroke-width="1.5" />
-                        <text x="25" y="52" fill="var(--text-primary)" font-size="8" font-family="var(--font-mono)"
-                            text-anchor="middle">RV</text>
-
-                        <!-- Right Block: EVM -->
-                        <rect x="65" y="35" width="25" height="30" rx="3" fill="none" stroke="var(--text-primary)"
-                            stroke-width="1.5" />
-                        <text x="77.5" y="52" fill="var(--text-primary)" font-size="8" font-family="var(--font-mono)"
-                            text-anchor="middle">EVM</text>
-
-                        <!-- Connecting Bridge / Data Flow -->
-                        <path d="M40 50 L65 50" stroke="url(#bridgeGrad)" stroke-width="2" stroke-dasharray="3 3"
-                            class="animated-path-segment" />
-
-                        <!-- Floating Particles/Data Packets -->
-                        <circle cx="45" cy="50" r="1.5" fill="var(--accent-glow)">
-                            <animate attributeName="cx" values="40;65" dur="2s" repeatCount="indefinite" />
-                            <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" />
-                        </circle>
-                        <circle cx="55" cy="50" r="1.5" fill="var(--accent-glow)">
-                            <animate attributeName="cx" values="40;65" dur="2.5s" repeatCount="indefinite" />
-                            <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" />
-                        </circle>
-
-                        <!-- Abstract Orbit/Environment -->
-                        <path d="M10 20 Q 50 -10, 90 20" fill="none" stroke="var(--text-secondary)" stroke-width="0.5"
-                            stroke-dasharray="2 4" />
-                        <path d="M10 80 Q 50 110, 90 80" fill="none" stroke="var(--text-secondary)" stroke-width="0.5"
-                            stroke-dasharray="2 4" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Card 02: Open Source -->
-            <div class="info-card reverse slide-up">
-                <div class="card-content">
-                    <p class="section-label">// 02 &nbsp; OPEN SOURCE</p>
-                    <h2 class="section-title">CORE EVM<br><span class="text-gradient">CONTRIBUTIONS</span></h2>
-                    <p>Significant engineering contributions to foundational blockchain infrastructure including Alloy,
-                        REVM, Ere zkVM Toolkit, and ZKboost.</p>
-                    <a href="projects.html" class="btn-secondary" style="margin-top: 20px;">VIEW GITHUB
-                        <span>→</span></a>
-                </div>
-                <div class="card-art fade-in">
-                    <!-- Contextual SVG: Core Open Source Contributions -->
-                    <svg class="svg-illustration" viewBox="0 0 100 100">
-                        <!-- Connecting lines (commits/PRs) -->
-                        <path class="animated-path-segment" d="M50 50 L20 30" stroke="var(--text-secondary)"
-                            stroke-width="1" stroke-dasharray="2 2" />
-                        <path class="animated-path-segment" d="M50 50 L80 30" stroke="var(--text-secondary)"
-                            stroke-width="1" stroke-dasharray="2 2" />
-                        <path class="animated-path-segment" d="M50 50 L30 80" stroke="var(--text-secondary)"
-                            stroke-width="1" stroke-dasharray="2 2" />
-                        <path class="animated-path-segment" d="M50 50 L70 80" stroke="var(--text-secondary)"
-                            stroke-width="1" stroke-dasharray="2 2" />
-
-                        <!-- Pulsing Center Node (The Developer) -->
-                        <circle cx="50" cy="50" r="8" fill="var(--bg-dark)" stroke="var(--accent-glow)"
-                            stroke-width="1.5">
-                            <animate attributeName="r" values="7;9;7" dur="3s" repeatCount="indefinite" />
-                            <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="3s"
-                                repeatCount="indefinite" />
-                        </circle>
-                        <circle cx="50" cy="50" r="3" fill="var(--accent-glow)" />
-
-                        <!-- Outer Nodes (Repositories: Alloy, REVM, Ere, ZKboost) -->
-                        <rect x="15" y="25" width="10" height="10" rx="2" fill="var(--bg-dark)"
-                            stroke="var(--text-primary)" stroke-width="1" />
-                        <rect x="75" y="25" width="10" height="10" rx="2" fill="var(--bg-dark)"
-                            stroke="var(--text-primary)" stroke-width="1" />
-                        <rect x="25" y="75" width="10" height="10" rx="2" fill="var(--bg-dark)"
-                            stroke="var(--text-primary)" stroke-width="1" />
-                        <rect x="65" y="75" width="10" height="10" rx="2" fill="var(--bg-dark)"
-                            stroke="var(--text-primary)" stroke-width="1" />
-
-                        <!-- Floating commit pulses -->
-                        <circle cx="50" cy="50" r="1.5" fill="var(--text-primary)">
-                            <animateMotion path="M0 0 L-30 -20" dur="2s" repeatCount="indefinite" fill="freeze" />
-                            <animate attributeName="opacity" values="1;0" dur="2s" repeatCount="indefinite" />
-                        </circle>
-                        <circle cx="50" cy="50" r="1.5" fill="var(--text-primary)">
-                            <animateMotion path="M0 0 L30 -20" dur="2.5s" repeatCount="indefinite" fill="freeze" />
-                            <animate attributeName="opacity" values="1;0" dur="2.5s" repeatCount="indefinite" />
-                        </circle>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Card 03: Writing -->
-            <div class="info-card slide-up">
-                <div class="card-content">
-                    <p class="section-label">// 03 &nbsp; DEEP DIVES</p>
-                    <h2 class="section-title">TECHNICAL<br>WRITINGS</h2>
-                    <p>Extensive documentation and deep dives into ZK-Rollups, EIP-4844, and Post-Quantum Cryptography
-                        published on HackMD and Medium.</p>
-                    <a href="blog.html" class="btn-secondary" style="margin-top: 20px;">EXPLORE BLOG <span>→</span></a>
-                </div>
-                <div class="card-art fade-in">
-                    <!-- Contextual SVG: Tech Writings / Cryptographic Documentation -->
-                    <svg class="svg-illustration" viewBox="0 0 100 100">
-                        <!-- Background Document/Paper -->
-                        <polygon points="30,20 60,20 75,35 75,85 30,85" fill="none" stroke="var(--text-secondary)"
-                            stroke-width="1.5" />
-                        <!-- Folded corner -->
-                        <polygon points="60,20 60,35 75,35" fill="none" stroke="var(--text-secondary)"
-                            stroke-width="1.5" />
-
-                        <!-- Text lines / paragraphs -->
-                        <line x1="38" y1="45" x2="67" y2="45" stroke="var(--text-primary)" stroke-width="1"
-                            class="animated-path-segment" />
-                        <line x1="38" y1="55" x2="60" y2="55" stroke="var(--text-primary)" stroke-width="1"
-                            class="animated-path-segment" />
-                        <line x1="38" y1="65" x2="67" y2="65" stroke="var(--text-primary)" stroke-width="1"
-                            class="animated-path-segment" />
-                        <line x1="38" y1="75" x2="55" y2="75" stroke="var(--text-primary)" stroke-width="1"
-                            class="animated-path-segment" />
-
-                        <!-- Foreground "Proof" / "Knowledge" Element (Glowing Orbit) -->
-                        <ellipse cx="65" cy="65" rx="15" ry="5" fill="none" stroke="var(--accent-glow)" stroke-width="1"
-                            transform="rotate(-30 65 65)">
-                            <animateTransform attributeName="transform" type="rotate" from="0 65 65" to="360 65 65"
-                                dur="10s" repeatCount="indefinite" />
-                        </ellipse>
-                        <ellipse cx="65" cy="65" rx="15" ry="5" fill="none" stroke="var(--accent-glow)" stroke-width="1"
-                            transform="rotate(60 65 65)">
-                            <animateTransform attributeName="transform" type="rotate" from="0 65 65" to="-360 65 65"
-                                dur="15s" repeatCount="indefinite" />
-                        </ellipse>
-                        <!-- Center Core -->
-                        <circle cx="65" cy="65" r="3" fill="var(--bg-dark)" stroke="var(--text-primary)"
-                            stroke-width="1.5" />
-                        <circle cx="65" cy="65" r="1.5" fill="var(--accent-glow)">
-                            <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
-                        </circle>
-                    </svg>
-                </div>
-            </div>
-
-        </section>
-        <!-- Section: Open Source Contributions Preview -->
-        <section class="content-list-section" style="padding-top: var(--spacing-xl);">
-            <div class="container-narrow">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                    <h2 class="subsection-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">//
-                        OPEN SOURCE CONTRIBUTIONS</h2>
-                    <a href="projects.html" class="read-more" style="font-size: 14px;">VIEW ALL CONTRIBUTIONS
-                        <span>→</span></a>
-                </div>
-                <div class="project-grid">
-                    <div class="info-card slide-up" style="min-height: 180px;">
-                        <div class="card-content">
-                            <h3 class="card-title">ALLOY</h3>
-                            <p>Connects applications to blockchains. A rewrite of ethers-rs from the ground up,
-                                featuring high performance and excellent docs.</p>
-                            <a href="https://github.com/alloy-rs/alloy/commits?author=developeruche" target="_blank"
-                                class="tag-link">VIEW PRs</a>
-                        </div>
-                    </div>
-                    <div class="info-card slide-up" style="min-height: 180px;">
-                        <div class="card-content">
-                            <h3 class="card-title">REVM</h3>
-                            <p>A high-performance, high-fidelity Ethereum Virtual Machine implementation written
-                                entirely in Rust.</p>
-                            <a href="https://github.com/bluealloy/revm/commits?author=developeruche" target="_blank"
-                                class="tag-link">VIEW PRs</a>
-                        </div>
-                    </div>
-                    <div class="info-card slide-up" style="min-height: 180px;">
-                        <div class="card-content">
-                            <h3 class="card-title">ERE</h3>
-                            <p>Unified zkVM Interface & Toolkit. Compile. Execute. Prove. Verify. One ergonomic Rust API
-                                for multiple zero‑knowledge virtual machines.</p>
-                            <a href="https://github.com/eth-act/ere/commits?author=developeruche" target="_blank"
-                                class="tag-link">VIEW PRs</a>
-                        </div>
-                    </div>
-                    <div class="info-card slide-up" style="min-height: 180px;">
-                        <div class="card-content">
-                            <h3 class="card-title">ZKBOOST</h3>
-                            <p>Simple HTTP API wrapper on top of Ere allowing developers to execute, verify, and create
-                                zkVM proofs by calling standard HTTP endpoints.</p>
-                            <a href="https://github.com/eth-act/zkboost/commits?author=developeruche" target="_blank"
-                                class="tag-link">VIEW PRs</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section: Projects Preview -->
-        <section class="content-list-section" style="padding-top: var(--spacing-xl);">
-            <div class="container-narrow">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                    <h2 class="subsection-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">//
-                        FEATURED PROJECTS</h2>
-                    <a href="projects.html" class="read-more" style="font-size: 14px;">VIEW ALL PROJECTS
-                        <span>→</span></a>
-                </div>
-                <div class="project-grid">
-                    <div class="info-card slide-up"
-                        style="min-height: 180px; border-left: 2px solid var(--accent-glow);">
-                        <div class="card-content">
-                            <h3 class="card-title">HYBRID FRAMEWORK</h3>
-                            <p>A modern framework for developing and deploying RISC-V-based smart contracts on Ethereum,
-                                featuring dual VM integration.</p>
-                            <a href="https://github.com/developeruche/hybrid" target="_blank" class="tag-link">VIEW
-                                CODE</a>
-                        </div>
-                    </div>
-                    <div class="info-card slide-up"
-                        style="min-height: 180px; border-left: 2px solid var(--accent-glow);">
-                        <div class="card-content">
-                            <h3 class="card-title">RISC-V EVM (RUST)</h3>
-                            <p>Experimental implementation of a RISC-V based Ethereum Virtual Machine exploring
-                                technical feasibility and performance implications.</p>
-                            <a href="https://github.com/developeruche/riscv-evm-experiment" target="_blank"
-                                class="tag-link">VIEW CODE</a>
-                        </div>
-                    </div>
-                    <div class="info-card slide-up" style="min-height: 180px;">
-                        <div class="card-content">
-                            <h3 class="card-title">CHRONICLE INDEXER</h3>
-                            <p>Blazing fast backend indexing software written in Rust that parses transactions, smart
-                                contracts, and parachain events.</p>
-                            <a href="https://github.com/developeruche/chronicle" target="_blank" class="tag-link">VIEW
-                                CODE</a>
-                        </div>
-                    </div>
-                    <div class="info-card slide-up" style="min-height: 180px;">
-                        <div class="card-content">
-                            <h3 class="card-title">GAS RELAY</h3>
-                            <p>A secure and efficient Gas Relay implementation based on ERC-2771 enabling seamless
-                                meta-transactions and covered gas costs.</p>
-                            <a href="https://github.com/developeruche/gas-relay" target="_blank" class="tag-link">VIEW
-                                CODE</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section: Blog Preview -->
-        <section class="content-list-section" style="padding-top: var(--spacing-xl);">
-            <div class="container-narrow">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                    <h2 class="subsection-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">//
-                        LATEST WRITINGS</h2>
-                    <a href="blog.html" class="read-more" style="font-size: 14px;">VIEW ALL WRITINGS <span>→</span></a>
-                </div>
-
-                <div class="list-item fade-in">
-                    <div class="list-item-content">
-                        <h3>Deconstructing the 1.5 GHz zkVM: How ZisK Redefined the Limits of Trace Generation</h3>
-                        <div class="meta-tags"><span>HackMD</span><span>Zero-Knowledge</span></div>
-                        <p>An engineering deep dive into trace generation optimization and how ZisK pushes the
-                            boundaries of zkVM performance.</p>
-                        <a href="https://hackmd.io/@0xdeveloperuche/rkd1vBsElx" target="_blank" class="read-more">READ
-                            POST <span>→</span></a>
-                    </div>
-                </div>
-
-                <div class="list-item fade-in">
-                    <div class="list-item-content">
-                        <h3>If State Read/Write Opcodes Aren't Native VM (WASM/RISC-V) Instructions, How Do Blockchains
-                            Read and Write State?</h3>
-                        <p>Bridging the conceptual gap between general-purpose VM instructions and blockchain specific
-                            state transitions.</p>
-                        <a href="https://hackmd.io/@0xdeveloperuche/BJ3ZKCj6Jg" target="_blank" class="read-more">READ
-                            POST <span>→</span></a>
-                    </div>
-                </div>
-
-                <div class="list-item fade-in">
-                    <div class="list-item-content">
-                        <h3>Building Blocks of Modern Zero-Knowledge Proofs: An Engineering Perspective</h3>
-                        <p>A comprehensive overview of the fundamental components that make up modern ZK proof systems,
-                            from polynomials to commitments.</p>
-                        <a href="https://hackmd.io/@0xdeveloperuche/By10JQ6Myx" target="_blank" class="read-more">READ
-                            POST <span>→</span></a>
-                    </div>
-                </div>
-
-                <div class="list-item fade-in">
-                    <div class="list-item-content">
-                        <h3>Chronicle: Blockchain Indexer Built in Rust - Blazing Fast</h3>
-                        <div class="meta-tags"><span>Medium</span><span>Indexer</span></div>
-                        <p>An introduction to Chronicle, a blazing fast blockchain indexer written in Rust.</p>
-                        <a href="https://developeruche.medium.com/chronicle-blockchain-indexer-built-in-rust-blazing-fast-fff45ba60a97"
-                            target="_blank" class="read-more">READ POST <span>→</span></a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section: Publications Preview -->
-        <section class="content-list-section"
-            style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
-            <div class="container-narrow">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                    <h2 class="subsection-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">//
-                        PUBLICATIONS & RESEARCH</h2>
-                    <a href="publications.html" class="read-more" style="font-size: 14px;">VIEW ALL RESEARCH
-                        <span>→</span></a>
-                </div>
-
-                <div class="list-item fade-in">
-                    <div class="list-item-content">
-                        <h3>Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM</h3>
-                        <p class="abstract" style="margin-bottom: 15px;">An extensive experimental study aiming to
-                            bridge the gap between the RISC-V instruction set architecture and the Ethereum Virtual
-                            Machine (EVM).</p>
-                        <a href="https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl" target="_blank" class="read-more">READ
-                            PAPER <span>→</span></a>
-                    </div>
-                </div>
-
-                <div class="list-item fade-in">
-                    <div class="list-item-content">
-                        <h3>Cryptography and Zero Knowledge Proof Research Repository</h3>
-                        <p class="abstract" style="margin-bottom: 15px;">A living research repository dedicated to
-                            implementing academic research papers, defining cryptographic primitives from scratch in
-                            Rust.</p>
-                        <a href="https://developeruche.gitbook.io/computational-proof-systems" target="_blank"
-                            class="read-more">RESEARCH NOTES <span>→</span></a>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="footer">
-        <div class="footer-top">
-            <div class="footer-newsletter">
-                <h3 class="footer-heading" style="color:var(--text-primary);">JOIN DISCUSSIONS</h3>
-                <p style="color: var(--text-muted); font-size: 12px; margin-top: 10px;">Reach out for cryptography
-                    consulting or protocol engineering.</p>
-                <div style="margin-top: 15px;">
-                    <a href="mailto:developeruche@gmail.com" style="color: var(--accent-glow);">developeruche@gmail.com
-                        <span>→</span></a>
-                </div>
-            </div>
-            <div class="footer-mission">
-                <p>Advancing the frontier of decentralized systems. Translating complex math and cryptography into
-                    scalable, secure software.</p>
-            </div>
+    <!-- PUBLICATIONS HIGHLIGHT -->
+    <section class="section slide-up">
+      <div class="container">
+        <div class="section-head">
+          <div><span class="section-label">// 02  RESEARCH</span><h2>Publications</h2></div>
+          <a class="view-all" href="publications.html">View all publications <span aria-hidden="true">→</span></a>
         </div>
-        <div class="footer-bottom">
-            <p>GENRE: BLOCKCHAIN / CRYPTOGRAPHY</p>
-            <p>© 2026 DEVELOPER UCHE. ALL RIGHTS RESERVED.</p>
-        </div>
-    </footer>
+        <div class="card-grid card-grid--list" id="pub-grid"></div>
+      </div>
+    </section>
 
-    <script src="index.js"></script>
+    <!-- OPEN-SOURCE HIGHLIGHT -->
+    <section class="section slide-up">
+      <div class="container">
+        <div class="section-head">
+          <div><span class="section-label">// 03  CONTRIBUTIONS</span><h2>Open Source</h2></div>
+          <a class="view-all" href="projects.html">View all <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="card-grid card-grid--four" id="os-grid"></div>
+      </div>
+    </section>
+
+    <!-- PROJECTS HIGHLIGHT -->
+    <section class="section slide-up">
+      <div class="container">
+        <div class="section-head">
+          <div><span class="section-label">// 04  BUILDS</span><h2>Projects</h2></div>
+          <a class="view-all" href="projects.html">View all <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="card-grid card-grid--four" id="proj-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="assets/js/home.js"></script>
 </body>
-
 </html>
