@@ -257,6 +257,31 @@ export function card(opts) {
   ]);
 }
 
+/* ── List item (editorial index row) ────────────────────────────────────
+   A dense, title-forward row for long indexes (blog listing): title, one-line
+   excerpt, tag chips, and a small fixed-size thumbnail on the right, separated
+   by a dashed divider. See components.md "List Item" spec.
+   opts: { title, excerpt, tags, href, thumbnail } */
+export function listItem(opts) {
+  const content = el('div', { class: 'list-item-content' }, [
+    el('h3', { class: 'list-item-title', text: opts.title }),
+    opts.excerpt ? el('p', { class: 'list-item-excerpt', text: opts.excerpt }) : null,
+    metaTags(opts.tags),
+    el('div', { class: 'list-item-meta' }, [
+      el('span', { text: 'Developer Uche' }),
+      el('span', { 'aria-hidden': 'true', text: '·' }),
+      el('span', { class: 'list-item-cta' }, ['Read', el('span', { 'aria-hidden': 'true', text: ' →' })]),
+    ]),
+  ]);
+  const thumb = el('div', { class: 'list-item-thumb' }, [imageSlot(opts.thumbnail, opts.title)]);
+  return el('a', {
+    class: 'list-item',
+    href: opts.href,
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  }, [content, thumb]);
+}
+
 /* ── Scroll reveal (IntersectionObserver, reveal-once) ─────────────────── */
 
 export function observeReveals(root = document) {

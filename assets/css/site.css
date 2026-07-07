@@ -208,6 +208,75 @@ body::before {
 /* Vertical list layout — one full-width card per row at every breakpoint. */
 .card-grid--list { grid-template-columns: 1fr !important; }
 
+/* ── List (editorial index) ───────────────────────────────────────────────
+   Dense title-forward rows for long indexes (blog listing). Whole row is a
+   link; small fixed thumbnail on the right; dashed divider between rows. */
+.blog-list { display: flex; flex-direction: column; max-width: var(--container-narrow); }
+
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+  border-bottom: var(--border-1) dashed var(--color-border);
+  transition: border-color var(--motion-fast);
+}
+.blog-list .list-item:first-child { padding-top: 0; }
+.blog-list .list-item:last-child { border-bottom: none; }
+.list-item:hover { border-color: var(--color-accent); }
+
+.list-item-content { flex: 1; min-width: 0; }
+.list-item-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, var(--text-2xl));
+  line-height: var(--leading-snug);
+  letter-spacing: 1px;
+  transition: color var(--motion-fast), text-shadow var(--motion-fast);
+  margin-bottom: var(--space-12);
+}
+.list-item:hover .list-item-title { color: var(--color-accent); text-shadow: var(--glow-accent-sm); }
+.list-item-excerpt {
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  text-transform: none;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-base);
+  margin-bottom: var(--space-12);
+  max-width: 60ch;
+}
+.list-item .meta-tags { margin-bottom: var(--space-12); }
+.list-item-meta {
+  display: flex; align-items: center; gap: var(--space-8);
+  color: var(--color-text-muted); font-size: var(--text-xs);
+}
+.list-item-cta {
+  color: var(--color-accent); font-weight: var(--font-weight-bold);
+  display: inline-flex; align-items: center;
+}
+.list-item-cta span { transition: transform var(--motion-fast); }
+.list-item:hover .list-item-cta span { transform: translateX(3px); }
+
+.list-item-thumb {
+  flex-shrink: 0;
+  width: 130px; height: 130px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: var(--border-1) solid var(--color-border);
+  transition: border-color var(--motion-fast);
+}
+.list-item:hover .list-item-thumb { border-color: var(--color-accent-a30); }
+/* Force the shared image-slot component to fill this fixed square instead of
+   its default 16:9 card aspect ratio. */
+.list-item-thumb .card-media,
+.list-item-thumb .card-media-link {
+  width: 100%; height: 100%; aspect-ratio: auto; border-bottom: none;
+}
+
+@media (min-width: 768px) {
+  .list-item-thumb { width: 200px; height: 200px; }
+}
+
 /* ── Universal card ────────────────────────────────────────────────────── */
 .info-card.card {
   display: flex; flex-direction: column;

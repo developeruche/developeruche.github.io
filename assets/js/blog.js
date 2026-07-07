@@ -1,12 +1,10 @@
 import { mountLayout } from './layout.js';
 import {
-  fetchJSON, card, createFilterBar, filterItems, BLOG_CATEGORIES,
+  fetchJSON, listItem, createFilterBar, filterItems, BLOG_CATEGORIES,
   readTagsFromURL, writeTagsToURL, observeReveals, stateMessage,
 } from './data.js';
 
 mountLayout();
-
-const blogCard = (b) => card({ title: b.title, tags: b.tags, href: b.link, thumbnail: b.thumbnail });
 
 (async function init() {
   const filterHost = document.getElementById('filter-host');
@@ -31,9 +29,9 @@ const blogCard = (b) => card({ title: b.title, tags: b.tags, href: b.link, thumb
     grid.innerHTML = '';
     if (!filtered.length) { stateMessage(grid, 'empty', '// No posts match these tags.'); }
     filtered.forEach((b) => {
-      const c = blogCard(b);
-      c.classList.add('slide-up');
-      grid.appendChild(c);
+      const row = listItem({ title: b.title, excerpt: b.excerpt, tags: b.tags, href: b.link, thumbnail: b.thumbnail });
+      row.classList.add('slide-up');
+      grid.appendChild(row);
     });
     bar.setCount(filtered.length, items.length);
     observeReveals();
