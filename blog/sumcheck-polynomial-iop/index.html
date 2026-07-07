@@ -15,7 +15,7 @@
   <meta property="og:title" content="SumCheck Polynomial Interactive Proof — Developer Uche" />
   <meta property="og:description" content="SumCheck Polynomial Interactive Proof The Sum Check Protocol The sum-check protocol is a fundamental sub-protocol used in various zero-knowledge…" />
   <meta property="og:url" content="https://developeruche.com/blog/sumcheck-polynomial-iop/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/sumcheck-polynomial-iop.png" />
+  <meta property="og:image" content="https://developeruche.com/assets/blogs/sumcheck-polynomial-iop.webp" />
   <meta property="og:image:alt" content="SumCheck Polynomial Interactive Proof — thumbnail" />
   <meta property="article:published_time" content="2026-06-27" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -27,7 +27,7 @@
   <meta name="twitter:creator" content="@developeruche" />
   <meta name="twitter:title" content="SumCheck Polynomial Interactive Proof — Developer Uche" />
   <meta name="twitter:description" content="SumCheck Polynomial Interactive Proof The Sum Check Protocol The sum-check protocol is a fundamental sub-protocol used in various zero-knowledge…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/sumcheck-polynomial-iop.png" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/sumcheck-polynomial-iop.webp" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
@@ -36,7 +36,7 @@
   "headline": "SumCheck Polynomial Interactive Proof",
   "description": "SumCheck Polynomial Interactive Proof The Sum Check Protocol The sum-check protocol is a fundamental sub-protocol used in various zero-knowledge…",
   "image": [
-    "https://developeruche.com/assets/blogs/sumcheck-polynomial-iop.png"
+    "https://developeruche.com/assets/blogs/sumcheck-polynomial-iop.webp"
   ],
   "datePublished": "2026-06-27",
   "dateModified": "2026-06-27",
@@ -80,7 +80,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">SumCheck Polynomial Interactive Proof</h1>
-        <img class="post-hero-img" src="/assets/blogs/sumcheck-polynomial-iop.png" alt="SumCheck Polynomial Interactive Proof — thumbnail" />
+        <img class="post-hero-img" src="/assets/blogs/sumcheck-polynomial-iop.webp" alt="SumCheck Polynomial Interactive Proof — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-27">2026-06-27</time> · 14 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>zero knowledge</span>
@@ -126,7 +126,7 @@ $$</p></p>
         <table><thead><tr><th>Boolean Hypercube</th><th>Poly Eval</th><th>Evaluation result</th></tr></thead><tbody><tr><td>$0,0,0$</td><td>$f(0,0,0)$</td><td>$0$</td></tr><tr><td>$0,0,1$</td><td>$f(0,0,1)$</td><td>$0$</td></tr><tr><td>$0,1,0$</td><td>$f(0,1,0)$</td><td>$0$</td></tr><tr><td>$0,1,1$</td><td>$f(0,1,1)$</td><td>$1$</td></tr><tr><td>$1,0,0$</td><td>$f(1,0,0)$</td><td>$2$</td></tr><tr><td>$1,0,1$</td><td>$f(1,0,1)$</td><td>$3$</td></tr><tr><td>$1,1,0$</td><td>$f(1,1,0)$</td><td>$2$</td></tr><tr><td>$1,1,1$</td><td>$f(1,1,1)$</td><td>$4$</td></tr></tbody></table>
         <p>$sum = 1 + 2 + 3 + 2 + 4 = 12$</p>
         <p>This is the computation done by the prover and sends the result (the sum) to verifier to initialise the protocol.</p>
-        <p><img src="/assets/blogs/sumcheck-polynomial-iop/img-1.png" alt="sum check protocol image" loading="lazy" /></p>
+        <p><img src="/assets/blogs/sumcheck-polynomial-iop/img-1.webp" alt="sum check protocol image" loading="lazy" /></p>
         <h3>The Protocol</h3>
         <ol><li>The Prover and the verifier agrees on the <code>Polynomial</code> ($f$) and <code>Sum</code>. This is done practically by sending the polynomial alongside the computed sum to the verifier.</li><li>Sum Reduction: The prover computes the polynomial $g_1(X_1)$ making use of a multilinear polynomial partial evaluation: &lt;br&gt;</li></ol>
         <p>$$g_1(X_1) = \sum_{x_2, \ldots, x_n \in \{0, 1\}^{n-1}} f(X_1, x_2, \ldots, x_n)$$</p>

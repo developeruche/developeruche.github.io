@@ -7,7 +7,7 @@
     ],
     "link": "blog/zisk-zkvm-trace-generation/",
     "highlight": true,
-    "thumbnail": "assets/blogs/zisk-1-5ghz-zkvm.png",
+    "thumbnail": "assets/blogs/zisk-1-5ghz-zkvm.webp",
     "excerpt": "Inside ZisK's AOT compilation and minimal-trace trick that pushed zkVM trace generation past 1 GHz."
   },
   {
@@ -18,7 +18,7 @@
     ],
     "link": "blog/epf-dev-log/",
     "highlight": true,
-    "thumbnail": "assets/blogs/epf-dev-log.png",
+    "thumbnail": "assets/blogs/epf-dev-log.webp",
     "excerpt": "A field log from the EF fellowship — zkVM research, RISC-V experiments, and precompile benchmarking."
   },
   {
@@ -30,7 +30,7 @@
     ],
     "link": "blog/hybrid-ethereum-riscv/",
     "highlight": true,
-    "thumbnail": "assets/blogs/hybrid-ethereum-riscv.png",
+    "thumbnail": "assets/blogs/hybrid-ethereum-riscv.webp",
     "excerpt": "Swapping the EVM's execution core for RISC-V while keeping backward compatibility intact."
   },
   {
@@ -42,7 +42,7 @@
     ],
     "link": "blog/eip-4337-account-abstraction/",
     "highlight": true,
-    "thumbnail": "assets/blogs/eip4337-account-abstraction.png",
+    "thumbnail": "assets/blogs/eip4337-account-abstraction.webp",
     "excerpt": "How EIP-4337 turns wallets into programmable smart contracts, bundlers, and paymasters."
   },
   {
@@ -54,7 +54,7 @@
     ],
     "link": "blog/zk-rollups-eip4844-blobs/",
     "highlight": true,
-    "thumbnail": "assets/blogs/zk-rollups-eip4844-blobs.png",
+    "thumbnail": "assets/blogs/zk-rollups-eip4844-blobs.webp",
     "excerpt": "What changed for rollup data availability once EIP-4844 introduced blob transactions."
   },
   {
@@ -66,7 +66,7 @@
     ],
     "link": "blog/eip7928-block-access-lists/",
     "highlight": true,
-    "thumbnail": "assets/blogs/eip7928-block-access-lists.png",
+    "thumbnail": "assets/blogs/eip7928-block-access-lists.webp",
     "excerpt": "Pre-declaring what a block touches, to unlock parallel execution and better gas prediction."
   },
   {
@@ -77,7 +77,7 @@
     ],
     "link": "blog/chronicle-rust-blockchain-indexer/",
     "highlight": true,
-    "thumbnail": "assets/blogs/chronicle-indexer.png",
+    "thumbnail": "assets/blogs/chronicle-indexer.webp",
     "excerpt": "A Rust-built, multi-threaded blockchain indexer serving data over GraphQL."
   },
   {
@@ -89,7 +89,7 @@
     ],
     "link": "blog/eip2771-gasless-relayer/",
     "highlight": true,
-    "thumbnail": "assets/blogs/eip2771-gasless-relayer.png",
+    "thumbnail": "assets/blogs/eip2771-gasless-relayer.webp",
     "excerpt": "Letting users transact without holding gas, by relaying signed meta-transactions on their behalf."
   },
   {
@@ -100,7 +100,7 @@
     ],
     "link": "blog/eof-deep-dive/",
     "highlight": true,
-    "thumbnail": "assets/blogs/eof-deep-dive.png",
+    "thumbnail": "assets/blogs/eof-deep-dive.webp",
     "excerpt": "A new container format for EVM bytecode, and why it matters for validation and gas."
   },
   {
@@ -111,7 +111,7 @@
     ],
     "link": "blog/evm-jumpdest/",
     "highlight": true,
-    "thumbnail": "assets/blogs/evm-jumpdest.png",
+    "thumbnail": "assets/blogs/evm-jumpdest.webp",
     "excerpt": "The opcode that keeps EVM control flow honest by marking valid jump targets."
   },
   {
@@ -122,7 +122,7 @@
     ],
     "link": "blog/state-read-write-opcodes/",
     "highlight": true,
-    "thumbnail": "assets/blogs/state-read-write-opcodes.png",
+    "thumbnail": "assets/blogs/state-read-write-opcodes.webp",
     "excerpt": "Tracing how state access actually happens when the VM's instruction set has no native storage opcodes."
   },
   {
@@ -133,7 +133,7 @@
     ],
     "link": "blog/zero-knowledge-proof-building-blocks/",
     "highlight": true,
-    "thumbnail": "assets/blogs/zk-building-blocks.png",
+    "thumbnail": "assets/blogs/zk-building-blocks.webp",
     "excerpt": "An engineer's tour of the four IOPs — Permutation, ProductCheck, SumCheck, ZeroCheck — that power modern ZK proofs."
   },
   {
@@ -144,7 +144,7 @@
     ],
     "link": "blog/kzg-polynomial-commitment-part-1/",
     "highlight": true,
-    "thumbnail": "assets/blogs/kzg-airdrop-part-1.png",
+    "thumbnail": "assets/blogs/kzg-airdrop-part-1.webp",
     "excerpt": "Airdropping to 200k+ addresses with Merkle proofs, and where their O(log n) verification starts to hurt."
   },
   {
@@ -155,7 +155,7 @@
     ],
     "link": "blog/kzg-polynomial-commitment-part-2/",
     "highlight": true,
-    "thumbnail": "assets/blogs/kzg-airdrop-part-2.png",
+    "thumbnail": "assets/blogs/kzg-airdrop-part-2.webp",
     "excerpt": "Swapping Merkle proofs for a single KZG commitment to verify airdrop claims in constant time."
   },
   {
@@ -166,7 +166,7 @@
     ],
     "link": "blog/winternitz-one-time-signature/",
     "highlight": true,
-    "thumbnail": "assets/blogs/winternitz-ots.png",
+    "thumbnail": "assets/blogs/winternitz-ots.webp",
     "excerpt": "A hash-chain-based signature scheme that stays secure even against quantum attackers."
   },
   {
@@ -178,7 +178,7 @@
     ],
     "link": "blog/groth16/",
     "highlight": true,
-    "thumbnail": "assets/blogs/groth16.png",
+    "thumbnail": "assets/blogs/groth16.webp",
     "excerpt": "The pairing-based zk-SNARK that made small, fast, constant-size proofs practical."
   },
   {
@@ -189,7 +189,7 @@
     ],
     "link": "blog/r1cs-to-qap/",
     "highlight": true,
-    "thumbnail": "assets/blogs/r1cs-to-qap.png",
+    "thumbnail": "assets/blogs/r1cs-to-qap.webp",
     "excerpt": "Turning arithmetic circuit constraints into a polynomial problem a SNARK can actually prove."
   },
   {
@@ -200,7 +200,7 @@
     ],
     "link": "blog/permutation-check-iop/",
     "highlight": true,
-    "thumbnail": "assets/blogs/permutation-check-iop.png",
+    "thumbnail": "assets/blogs/permutation-check-iop.webp",
     "excerpt": "Proving one sequence is a shuffled version of another, using nothing but polynomial identities."
   },
   {
@@ -211,7 +211,7 @@
     ],
     "link": "blog/product-check-iop/",
     "highlight": true,
-    "thumbnail": "assets/blogs/product-check-iop.png",
+    "thumbnail": "assets/blogs/product-check-iop.webp",
     "excerpt": "Verifying a product relationship between polynomials without ever revealing them."
   },
   {
@@ -222,7 +222,7 @@
     ],
     "link": "blog/sumcheck-polynomial-iop/",
     "highlight": true,
-    "thumbnail": "assets/blogs/sumcheck-polynomial-iop.png",
+    "thumbnail": "assets/blogs/sumcheck-polynomial-iop.webp",
     "excerpt": "The interactive protocol that reduces a giant sum over the boolean hypercube to a handful of cheap checks."
   },
   {
@@ -233,7 +233,7 @@
     ],
     "link": "blog/zerocheck-polynomial-iop/",
     "highlight": true,
-    "thumbnail": "assets/blogs/zerocheck-polynomial-iop.png",
+    "thumbnail": "assets/blogs/zerocheck-polynomial-iop.webp",
     "excerpt": "How provers show a polynomial vanishes on a domain, and why that's the backbone of Plonk-style constraint checks."
   },
   {
@@ -244,7 +244,7 @@
     ],
     "link": "blog/multiset-check-iop/",
     "highlight": true,
-    "thumbnail": "assets/blogs/multiset-check-iop.png",
+    "thumbnail": "assets/blogs/multiset-check-iop.webp",
     "excerpt": "Proving two multisets contain exactly the same elements, without revealing either one."
   },
   {
@@ -256,7 +256,7 @@
     ],
     "link": "blog/merkle-patricia-trie/",
     "highlight": true,
-    "thumbnail": "assets/blogs/merkle-patricia-trie.png",
+    "thumbnail": "assets/blogs/merkle-patricia-trie.webp",
     "excerpt": "The hybrid trie structure Ethereum uses to commit to and prove account and storage state."
   },
   {
@@ -267,7 +267,7 @@
     ],
     "link": "blog/merkle-tree-blockchain/",
     "highlight": true,
-    "thumbnail": "assets/blogs/ethereum-state-trie.png",
+    "thumbnail": "assets/blogs/ethereum-state-trie.webp",
     "excerpt": "Why a simple binary hash tree became the backbone of blockchain data integrity and proofs."
   },
   {
@@ -278,7 +278,7 @@
     ],
     "link": "blog/kademlia-dht/",
     "highlight": true,
-    "thumbnail": "assets/blogs/kademlia-dht.png",
+    "thumbnail": "assets/blogs/kademlia-dht.webp",
     "excerpt": "How peers find each other in a P2P network using XOR distance and k-buckets."
   },
   {
@@ -289,7 +289,7 @@
     ],
     "link": "blog/fields-extension-fields/",
     "highlight": true,
-    "thumbnail": "assets/blogs/fields-extension-fields.png",
+    "thumbnail": "assets/blogs/fields-extension-fields.webp",
     "excerpt": "A grounding in finite fields and their extensions — the algebra underneath most modern cryptography."
   },
   {
@@ -300,7 +300,7 @@
     ],
     "link": "blog/matryoshka-mle/",
     "highlight": true,
-    "thumbnail": "assets/blogs/matryoshka-mle.png",
+    "thumbnail": "assets/blogs/matryoshka-mle.webp",
     "excerpt": "A nested, Russian-doll approach to evaluating multilinear extensions more efficiently."
   },
   {
@@ -311,7 +311,7 @@
     ],
     "link": "blog/jagged-mle/",
     "highlight": true,
-    "thumbnail": "assets/blogs/jagged-mle.png",
+    "thumbnail": "assets/blogs/jagged-mle.webp",
     "excerpt": "Handling multilinear extensions over ragged, unevenly sized data without wasting computation."
   },
   {
@@ -322,7 +322,7 @@
     ],
     "link": "blog/ron-mle-optimization/",
     "highlight": true,
-    "thumbnail": "assets/blogs/ron-mle-optimization.png",
+    "thumbnail": "assets/blogs/ron-mle-optimization.webp",
     "excerpt": "A faster path through the MLE evaluation tree that cuts redundant work."
   },
   {
@@ -333,7 +333,7 @@
     ],
     "link": "blog/mle-direct-evaluation/",
     "highlight": true,
-    "thumbnail": "assets/blogs/mle-direct-evaluation.png",
+    "thumbnail": "assets/blogs/mle-direct-evaluation.webp",
     "excerpt": "The basics of extending a function over the boolean hypercube into a multilinear polynomial."
   }
 ]
