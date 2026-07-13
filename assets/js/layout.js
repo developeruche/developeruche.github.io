@@ -63,6 +63,10 @@ function renderFooter() {
             <h4>// Pages</h4>
             ${NAV.map((n) => `<a href="${n.href}">${n.label} →</a>`).join('')}
           </div>
+          <div class="footer-col">
+            <h4>// Resources</h4>
+            <a href="/python-cheatsheet.html">Python Cheat Sheet →</a>
+          </div>
         </div>
       </div>
       <div class="footer-bottom">
