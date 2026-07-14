@@ -102,13 +102,16 @@
   nav#sidebar a.active { color: var(--color-accent); border-left-color: var(--color-accent); background: var(--color-surface); }
 
   main.cheat-main { flex: 1; padding: var(--space-md) 0 var(--space-lg); min-width: 0; }
-  .cols { columns: 3 360px; column-gap: var(--space-sm); }
+  /* Column width fits the widest code line (~560px) so code never needs a
+     horizontal scrollbar; the page flows to 2+ columns when there's room. */
+  .cols { columns: 600px; column-gap: var(--space-md); }
 
   /* cards */
   .card {
     break-inside: avoid; background: var(--color-surface);
     border: var(--border-1) solid var(--color-border); border-radius: var(--radius-sm);
-    padding: var(--space-12) var(--space-12) var(--space-10); margin: 0 0 var(--space-sm); overflow: hidden;
+    padding: var(--space-12) var(--space-12) var(--space-10); margin: 0 0 var(--space-sm);
+    max-width: 660px; overflow: hidden;
   }
   .card.dim { display: none; }
   .card h2 {
@@ -125,7 +128,9 @@
   }
   .card > p, .card li { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--color-text-muted); }
 
-  /* code */
+  /* code — never uppercase (Python is case-sensitive); the site's global
+     text-transform:uppercase would corrupt identifiers, so reset it here. */
+  .cheat pre, .cheat code, .cheat pre *, .cheat code * { text-transform: none; }
   .codewrap { position: relative; margin: var(--space-8) 0; }
   .card pre {
     background: var(--color-bg); border: var(--border-1) solid var(--color-border);
