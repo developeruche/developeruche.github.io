@@ -3,22 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python Cheat Sheet — Dense Reference — Developer Uche</title>
-  <meta name="description" content="A dense, searchable Python reference — syntax, data structures, OOP, iteration, async, tooling, and idioms — styled in the Developer Uche design system." />
+  <title>Python Cheat Sheet — Dense Quick Reference | Developer Uche</title>
+  <meta name="description" content="A dense, searchable Python cheat sheet: syntax, data structures, comprehensions, OOP, decorators, generators, async, regex, type hints, and idioms." />
+  <meta name="keywords" content="python cheat sheet, python quick reference, python syntax, python data structures, list comprehensions, python decorators, python generators, asyncio, python regex, python type hints, python idioms" />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/python-cheatsheet.html" />
   <link rel="icon" href="/assets/favicon.ico" />
-  <meta property="og:type" content="website" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Python Cheat Sheet — Dense Reference" />
-  <meta property="og:description" content="A dense, searchable Python reference — syntax, data structures, OOP, iteration, async, tooling, and idioms." />
+  <meta property="og:title" content="Python Cheat Sheet — Dense Quick Reference" />
+  <meta property="og:description" content="A dense, searchable Python cheat sheet: syntax, data structures, comprehensions, OOP, decorators, generators, async, regex, type hints, and idioms — one fast reference." />
   <meta property="og:url" content="https://developeruche.com/python-cheatsheet.html" />
   <meta property="og:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <meta property="og:image:alt" content="Python Cheat Sheet — Developer Uche" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:published_time" content="2026-07-14" />
+  <meta property="article:section" content="Python" />
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
-  <meta name="twitter:title" content="Python Cheat Sheet — Dense Reference" />
-  <meta name="twitter:description" content="A dense, searchable Python reference styled in the Developer Uche design system." />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Python Cheat Sheet — Dense Quick Reference" />
+  <meta name="twitter:description" content="A dense, searchable Python cheat sheet: syntax, data structures, OOP, decorators, generators, async, regex, type hints, and idioms." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Python Cheat Sheet — Dense Quick Reference",
+    "name": "Python Cheat Sheet",
+    "description": "A dense, searchable Python cheat sheet covering syntax, strings, f-strings, data structures, comprehensions, collections, functions, decorators, classes and OOP, dataclasses, dunder methods, iterators and generators, itertools, functools, files and pathlib, JSON/CSV/pickle, regex, datetime, type hints, exceptions, modules, tooling, asyncio, concurrency, testing, debugging, gotchas, and idioms.",
+    "url": "https://developeruche.com/python-cheatsheet.html",
+    "image": "https://developeruche.com/assets/main/developeruche.jpg",
+    "inLanguage": "en",
+    "datePublished": "2026-07-14",
+    "dateModified": "2026-07-14",
+    "proficiencyLevel": ["Beginner", "Intermediate", "Advanced"],
+    "keywords": "python cheat sheet, python quick reference, python syntax, python data structures, list comprehensions, python decorators, python generators, asyncio, python regex, python type hints, python idioms",
+    "about": [
+      { "@type": "Thing", "name": "Python (programming language)", "sameAs": "https://en.wikipedia.org/wiki/Python_(programming_language)" },
+      { "@type": "Thing", "name": "Computer programming" }
+    ],
+    "articleSection": ["Variables & Basics", "Numbers & Math", "Strings", "f-strings & Format Spec", "Control Flow & match", "Lists", "Tuples & Unpacking", "Dicts", "Sets", "Comprehensions", "collections", "Functions", "Decorators", "Classes & OOP", "Dataclasses", "Dunder Methods", "Iterators & Generators", "itertools", "functools", "Files & I/O", "pathlib", "JSON · CSV · Pickle", "Regex", "datetime", "Type Hints", "Exceptions", "Modules & Imports", "venv · pip · Tooling", "asyncio", "Threads & Processes", "subprocess · os · sys", "Testing (pytest)", "Debug & Profile", "Gotchas", "Idioms & One-liners"],
+    "author": {
+      "@type": "Person",
+      "name": "Developer Uche",
+      "url": "https://developeruche.com",
+      "sameAs": [
+        "https://github.com/developeruche",
+        "https://x.com/developeruche",
+        "https://www.linkedin.com/in/developeruche"
+      ]
+    },
+    "publisher": { "@type": "Person", "name": "Developer Uche", "url": "https://developeruche.com" },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://developeruche.com/python-cheatsheet.html" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://developeruche.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Python Cheat Sheet", "item": "https://developeruche.com/python-cheatsheet.html" }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
@@ -192,7 +245,7 @@
 
   <section class="cheat-intro">
     <span class="section-label">// REFERENCE</span>
-    <h1>Python<br />Cheat Sheet</h1>
+    <h1>Python <br />Cheat Sheet</h1>
     <p class="subline">A dense, searchable single-page reference — the syntax, data structures, OOP, iteration, async, tooling, and idioms I reach for most. Hit <span class="kbd" style="position:static">/</span> to filter cards.</p>
   </section>
 
