@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Cheat Sheet — Dense Quick Reference | Developer Uche</title>
+  <meta name="description" content="A dense, searchable Python cheat sheet: syntax, data structures, comprehensions, OOP, decorators, generators, async, regex, type hints, and idioms." />
+  <meta name="keywords" content="python cheat sheet, python quick reference, python syntax, python data structures, list comprehensions, python decorators, python generators, asyncio, python regex, python type hints, python idioms" />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/python-cheatsheet.html" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Python Cheat Sheet — Dense Quick Reference" />
+  <meta property="og:description" content="A dense, searchable Python cheat sheet: syntax, data structures, comprehensions, OOP, decorators, generators, async, regex, type hints, and idioms — one fast reference." />
+  <meta property="og:url" content="https://developeruche.com/python-cheatsheet.html" />
+  <meta property="og:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <meta property="og:image:alt" content="Python Cheat Sheet — Developer Uche" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <meta property="article:published_time" content="2026-07-14" />
+  <meta property="article:section" content="Python" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Python Cheat Sheet — Dense Quick Reference" />
+  <meta name="twitter:description" content="A dense, searchable Python cheat sheet: syntax, data structures, OOP, decorators, generators, async, regex, type hints, and idioms." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Python Cheat Sheet — Dense Quick Reference",
+    "name": "Python Cheat Sheet",
+    "description": "A dense, searchable Python cheat sheet covering syntax, strings, f-strings, data structures, comprehensions, collections, functions, decorators, classes and OOP, dataclasses, dunder methods, iterators and generators, itertools, functools, files and pathlib, JSON/CSV/pickle, regex, datetime, type hints, exceptions, modules, tooling, asyncio, concurrency, testing, debugging, gotchas, and idioms.",
+    "url": "https://developeruche.com/python-cheatsheet.html",
+    "image": "https://developeruche.com/assets/main/developeruche.jpg",
+    "inLanguage": "en",
+    "datePublished": "2026-07-14",
+    "dateModified": "2026-07-14",
+    "proficiencyLevel": ["Beginner", "Intermediate", "Advanced"],
+    "keywords": "python cheat sheet, python quick reference, python syntax, python data structures, list comprehensions, python decorators, python generators, asyncio, python regex, python type hints, python idioms",
+    "about": [
+      { "@type": "Thing", "name": "Python (programming language)", "sameAs": "https://en.wikipedia.org/wiki/Python_(programming_language)" },
+      { "@type": "Thing", "name": "Computer programming" }
+    ],
+    "articleSection": ["Variables & Basics", "Numbers & Math", "Strings", "f-strings & Format Spec", "Control Flow & match", "Lists", "Tuples & Unpacking", "Dicts", "Sets", "Comprehensions", "collections", "Functions", "Decorators", "Classes & OOP", "Dataclasses", "Dunder Methods", "Iterators & Generators", "itertools", "functools", "Files & I/O", "pathlib", "JSON · CSV · Pickle", "Regex", "datetime", "Type Hints", "Exceptions", "Modules & Imports", "venv · pip · Tooling", "asyncio", "Threads & Processes", "subprocess · os · sys", "Testing (pytest)", "Debug & Profile", "Gotchas", "Idioms & One-liners"],
+    "author": {
+      "@type": "Person",
+      "name": "Developer Uche",
+      "url": "https://developeruche.com",
+      "sameAs": [
+        "https://github.com/developeruche",
+        "https://x.com/developeruche",
+        "https://www.linkedin.com/in/developeruche"
+      ]
+    },
+    "publisher": { "@type": "Person", "name": "Developer Uche", "url": "https://developeruche.com" },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://developeruche.com/python-cheatsheet.html" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://developeruche.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Python Cheat Sheet", "item": "https://developeruche.com/python-cheatsheet.html" }
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+  /* ── Python Cheat Sheet — scoped to the Developer Uche design system ──────
+     All color/space/type via tokens.css. Structure reused from the source;
+     only the skin conforms to the light terminal/blueprint aesthetic. */
+  .cheat { --cheat-top: 64px; }
+  .cheat main { padding: 0 var(--space-md) var(--space-lg); min-width: 0; }
+
+  /* intro */
+  .cheat-intro { padding: calc(var(--cheat-top) + var(--space-lg)) var(--space-md) var(--space-md); max-width: 1200px; margin: 0 auto; }
+  .cheat-intro .section-label { display: block; }
+  .cheat-intro h1 {
+    font-family: var(--font-heading); font-weight: var(--font-weight-normal);
+    font-size: clamp(2.6rem, 6vw, 4rem); line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-wide); color: var(--color-text);
+    text-transform: uppercase; margin: var(--space-8) 0 var(--space-12);
+  }
+  .cheat-intro .subline {
+    font-family: var(--font-ui); color: var(--color-text-muted);
+    font-size: var(--text-base); max-width: 68ch; letter-spacing: var(--tracking-tight);
+  }
+
+  /* sticky toolbar (search) */
+  .cheat-toolbar {
+    position: sticky; top: var(--cheat-top); z-index: var(--z-raised);
+    display: flex; align-items: center; gap: var(--space-12);
+    max-width: 1200px; margin: var(--space-md) auto 0; padding: var(--space-12) var(--space-md);
+    background: var(--gradient-header); backdrop-filter: var(--blur-header);
+    -webkit-backdrop-filter: var(--blur-header);
+    border-top: var(--border-1) solid var(--color-border);
+    border-bottom: var(--border-1) solid var(--color-border);
+  }
+  .searchwrap { flex: 1; max-width: 560px; position: relative; }
+  #search {
+    width: 100%; height: 38px; background: var(--color-surface);
+    border: var(--border-1) solid var(--color-border); border-radius: var(--radius-xs);
+    color: var(--color-text); font-family: var(--font-ui); font-size: var(--text-base);
+    padding: 0 66px 0 34px; outline: none; transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+    text-transform: none;
+  }
+  #search::placeholder { color: var(--color-text-muted); }
+  #search:focus { border-color: var(--color-accent); box-shadow: var(--glow-accent-md); }
+  .searchwrap svg { position: absolute; left: 10px; top: 11px; width: 16px; height: 16px; stroke: var(--color-text-muted); fill: none; stroke-width: 2; }
+  .kbd {
+    position: absolute; right: 8px; top: 9px; font-family: var(--font-ui); font-size: var(--text-xs);
+    color: var(--color-text-muted); border: var(--border-1) solid var(--color-border);
+    border-radius: var(--radius-xs); padding: 2px 7px; background: var(--color-surface);
+  }
+  #hitcount { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--color-text-muted); white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }
+  #navtoggle {
+    display: none; background: var(--color-surface); border: var(--border-1) solid var(--color-border);
+    color: var(--color-text); border-radius: var(--radius-xs); width: 38px; height: 38px; font-size: 16px; cursor: pointer;
+  }
+
+  /* shell: sidebar + columns */
+  .cheat-shell { display: flex; gap: var(--space-md); max-width: 1200px; margin: 0 auto; }
+  nav#sidebar {
+    width: 220px; flex: none; position: sticky; top: calc(var(--cheat-top) + 62px);
+    height: calc(100vh - var(--cheat-top) - 62px); overflow-y: auto;
+    padding: var(--space-md) var(--space-8) var(--space-lg) 0; scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+  nav#sidebar .grp {
+    font-family: var(--font-ui); font-size: var(--text-xs); font-weight: var(--font-weight-bold);
+    text-transform: uppercase; letter-spacing: 2px; color: var(--color-accent);
+    margin: var(--space-md) 0 var(--space-5) var(--space-8);
+  }
+  nav#sidebar .grp::before { content: "// "; color: var(--color-text-muted); }
+  nav#sidebar .grp:first-child { margin-top: 0; }
+  nav#sidebar a {
+    display: block; color: var(--color-text-muted); text-decoration: none;
+    font-family: var(--font-ui); font-size: var(--text-sm); padding: 3px var(--space-8);
+    border-left: var(--border-2) solid transparent; text-transform: uppercase; letter-spacing: .5px;
+    transition: color var(--motion-fast), background var(--motion-fast);
+  }
+  nav#sidebar a:hover { color: var(--color-text); background: var(--color-surface); }
+  nav#sidebar a.active { color: var(--color-accent); border-left-color: var(--color-accent); background: var(--color-surface); }
+
+  main.cheat-main { flex: 1; padding: var(--space-md) 0 var(--space-lg); min-width: 0; }
+  /* Column width fits the widest code line (~560px) so code never needs a
+     horizontal scrollbar; the page flows to 2+ columns when there's room. */
+  .cols { columns: 600px; column-gap: var(--space-md); }
+
+  /* cards */
+  .card {
+    break-inside: avoid; background: var(--color-surface);
+    border: var(--border-1) solid var(--color-border); border-radius: var(--radius-sm);
+    padding: var(--space-12) var(--space-12) var(--space-10); margin: 0 0 var(--space-sm);
+    max-width: 660px; overflow: hidden;
+  }
+  .card.dim { display: none; }
+  .card h2 {
+    font-family: var(--font-heading); font-weight: var(--font-weight-normal);
+    font-size: var(--text-xl); letter-spacing: .5px; color: var(--color-text);
+    text-transform: uppercase; margin-bottom: var(--space-2); display: flex; align-items: center; gap: var(--space-8);
+  }
+  .card h2::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--color-accent); flex: none; transform: rotate(45deg); }
+  .card .tag {
+    font-family: var(--font-ui); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 1px;
+    color: var(--color-accent); background: var(--color-white-a05);
+    border: var(--border-1) solid var(--color-border); border-radius: var(--radius-pill-sm);
+    padding: 1px var(--space-8); margin-left: auto; font-weight: var(--font-weight-normal);
+  }
+  .card > p, .card li { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--color-text-muted); }
+
+  /* code — never uppercase (Python is case-sensitive); the site's global
+     text-transform:uppercase would corrupt identifiers, so reset it here. */
+  .cheat pre, .cheat code, .cheat pre *, .cheat code * { text-transform: none; }
+  .codewrap { position: relative; margin: var(--space-8) 0; }
+  .card pre {
+    background: var(--color-bg); border: var(--border-1) solid var(--color-border);
+    border-radius: var(--radius-xs); padding: var(--space-10) var(--space-12);
+    overflow-x: auto; font-size: 12.5px; line-height: 1.5;
+  }
+  .card pre code { font-family: var(--font-ui); background: none; border: none; padding: 0; }
+  .card :not(pre) > code {
+    font-family: var(--font-ui); font-size: var(--text-sm); color: var(--color-text);
+    background: var(--color-white-a05); border: var(--border-1) solid var(--color-border);
+    border-radius: var(--radius-xs); padding: 1px 5px;
+  }
+  .copy {
+    position: absolute; top: 6px; right: 6px; font-family: var(--font-ui); font-size: var(--text-xs);
+    text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted);
+    background: var(--color-surface); border: var(--border-1) solid var(--color-border);
+    border-radius: var(--radius-xs); padding: 2px var(--space-8); cursor: pointer; opacity: 0;
+    transition: opacity var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast);
+  }
+  .codewrap:hover .copy { opacity: 1; }
+  .copy:hover { color: var(--color-accent); border-color: var(--color-accent); }
+
+  /* notes */
+  .note {
+    font-family: var(--font-ui); font-size: var(--text-sm); color: var(--color-text-muted);
+    background: var(--color-surface); border-left: var(--border-2) solid var(--color-accent);
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0; padding: var(--space-8) var(--space-10); margin: var(--space-8) 0 0;
+  }
+  .note code { font-family: var(--font-ui); color: var(--color-text); }
+  .note.warn { border-left-color: var(--color-black); color: var(--color-text); }
+  .note.warn::before { content: "// NOTE  "; color: var(--color-black); font-weight: var(--font-weight-bold); }
+
+  /* highlight.js — light, on-system (navy inks + weight/italic, one hue) */
+  .hljs { color: var(--color-text); background: transparent; }
+  .hljs-comment, .hljs-quote { color: var(--color-text-muted); font-style: italic; }
+  .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-section, .hljs-name { color: var(--color-accent); font-weight: var(--font-weight-bold); }
+  .hljs-built_in, .hljs-type, .hljs-title.class_, .hljs-class .hljs-title { color: var(--color-accent); }
+  .hljs-string, .hljs-regexp, .hljs-attr, .hljs-attribute, .hljs-symbol { color: var(--color-text-muted); }
+  .hljs-number, .hljs-title, .hljs-title.function_ { color: var(--color-text); font-weight: var(--font-weight-bold); }
+  .hljs-meta, .hljs-decorator { color: var(--color-accent); font-style: italic; }
+  .hljs-params, .hljs-operator, .hljs-punctuation, .hljs-variable { color: var(--color-text); }
+
+  /* mobile */
+  @media (max-width: 768px) {
+    #navtoggle { display: block; }
+    .cheat-shell { display: block; }
+    nav#sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 240px; height: 100vh; z-index: var(--z-header);
+      background: var(--color-bg); border-right: var(--border-1) solid var(--color-border);
+      padding: var(--space-md) var(--space-12); transform: translateX(-105%); transition: transform var(--motion-fast);
+    }
+    nav#sidebar.open { transform: translateX(0); }
+    .cols { columns: 1; }
+  }
+  </style>
+</head>
+<body data-page="cheatsheet" class="cheat">
+  <div id="site-header"></div>
+
+  <section class="cheat-intro">
+    <span class="section-label">// REFERENCE</span>
+    <h1>Python <br />Cheat Sheet</h1>
+    <p class="subline">A dense, searchable single-page reference — the syntax, data structures, OOP, iteration, async, tooling, and idioms I reach for most. Hit <span class="kbd" style="position:static">/</span> to filter cards.</p>
+  </section>
+
+  <div class="cheat-toolbar">
+    <button id="navtoggle" aria-label="Toggle navigation">☰</button>
+    <div class="searchwrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>
+      <input id="search" type="text" placeholder="filter cards… (decorator, regex, gil)" autocomplete="off" spellcheck="false" />
+      <span class="kbd">/</span>
+    </div>
+    <span id="hitcount"></span>
+  </div>
+
+  <div class="cheat-shell">
+<nav id="sidebar" aria-label="Sections">
+  <div class="grp">Core</div>
+  <a href="#basics">Variables &amp; Basics</a>
+  <a href="#numbers">Numbers &amp; Math</a>
+  <a href="#strings">Strings</a>
+  <a href="#fstrings">f-strings &amp; Format Spec</a>
+  <a href="#flow">Control Flow &amp; match</a>
+  <div class="grp">Data Structures</div>
+  <a href="#lists">Lists</a>
+  <a href="#tuples">Tuples &amp; Unpacking</a>
+  <a href="#dicts">Dicts</a>
+  <a href="#sets">Sets</a>
+  <a href="#comprehensions">Comprehensions</a>
+  <a href="#collections">collections</a>
+  <div class="grp">Functions &amp; OOP</div>
+  <a href="#functions">Functions</a>
+  <a href="#decorators">Decorators</a>
+  <a href="#oop">Classes &amp; OOP</a>
+  <a href="#dataclasses">Dataclasses</a>
+  <a href="#dunder">Dunder Methods</a>
+  <div class="grp">Iteration</div>
+  <a href="#generators">Iterators &amp; Generators</a>
+  <a href="#itertools">itertools</a>
+  <a href="#functools">functools</a>
+  <div class="grp">I/O &amp; Data</div>
+  <a href="#files">Files &amp; I/O</a>
+  <a href="#pathlib">pathlib</a>
+  <a href="#serialization">JSON · CSV · Pickle</a>
+  <a href="#regex">Regex</a>
+  <a href="#datetime">datetime</a>
+  <div class="grp">Language Depth</div>
+  <a href="#typing">Type Hints</a>
+  <a href="#exceptions">Exceptions</a>
+  <a href="#modules">Modules &amp; Imports</a>
+  <a href="#tooling">venv · pip · Tooling</a>
+  <div class="grp">Concurrency</div>
+  <a href="#async">asyncio</a>
+  <a href="#concurrency">Threads &amp; Processes</a>
+  <a href="#subprocess">subprocess · os · sys</a>
+  <div class="grp">Quality</div>
+  <a href="#testing">Testing (pytest)</a>
+  <a href="#debugging">Debug &amp; Profile</a>
+  <a href="#gotchas">Gotchas</a>
+  <a href="#idioms">Idioms &amp; One-liners</a>
+</nav>
+  <main class="cheat-main">
+<div class="cols">
+<!-- ══════════ CORE ══════════ -->
+<section class="card" id="basics"><h2>Variables &amp; Basics<span class="tag">core</span></h2>
+<div class="codewrap"><pre><code class="language-python">x = 5                    # dynamic typing, no declaration
+a, b = 1, 2              # multiple assignment
+a, b = b, a              # swap (tuple pack/unpack)
+x = y = z = 0            # chained
+first, *rest = [1,2,3,4] # starred unpack -> rest=[2,3,4]
+PI = 3.14159             # UPPER = constant by convention
+
+if (n := len(data)) > 10:    # walrus := assigns in expression
+    print(f"{n} items")
+
+type(x)                  # <class 'int'>
+isinstance(x, (int, float))  # True — prefer over type()==
+id(x)                    # object identity (CPython: address)
+del x                    # unbind name
+x is None                # identity check — always for None
+bool([]), bool(0), bool("")  # all False (falsy)
+# Falsy: None, False, 0, 0.0, "", [], {}, (), set()</code></pre></div>
+<table><tr><th>op</th><th>meaning</th></tr>
+<tr><td>==  !=</td><td>value equality</td></tr>
+<tr><td>is / is not</td><td>identity (same object)</td></tr>
+<tr><td>and or not</td><td>short-circuit; return operand, not bool</td></tr>
+<tr><td>in / not in</td><td>membership</td></tr>
+<tr><td>a &lt; b &lt; c</td><td>chained comparison</td></tr></table>
+<p><code>x or default</code> returns <code>default</code> if x falsy; <code>a and b</code> returns b if a truthy.</p>
+</section>
+
+<section class="card" id="numbers"><h2>Numbers &amp; Math<span class="tag">core</span></h2>
+<div class="codewrap"><pre><code class="language-python">7 / 2      # 3.5   true division (always float)
+7 // 2     # 3     floor division (rounds toward -inf!)
+-7 // 2    # -4    ← beware
+7 % 2      # 1     modulo (sign follows divisor)
+divmod(7, 2)   # (3, 1)
+2 ** 10        # 1024   power
+pow(2, 10, 97) # modular pow — fast
+round(2.675, 2)   # 2.67 — float repr + banker's rounding
+round(2.5)        # 2 (rounds half to even!)
+abs(-3), int("ff", 16), float("inf"), float("nan")
+0b1010, 0o17, 0xFF          # binary/octal/hex literals
+1_000_000                   # underscore separators
+f"{255:b} {255:o} {255:x}"  # '11111111 377 ff'
+
+# bitwise
+a & b, a | b, a ^ b, ~a, a << 2, a >> 2
+(n & (n-1)) == 0            # power-of-2 test
+x.bit_length(), x.bit_count()
+
+import math
+math.floor(-1.5), math.ceil(1.2), math.trunc(-1.5)  # -2, 2, -1
+math.isclose(0.1+0.2, 0.3)  # True — never == floats
+math.gcd(12, 18), math.lcm(4, 6), math.sqrt(2), math.log2(8)
+math.prod([1,2,3,4]), math.factorial(5), math.comb(5,2)
+
+from decimal import Decimal      # exact decimal arithmetic
+Decimal("0.1") + Decimal("0.2")  # Decimal('0.3')
+from fractions import Fraction
+Fraction(1, 3) + Fraction(1, 6)  # Fraction(1, 2)</code></pre></div>
+<div class="note">Ints are arbitrary precision — no overflow, ever. <code>2**10000</code> just works.</div>
+</section>
+
+<section class="card" id="strings"><h2>Strings<span class="tag">core</span></h2>
+<div class="codewrap"><pre><code class="language-python">s = 'single' + "double" + '''triple
+multiline'''
+r"raw\nstring"     # no escape processing (regex, paths)
+b"bytes"           # bytes literal
+"ab" * 3           # 'ababab'
+s[0], s[-1]        # indexing
+s[2:5], s[::-1]    # slice, reverse
+"na" in "banana"   # True
+len(s), min(s), max(s), sorted(s)
+str(42), repr("hi")     # 'hi' with quotes -> "'hi'"
+", ".join(["a","b","c"])       # 'a, b, c' — join, not +=
+"".join(reversed(s))
+"a-b-c".split("-")             # ['a','b','c']
+"a b  c".split()               # any whitespace, drops empties
+"key=val=x".partition("=")     # ('key','=','val=x')
+"line1\nline2".splitlines()
+"hello".encode("utf-8")        # str -> bytes
+b"hello".decode("utf-8")       # bytes -> str
+ord("A"), chr(65)              # 65, 'A'</code></pre></div>
+<table><tr><th>method</th><th>does</th></tr>
+<tr><td>strip / lstrip / rstrip</td><td>trim chars (default whitespace)</td></tr>
+<tr><td>removeprefix / removesuffix</td><td>drop exact prefix/suffix (3.9+)</td></tr>
+<tr><td>upper lower title capitalize</td><td>case transforms</td></tr>
+<tr><td>casefold</td><td>aggressive lower for comparison</td></tr>
+<tr><td>startswith / endswith</td><td>accepts tuple of options</td></tr>
+<tr><td>find / rfind</td><td>index or -1</td></tr>
+<tr><td>index / rindex</td><td>index or ValueError</td></tr>
+<tr><td>replace(old,new,count)</td><td>substitution</td></tr>
+<tr><td>count(sub)</td><td>non-overlapping occurrences</td></tr>
+<tr><td>isdigit isalpha isalnum</td><td>content tests</td></tr>
+<tr><td>isspace isidentifier</td><td>more tests</td></tr>
+<tr><td>zfill(w) / ljust / rjust / center</td><td>padding</td></tr>
+<tr><td>translate(str.maketrans(...))</td><td>char mapping/removal</td></tr></table>
+<div class="note">Strings are immutable — every "mutation" builds a new string. Accumulate in a list and <code>"".join()</code> for O(n).</div>
+</section>
+
+<section class="card" id="fstrings"><h2>f-strings &amp; Format Spec<span class="tag">core</span></h2>
+<div class="codewrap"><pre><code class="language-python">name, pi, n = "ada", 3.14159, 1234567
+f"{name.upper()}"        # expressions allowed
+f"{pi:.2f}"              # '3.14'
+f"{n:,}"                 # '1,234,567'
+f"{n:_}"                 # '1_234_567'
+f"{0.257:.1%}"           # '25.7%'
+f"{n:>12}"               # right-align width 12
+f"{n:<12}" f"{n:^12}"    # left / center
+f"{n:012d}"              # zero-pad
+f"{255:#06x}"            # '0x00ff'
+f"{1e9:.2e}"             # '1.00e+09'
+f"{pi:{'.3f'}}"          # nested format spec
+f"{name=}"               # "name='ada'" — debug (3.8+)
+f"{obj!r}"               # repr(); !s str(); !a ascii()
+f"{{literal braces}}"    # '{literal braces}'
+f"{now:%Y-%m-%d}"        # datetime passthrough</code></pre></div>
+<table><tr><th>spec</th><th>[[fill]align][sign][#][0][width][,][.prec][type]</th></tr>
+<tr><td>&lt; &gt; ^ =</td><td>align left/right/center/pad-after-sign</td></tr>
+<tr><td>+ - space</td><td>sign handling</td></tr>
+<tr><td>b o x X</td><td>bin, octal, hex</td></tr>
+<tr><td>d n</td><td>decimal, locale-aware</td></tr>
+<tr><td>e f g %</td><td>sci, fixed, general, percent</td></tr>
+<tr><td>*&lt;10</td><td>fill with '*', left, width 10</td></tr></table>
+<p>Legacy: <code>"{} {}".format(a, b)</code>, <code>"%s %d" % (s, n)</code>. Prefer f-strings.</p>
+</section>
+
+<section class="card" id="flow"><h2>Control Flow &amp; match<span class="tag">core</span></h2>
+<div class="codewrap"><pre><code class="language-python">if x > 0: pass
+elif x < 0: pass
+else: pass
+
+val = "yes" if cond else "no"     # ternary
+
+for i, item in enumerate(items, start=1): ...
+for a, b in zip(xs, ys): ...              # stops at shortest
+for a, b in zip(xs, ys, strict=True): ... # raise on mismatch
+for k, v in d.items(): ...
+for x in reversed(seq): ...
+for x in sorted(seq, key=len): ...
+range(5), range(2, 10), range(10, 0, -2)
+
+while n > 0:
+    n -= 1
+    if skip: continue
+    if done: break
+else:
+    ...   # runs iff loop was NOT broken (for...else too)
+
+# structural pattern matching (3.10+)
+match command.split():
+    case ["go", direction]:            print(direction)
+    case ["drop", *items]:             print(items)
+    case ["quit" | "exit"]:            raise SystemExit
+    case {"action": act, **rest}:      ...   # dict pattern
+    case Point(x=0, y=0):              ...   # class pattern
+    case [Point(x=0), Point() as p2]:  ...   # capture with as
+    case int() | float() as num if num > 0:  ...  # guard
+    case _:                            print("unknown")</code></pre></div>
+<div class="note"><code>case</code> names <b>bind</b> — a bare <code>case x:</code> matches anything and assigns. Use dotted names (<code>case Color.RED:</code>) to compare against constants.</div>
+</section>
+
+<!-- ══════════ DATA STRUCTURES ══════════ -->
+<section class="card" id="lists"><h2>Lists<span class="tag">mutable · ordered</span></h2>
+<div class="codewrap"><pre><code class="language-python">xs = [1, 2, 3]
+xs.append(4)            # add one          O(1)
+xs.extend([5, 6])       # add many         O(k)
+xs.insert(0, 99)        # at index         O(n)
+xs.pop()                # remove+return last  O(1)
+xs.pop(0)               # from front       O(n) — use deque
+xs.remove(99)           # first matching value, ValueError if absent
+xs.index(3), xs.count(2)
+xs.reverse(); xs.sort() # in-place, return None!
+ys = sorted(xs)                     # new list
+ys = sorted(xs, key=len, reverse=True)
+ys = sorted(people, key=lambda p: (p.age, p.name))  # multi-key
+xs.clear()
+
+# slicing: seq[start:stop:step] — stop exclusive
+xs[2:5]; xs[:3]; xs[-3:]; xs[::2]; xs[::-1]
+xs[1:3] = [9, 9, 9]      # slice assignment resizes
+del xs[::2]              # delete by slice
+
+copy = xs[:]             # shallow copy (also list(xs), xs.copy())
+import copy as _c; deep = _c.deepcopy(nested)
+
+[0] * 5                  # [0,0,0,0,0]
+[[0]*3 for _ in range(2)]  # 2-D — NOT [[0]*3]*2 (shared rows!)
+max(xs, default=0); sum(xs); any(xs); all(xs)
+list(filter(None, xs))   # drop falsy</code></pre></div>
+<div class="note">Sort is stable (Timsort). Multi-level: sort by secondary key first, or use a key tuple. Descending on one field: negate numerics or sort twice.</div>
+</section>
+
+<section class="card" id="tuples"><h2>Tuples &amp; Unpacking<span class="tag">immutable</span></h2>
+<div class="codewrap"><pre><code class="language-python">t = (1, "a", 3.0)
+single = (42,)          # ← comma makes the tuple, not parens
+t = 1, 2, 3             # parens optional
+x, y, z = t             # unpack (exact count)
+first, *mid, last = range(6)   # mid = [1,2,3,4]
+(a, b), c = (1, 2), 3          # nested
+
+def stats(xs): return min(xs), max(xs)   # "multi-return"
+lo, hi = stats(data)
+
+# tuples are hashable (if contents are) -> dict keys, set items
+points = {(0, 0): "origin"}
+
+from collections import namedtuple
+Point = namedtuple("Point", "x y")
+p = Point(3, 4); p.x; p._replace(x=9); p._asdict()
+
+from typing import NamedTuple
+class Point(NamedTuple):      # typed version
+    x: int
+    y: int = 0</code></pre></div>
+<p>Tuple vs list: heterogeneous fixed record vs homogeneous variable collection. Tuples are lighter and hashable.</p>
+</section>
+
+<section class="card" id="dicts"><h2>Dicts<span class="tag">insertion-ordered</span></h2>
+<div class="codewrap"><pre><code class="language-python">d = {"a": 1, "b": 2}
+d = dict(a=1, b=2)
+d = dict(zip(keys, vals))
+d["c"] = 3
+d["missing"]              # KeyError
+d.get("missing")          # None
+d.get("missing", 0)       # default
+d.setdefault("k", []).append(x)   # init-if-absent idiom
+d.pop("a")                # remove+return (KeyError if absent)
+d.pop("a", None)          # safe
+d.popitem()               # remove last-inserted (k, v)
+del d["b"]
+"a" in d                  # key membership
+d.keys(); d.values(); d.items()   # live views
+d.update(other)           # merge in-place
+merged = d1 | d2          # merged dict (3.9+), right wins
+d1 |= d2                  # in-place merge
+{v: k for k, v in d.items()}      # invert
+dict.fromkeys(["a","b"], 0)       # {'a':0,'b':0}
+
+max(d, key=d.get)                 # key of max value
+sorted(d.items(), key=lambda kv: kv[1], reverse=True)
+{k: d[k] for k in sorted(d)}      # sort by key</code></pre></div>
+<div class="note">Keys must be hashable. Dicts preserve insertion order (guaranteed 3.7+). Don't add/remove keys while iterating — snapshot with <code>list(d)</code> first.</div>
+</section>
+
+<section class="card" id="sets"><h2>Sets<span class="tag">unique · unordered</span></h2>
+<div class="codewrap"><pre><code class="language-python">s = {1, 2, 3}
+s = set()               # {} is an empty DICT
+s = set("hello")        # {'h','e','l','o'}
+s.add(4); s.discard(9)  # discard: no error if absent
+s.remove(9)             # KeyError if absent
+s.pop()                 # arbitrary element
+x in s                  # O(1) membership — the killer feature
+
+a | b   a.union(b)              # union
+a & b   a.intersection(b)       # intersection
+a - b   a.difference(b)         # difference
+a ^ b   a.symmetric_difference(b)
+a <= b  a.issubset(b);   a < b  # proper subset
+a >= b  a.issuperset(b)
+a.isdisjoint(b)
+a |= b; a &= b; a -= b          # in-place variants
+
+unique = list(set(xs))          # dedupe (order lost)
+list(dict.fromkeys(xs))         # dedupe, order KEPT
+
+frozenset({1, 2})               # immutable, hashable set</code></pre></div>
+<p>Set elements must be hashable — use <code>frozenset</code> or tuples for nested sets.</p>
+</section>
+
+<section class="card" id="comprehensions"><h2>Comprehensions<span class="tag">expressive</span></h2>
+<div class="codewrap"><pre><code class="language-python">[x**2 for x in range(10)]                 # list
+[x for x in xs if x > 0]                  # filter
+[x if x > 0 else 0 for x in xs]           # map w/ ternary
+{x % 3 for x in xs}                       # set
+{w: len(w) for w in words}                # dict
+(x**2 for x in xs)                        # generator — lazy!
+sum(x*x for x in xs)                      # genexp inline
+
+# nested loops read left→right like for-statements
+[(i, j) for i in range(3) for j in range(3) if i != j]
+
+flat = [x for row in matrix for x in row]        # flatten
+transposed = [list(col) for col in zip(*matrix)]
+
+# double comprehension = nested output
+[[x*2 for x in row] for row in matrix]
+
+# with walrus — compute once, use twice
+[y for x in data if (y := f(x)) is not None]</code></pre></div>
+<div class="note warn">If it needs more than ~2 <code>for</code>/<code>if</code> clauses or side effects, write a real loop. Comprehensions are for building collections, not executing code.</div>
+</section>
+
+<section class="card" id="collections"><h2>collections<span class="tag">stdlib</span></h2>
+<div class="codewrap"><pre><code class="language-python">from collections import Counter, defaultdict, deque, ChainMap
+
+c = Counter("mississippi")
+c.most_common(2)          # [('i',4),('s',4)]
+c["m"]; c["zz"]           # missing -> 0, no KeyError
+c.update(other); c.total()
+Counter(a) + Counter(b); Counter(a) - Counter(b)
+c1 & c2; c1 | c2          # min / max of counts
+
+dd = defaultdict(list)    # factory called on missing key
+dd["k"].append(1)         # no KeyError, auto []
+graph = defaultdict(set)  # adjacency lists
+counts = defaultdict(int) # counting (or use Counter)
+
+dq = deque([1,2,3], maxlen=5)   # ring buffer w/ maxlen
+dq.append(4); dq.appendleft(0)  # O(1) both ends
+dq.pop(); dq.popleft()
+dq.rotate(1)                    # [3,0,1] style rotation
+
+cm = ChainMap(cli_args, env, defaults)  # layered lookup
+cm["key"]   # searches maps left→right</code></pre></div>
+<p><code>deque</code> for queues/BFS (list.pop(0) is O(n)); <code>Counter</code> for any tally; <code>defaultdict</code> for grouping.</p>
+<div class="codewrap"><pre><code class="language-python"># grouping idiom
+by_len = defaultdict(list)
+for w in words: by_len[len(w)].append(w)
+
+import heapq                     # honorary mention: heaps
+heapq.heapify(xs)                # min-heap, in place
+heapq.heappush(xs, v); heapq.heappop(xs)
+heapq.nlargest(3, xs, key=score) # top-k
+import bisect
+bisect.bisect_left(sorted_xs, v) # binary search insert point
+bisect.insort(sorted_xs, v)</code></pre></div>
+</section>
+<!-- ══════════ FUNCTIONS & OOP ══════════ -->
+<section class="card" id="functions"><h2>Functions<span class="tag">core</span></h2>
+<div class="codewrap"><pre><code class="language-python">def f(a, b=10, *args, kw_only, opt=None, **kwargs):
+    """Docstring: first line summary."""
+    return a + b
+
+f(1, 2, 3, 4, kw_only=True, extra=9)
+# args=(3,4)  kwargs={'extra': 9}
+
+def g(pos_only, /, either, *, kw_only): ...
+# before / : positional-only; after * : keyword-only
+
+f(*[1, 2], **{"kw_only": True})   # unpack into call
+
+square = lambda x: x * x          # single expression only
+sorted(xs, key=lambda p: p[1])
+
+def outer():
+    count = 0
+    def inner():
+        nonlocal count            # write to enclosing scope
+        count += 1
+        return count
+    return inner                  # closure
+
+counter = outer(); counter()      # 1, 2, 3...
+
+def h() -> int: ...               # annotations (not enforced)
+h.__doc__, h.__name__, h.__annotations__
+
+# functions are objects: pass, store, return them
+ops = {"add": lambda a,b: a+b, "mul": lambda a,b: a*b}
+ops["add"](2, 3)</code></pre></div>
+<div class="note warn">Never use mutable defaults: <code>def f(xs=[])</code> shares ONE list across all calls. Use <code>xs=None</code> then <code>xs = xs if xs is not None else []</code>.</div>
+<p>Scope rule LEGB: Local → Enclosing → Global → Builtins. <code>global name</code> / <code>nonlocal name</code> to rebind outward.</p>
+</section>
+
+<section class="card" id="decorators"><h2>Decorators<span class="tag">meta</span></h2>
+<div class="codewrap"><pre><code class="language-python">import functools, time
+
+def timed(fn):
+    @functools.wraps(fn)          # preserve __name__/__doc__
+    def wrapper(*args, **kwargs):
+        t0 = time.perf_counter()
+        try:
+            return fn(*args, **kwargs)
+        finally:
+            print(f"{fn.__name__}: {time.perf_counter()-t0:.4f}s")
+    return wrapper
+
+@timed
+def work(): ...        # work = timed(work)
+
+def retry(times=3, exc=Exception):     # decorator WITH args
+    def deco(fn):
+        @functools.wraps(fn)
+        def wrapper(*a, **kw):
+            for i in range(times):
+                try: return fn(*a, **kw)
+                except exc:
+                    if i == times - 1: raise
+        return wrapper
+    return deco
+
+@retry(times=5, exc=ConnectionError)
+def fetch(url): ...
+
+@functools.lru_cache(maxsize=None)   # or @functools.cache
+def fib(n): return n if n < 2 else fib(n-1) + fib(n-2)
+fib.cache_info(); fib.cache_clear()
+
+# stacking: applied bottom-up
+@timed
+@retry()
+def job(): ...        # job = timed(retry()(job))</code></pre></div>
+<p>Class-level: <code>@staticmethod</code>, <code>@classmethod</code>, <code>@property</code>. A decorator is just <code>f = deco(f)</code>.</p>
+</section>
+
+<section class="card" id="oop"><h2>Classes &amp; OOP<span class="tag">objects</span></h2>
+<div class="codewrap"><pre><code class="language-python">class Animal:
+    kind = "generic"              # CLASS attr (shared)
+
+    def __init__(self, name):
+        self.name = name          # instance attr
+
+    def speak(self):              # instance method
+        return f"{self.name} makes a sound"
+
+    @classmethod
+    def from_dict(cls, d):        # alt constructor pattern
+        return cls(d["name"])
+
+    @staticmethod
+    def is_valid(name):           # no self/cls
+        return bool(name)
+
+    @property
+    def label(self):              # computed attr: a.label
+        return self.name.title()
+
+    @label.setter
+    def label(self, v): self.name = v.lower()
+
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)    # call parent init
+        self.breed = breed
+    def speak(self):              # override
+        return super().speak() + " — woof"
+
+d = Dog("rex", "gsd")
+isinstance(d, Animal)     # True
+issubclass(Dog, Animal)   # True
+Dog.__mro__               # method resolution order (C3)
+vars(d)                   # instance __dict__
+getattr(d, "name", None); setattr(d, "x", 1); hasattr(d, "x")
+
+class Point:
+    __slots__ = ("x", "y")   # no __dict__: less RAM, no dynamic attrs
+
+from abc import ABC, abstractmethod
+class Repo(ABC):
+    @abstractmethod
+    def get(self, id): ...    # subclasses MUST implement</code></pre></div>
+<div class="note">Name mangling: <code>__attr</code> becomes <code>_Class__attr</code> (avoid unless preventing subclass clashes). Convention: <code>_attr</code> = "internal, hands off".</div>
+</section>
+
+<section class="card" id="dataclasses"><h2>Dataclasses<span class="tag">3.7+</span></h2>
+<div class="codewrap"><pre><code class="language-python">from dataclasses import dataclass, field, asdict, replace
+
+@dataclass
+class User:
+    name: str
+    age: int = 0
+    tags: list[str] = field(default_factory=list)  # mutable default
+    _cache: dict = field(default_factory=dict, repr=False,
+                         compare=False)
+
+    def __post_init__(self):          # validation/derivation
+        if self.age < 0: raise ValueError("age")
+
+u = User("ada", 36)
+u == User("ada", 36)      # True — __eq__ generated
+asdict(u)                 # recursive dict
+replace(u, age=37)        # copy with changes
+
+@dataclass(frozen=True)   # immutable + hashable
+class Point:
+    x: float
+    y: float
+
+@dataclass(order=True)    # generates < <= > >=
+class Task:
+    priority: int
+    name: str = field(compare=False)
+
+@dataclass(slots=True)    # 3.10+: __slots__ generated
+class Fast: x: int; y: int
+
+@dataclass(kw_only=True)  # 3.10+: all fields keyword-only
+class Config: host: str; port: int = 8080</code></pre></div>
+<p>Generated for free: <code>__init__</code>, <code>__repr__</code>, <code>__eq__</code> (+ <code>__hash__</code> if frozen, ordering if order=True). Heavier alternative with validation: pydantic.</p>
+</section>
+
+<section class="card" id="dunder"><h2>Dunder Methods<span class="tag">protocols</span></h2>
+<table><tr><th>method</th><th>triggered by</th></tr>
+<tr><td>__init__ / __new__</td><td>construction (init self / create instance)</td></tr>
+<tr><td>__repr__</td><td>repr(x), debugger — unambiguous</td></tr>
+<tr><td>__str__</td><td>str(x), print — readable (falls back to repr)</td></tr>
+<tr><td>__eq__ __hash__</td><td>==, dict/set keys (eq without hash → unhashable)</td></tr>
+<tr><td>__lt__ __le__ __gt__ __ge__</td><td>ordering, sorted()</td></tr>
+<tr><td>__len__ __bool__</td><td>len(x), truthiness (len→bool fallback)</td></tr>
+<tr><td>__getitem__ __setitem__ __delitem__</td><td>x[k] access</td></tr>
+<tr><td>__contains__</td><td>v in x</td></tr>
+<tr><td>__iter__ __next__</td><td>for loops, iter()/next()</td></tr>
+<tr><td>__call__</td><td>x() — callable instances</td></tr>
+<tr><td>__enter__ __exit__</td><td>with blocks (context manager)</td></tr>
+<tr><td>__add__ __radd__ __iadd__</td><td>x+y, y+x fallback, x+=y (same for sub/mul/truediv/…)</td></tr>
+<tr><td>__neg__ __abs__ __round__</td><td>-x, abs(x), round(x)</td></tr>
+<tr><td>__getattr__</td><td>attr lookup MISS only</td></tr>
+<tr><td>__getattribute__</td><td>every attr lookup (dangerous)</td></tr>
+<tr><td>__slots__</td><td>declared attrs, no __dict__</td></tr>
+<tr><td>__init_subclass__</td><td>subclass creation hook</td></tr>
+<tr><td>__class_getitem__</td><td>Class[param] generics</td></tr></table>
+<div class="codewrap"><pre><code class="language-python">class Vector:
+    def __init__(self, *xs): self.xs = tuple(xs)
+    def __repr__(self): return f"Vector{self.xs}"
+    def __len__(self): return len(self.xs)
+    def __getitem__(self, i): return self.xs[i]   # → iterable, sliceable
+    def __add__(self, o):
+        if not isinstance(o, Vector): return NotImplemented
+        return Vector(*(a+b for a, b in zip(self.xs, o.xs)))
+    def __eq__(self, o): return isinstance(o, Vector) and self.xs == o.xs
+    def __hash__(self): return hash(self.xs)</code></pre></div>
+<p>Return <code>NotImplemented</code> (not raise) from binary ops on type mismatch — lets Python try the reflected method.</p>
+</section>
+
+<!-- ══════════ ITERATION ══════════ -->
+<section class="card" id="generators"><h2>Iterators &amp; Generators<span class="tag">lazy</span></h2>
+<div class="codewrap"><pre><code class="language-python">it = iter([1, 2, 3])
+next(it)              # 1
+next(it, None)        # default instead of StopIteration
+
+def countdown(n):     # generator function — lazy, resumable
+    while n > 0:
+        yield n       # pauses here, resumes on next()
+        n -= 1
+
+for x in countdown(3): print(x)
+list(countdown(3))            # [3,2,1]
+
+def chained(*iters):
+    for it in iters:
+        yield from it         # delegate to sub-iterator
+
+gen = (x*x for x in range(10**9))   # generator expression: O(1) mem
+sum(gen)                             # consumes it — one pass only!
+
+# generators as pipelines
+lines  = (l.strip() for l in open("log.txt"))
+errors = (l for l in lines if "ERROR" in l)
+first5 = [next(errors) for _ in range(5)]
+
+# infinite generator
+def ids():
+    n = 0
+    while True:
+        yield n; n += 1
+
+# coroutine-ish: send values in
+def accumulator():
+    total = 0
+    while True:
+        total += yield total
+
+class Countdown:              # iterator protocol by hand
+    def __init__(self, n): self.n = n
+    def __iter__(self): return self
+    def __next__(self):
+        if self.n <= 0: raise StopIteration
+        self.n -= 1; return self.n + 1</code></pre></div>
+<div class="note">Generators are single-use. To re-iterate, call the function again or materialize with <code>list()</code>. Check exhaustion bugs when a "sequence" is silently empty the second time.</div>
+</section>
+
+<section class="card" id="itertools"><h2>itertools<span class="tag">stdlib</span></h2>
+<div class="codewrap"><pre><code class="language-python">from itertools import *</code></pre></div>
+<table><tr><th>fn</th><th>yields</th></tr>
+<tr><td>count(10, 2)</td><td>10, 12, 14, … infinite</td></tr>
+<tr><td>cycle("AB")</td><td>A B A B … infinite</td></tr>
+<tr><td>repeat(x, 3)</td><td>x, x, x</td></tr>
+<tr><td>chain(a, b)</td><td>all of a, then b</td></tr>
+<tr><td>chain.from_iterable(m)</td><td>flatten one level</td></tr>
+<tr><td>islice(it, 5) / (it, 2, 8)</td><td>lazy slicing of any iterator</td></tr>
+<tr><td>takewhile(pred, it)</td><td>prefix while true</td></tr>
+<tr><td>dropwhile(pred, it)</td><td>skip prefix, rest</td></tr>
+<tr><td>filterfalse(pred, it)</td><td>where pred is False</td></tr>
+<tr><td>accumulate(xs) / (xs, mul)</td><td>running totals / fold prefixes</td></tr>
+<tr><td>pairwise(xs)</td><td>(a,b),(b,c),(c,d) — 3.10+</td></tr>
+<tr><td>batched(xs, 3)</td><td>chunks of 3 — 3.12+</td></tr>
+<tr><td>zip_longest(a, b, fillvalue=0)</td><td>zip to longest</td></tr>
+<tr><td>product("AB", repeat=2)</td><td>AA AB BA BB (cartesian)</td></tr>
+<tr><td>permutations("ABC", 2)</td><td>ordered picks, no repeat</td></tr>
+<tr><td>combinations("ABC", 2)</td><td>AB AC BC</td></tr>
+<tr><td>combinations_with_replacement</td><td>AA AB AC BB BC CC</td></tr>
+<tr><td>groupby(xs, key)</td><td>(key, group-iter) — SORT FIRST</td></tr>
+<tr><td>starmap(f, pairs)</td><td>f(*pair) for each</td></tr>
+<tr><td>tee(it, 2)</td><td>n independent copies</td></tr></table>
+<div class="codewrap"><pre><code class="language-python"># groupby only groups CONSECUTIVE equal keys:
+data.sort(key=keyfn)
+for k, grp in groupby(data, key=keyfn):
+    print(k, list(grp))</code></pre></div>
+</section>
+
+<section class="card" id="functools"><h2>functools<span class="tag">stdlib</span></h2>
+<div class="codewrap"><pre><code class="language-python">from functools import (reduce, partial, cache, lru_cache,
+    cached_property, wraps, total_ordering, singledispatch)
+
+reduce(lambda acc, x: acc * x, [1,2,3,4], 1)   # 24
+
+pow2 = partial(pow, 2)          # freeze leading args
+pow2(10)                        # 1024
+log_err = partial(log, level="ERROR")
+
+@cache                          # unbounded memoize (3.9+)
+def parse(s): ...
+@lru_cache(maxsize=256)         # bounded LRU
+def lookup(key): ...            # args must be hashable
+
+class Report:
+    @cached_property            # computed once, then stored
+    def stats(self): return expensive(self.data)
+
+@total_ordering                 # define __eq__ + one of lt/le/gt/ge
+class Version:                  # → get all comparisons
+    def __eq__(self, o): ...
+    def __lt__(self, o): ...
+
+@singledispatch                 # function overloading by arg type
+def render(x): return str(x)
+@render.register
+def _(x: list): return ", ".join(map(render, x))
+@render.register
+def _(x: dict): return "; ".join(f"{k}={v}" for k,v in x.items())
+
+import operator as op           # frequent partner
+sorted(xs, key=op.itemgetter(1))
+sorted(objs, key=op.attrgetter("age", "name"))
+reduce(op.add, xs)</code></pre></div>
+</section>
+
+<!-- ══════════ I/O & DATA ══════════ -->
+<section class="card" id="files"><h2>Files &amp; I/O<span class="tag">io</span></h2>
+<div class="codewrap"><pre><code class="language-python">with open("data.txt", encoding="utf-8") as f:   # auto-close
+    text = f.read()               # whole file
+    # f.readline()                # one line
+    # f.readlines()               # list of lines
+
+with open("data.txt") as f:
+    for line in f:                # memory-efficient iteration
+        process(line.rstrip("\n"))
+
+with open("out.txt", "w", encoding="utf-8") as f:
+    f.write("one\n")
+    f.writelines(f"{x}\n" for x in xs)
+    print("also works", file=f)
+
+with open("img.png", "rb") as f:  # binary
+    blob = f.read()
+
+with open("a") as fa, open("b") as fb:   # multiple
+    ...
+
+f.seek(0); f.tell()               # random access
+import io
+buf = io.StringIO("in-memory text file")
+raw = io.BytesIO(b"bytes buffer")</code></pre></div>
+<table><tr><th>mode</th><th>meaning</th></tr>
+<tr><td>r</td><td>read (default), must exist</td></tr>
+<tr><td>w</td><td>write, TRUNCATES / creates</td></tr>
+<tr><td>a</td><td>append, creates</td></tr>
+<tr><td>x</td><td>create, fail if exists</td></tr>
+<tr><td>r+ / w+</td><td>read+write (w+ truncates)</td></tr>
+<tr><td>rb wb ab</td><td>binary variants (no encoding)</td></tr></table>
+<div class="note">Always pass <code>encoding="utf-8"</code> for text — the default is platform-dependent.</div>
+</section>
+
+<section class="card" id="pathlib"><h2>pathlib<span class="tag">paths</span></h2>
+<div class="codewrap"><pre><code class="language-python">from pathlib import Path
+
+p = Path("data") / "raw" / "file.tar.gz"   # / joins!
+p.name        # 'file.tar.gz'
+p.stem        # 'file.tar'
+p.suffix      # '.gz'
+p.suffixes    # ['.tar', '.gz']
+p.parent      # Path('data/raw')
+p.parts       # ('data', 'raw', 'file.tar.gz')
+p.with_suffix(".zip"); p.with_name("other.txt")
+
+Path.cwd(); Path.home(); p.resolve(); p.absolute()
+p.exists(); p.is_file(); p.is_dir(); p.is_symlink()
+p.stat().st_size; p.stat().st_mtime
+
+p.read_text(encoding="utf-8")     # slurp
+p.write_text("content", encoding="utf-8")
+p.read_bytes(); p.write_bytes(b"...")
+
+d = Path("out"); d.mkdir(parents=True, exist_ok=True)
+p.unlink(missing_ok=True)         # delete file
+d.rmdir()                         # empty dir only
+p.rename("new"); p.replace("new") # replace overwrites
+import shutil
+shutil.rmtree(d); shutil.copy2(src, dst); shutil.move(src, dst)
+
+for f in d.iterdir(): ...                 # children
+for f in d.glob("*.py"): ...              # pattern
+for f in d.rglob("**/*.json"): ...        # recursive
+[f for f in d.rglob("*") if f.is_file()]</code></pre></div>
+</section>
+
+<section class="card" id="serialization"><h2>JSON · CSV · Pickle<span class="tag">data</span></h2>
+<div class="codewrap"><pre><code class="language-python">import json
+s = json.dumps(obj, indent=2, sort_keys=True)
+s = json.dumps(obj, default=str)      # fallback for datetime etc.
+obj = json.loads(s)
+with open("f.json", "w") as f: json.dump(obj, f, indent=2)
+with open("f.json") as f: obj = json.load(f)
+# str↔str; dict keys become strings; tuples become lists
+
+import csv
+with open("f.csv", newline="") as f:      # newline="" matters
+    for row in csv.reader(f): ...          # row = list[str]
+    # or:
+    for row in csv.DictReader(f): row["col_name"]
+
+with open("out.csv", "w", newline="") as f:
+    w = csv.writer(f); w.writerow(["a", "b"]); w.writerows(rows)
+    dw = csv.DictWriter(f, fieldnames=["a","b"])
+    dw.writeheader(); dw.writerow({"a":1,"b":2})
+
+import pickle                          # arbitrary Python objects
+blob = pickle.dumps(obj)
+obj = pickle.loads(blob)               # NEVER on untrusted data</code></pre></div>
+<div class="note warn"><code>pickle.loads</code> executes arbitrary code — only unpickle data you produced. For config prefer JSON/TOML (<code>tomllib.load</code>, 3.11+).</div>
+</section>
+
+<section class="card" id="regex"><h2>Regex<span class="tag">re</span></h2>
+<div class="codewrap"><pre><code class="language-python">import re
+pat = re.compile(r"(\w+)@(\w+)\.com")   # compile if reused
+
+m = pat.search(text)          # first match anywhere, or None
+if m:
+    m.group(0)                # whole match
+    m.group(1), m.group(2)    # captures
+    m.start(), m.end(), m.span()
+pat.match(text)               # only at START
+pat.fullmatch(text)           # entire string
+pat.findall(text)             # list of captures/strings
+pat.finditer(text)            # iterator of match objects
+pat.split("a1b22c")           # split by pattern
+pat.sub(r"\2/\1", text)       # replace w/ backrefs
+pat.sub(lambda m: m.group(1).upper(), text)   # fn replacement
+
+m = re.search(r"(?P<user>\w+)@(?P<host>\w+)", s)
+m["user"]                     # named groups
+
+re.IGNORECASE | re.MULTILINE  # flags: re.I, re.M (^$ per line),
+                              # re.S (dot matches \n), re.X (verbose)</code></pre></div>
+<table><tr><th>pattern</th><th>matches</th></tr>
+<tr><td>. ^ $</td><td>any char (not \n), start, end</td></tr>
+<tr><td>* + ? {2,5}</td><td>0+, 1+, 0/1, range — all greedy</td></tr>
+<tr><td>*? +? ??</td><td>lazy variants</td></tr>
+<tr><td>\d \w \s</td><td>digit, word char, whitespace (caps = negated)</td></tr>
+<tr><td>[abc] [^abc] [a-z]</td><td>char class, negated, range</td></tr>
+<tr><td>\b</td><td>word boundary</td></tr>
+<tr><td>(x) (?:x)</td><td>capture / non-capture group</td></tr>
+<tr><td>a|b</td><td>alternation</td></tr>
+<tr><td>(?=x) (?!x)</td><td>lookahead pos/neg</td></tr>
+<tr><td>(?&lt;=x) (?&lt;!x)</td><td>lookbehind pos/neg</td></tr>
+<tr><td>\1</td><td>backreference to group 1</td></tr></table>
+</section>
+
+<section class="card" id="datetime"><h2>datetime<span class="tag">time</span></h2>
+<div class="codewrap"><pre><code class="language-python">from datetime import datetime, date, timedelta, timezone
+
+now = datetime.now()                       # naive local
+utc = datetime.now(timezone.utc)           # aware — prefer!
+today = date.today()
+dt = datetime(2026, 7, 13, 14, 30)
+dt.year, dt.month, dt.day, dt.hour, dt.weekday()  # Mon=0
+
+dt.isoformat()                       # '2026-07-13T14:30:00'
+datetime.fromisoformat("2026-07-13T14:30:00+01:00")
+dt.strftime("%Y-%m-%d %H:%M")        # format →  str
+datetime.strptime("13/07/26", "%d/%m/%y")   # parse ← str
+
+delta = timedelta(days=7, hours=3)
+tomorrow = now + timedelta(days=1)
+(d2 - d1).days; delta.total_seconds()
+
+from zoneinfo import ZoneInfo         # 3.9+
+lagos = datetime.now(ZoneInfo("Africa/Lagos"))
+lagos.astimezone(ZoneInfo("America/Los_Angeles"))
+
+import time
+time.time()                # unix epoch float
+time.perf_counter()        # monotonic — use for timing
+time.sleep(0.5)
+datetime.fromtimestamp(1752400000, tz=timezone.utc)
+dt.timestamp()</code></pre></div>
+<table><tr><th>code</th><th>meaning</th></tr>
+<tr><td>%Y %m %d</td><td>2026, 07, 13</td></tr>
+<tr><td>%H %M %S</td><td>hour24 min sec</td></tr>
+<tr><td>%I %p</td><td>hour12, AM/PM</td></tr>
+<tr><td>%a %A</td><td>Mon / Monday</td></tr>
+<tr><td>%b %B</td><td>Jul / July</td></tr>
+<tr><td>%j %U %W</td><td>day-of-year, week#</td></tr>
+<tr><td>%z %Z</td><td>+0100, TZ name</td></tr>
+<tr><td>%%</td><td>literal %</td></tr></table>
+</section>
+
+<!-- ══════════ LANGUAGE DEPTH ══════════ -->
+<section class="card" id="typing"><h2>Type Hints<span class="tag">typing</span></h2>
+<div class="codewrap"><pre><code class="language-python">def scale(v: list[float], k: float = 1.0) -> list[float]: ...
+x: int | None = None              # Optional (3.10+ union syntax)
+pairs: dict[str, list[int]] = {}
+point: tuple[int, int]; row: tuple[str, ...]   # variadic
+
+from typing import (Any, Callable, Literal, Final, TypeVar,
+    Protocol, TypedDict, TypeAlias, cast, overload, Iterator)
+from collections.abc import Iterable, Sequence, Mapping
+
+f: Callable[[int, str], bool]
+mode: Literal["r", "w", "a"]
+MAX: Final = 100                  # constant — no reassignment
+
+T = TypeVar("T")
+def first(xs: Sequence[T]) -> T: return xs[0]
+def first[T](xs: Sequence[T]) -> T: ...   # 3.12 syntax
+
+class Comparable(Protocol):       # structural typing (duck)
+    def __lt__(self, other) -> bool: ...
+def smallest(xs: Iterable[Comparable]): ...
+
+class Movie(TypedDict):           # typed dict shapes
+    title: str
+    year: int
+    rating: NotRequired[float]    # 3.11+
+
+Vector: TypeAlias = list[float]
+type Vector = list[float]         # 3.12 syntax
+
+def gen() -> Iterator[int]: yield 1
+val = cast(list[int], opaque)     # assert to checker, no runtime op
+
+@overload
+def get(i: int) -> str: ...
+@overload
+def get(i: slice) -> list[str]: ...
+def get(i): ...                   # real impl last</code></pre></div>
+<p>Hints are ignored at runtime — enforce with <code>mypy</code> / <code>pyright</code>. Accept broad (<code>Iterable</code>, <code>Mapping</code>), return specific (<code>list</code>, <code>dict</code>).</p>
+</section>
+
+<section class="card" id="exceptions"><h2>Exceptions<span class="tag">errors</span></h2>
+<div class="codewrap"><pre><code class="language-python">try:
+    risky()
+except (ValueError, KeyError) as e:   # tuple of types
+    logger.warning("bad input: %s", e)
+except OSError as e:
+    if e.errno != errno.ENOENT: raise   # re-raise same exc
+except Exception:
+    logger.exception("unexpected")      # logs traceback
+    raise                               # never swallow silently
+else:
+    ...   # runs only if NO exception
+finally:
+    ...   # always runs (cleanup)
+
+raise ValueError(f"bad port: {port!r}")
+raise TimeoutError("db") from original_exc   # chain: __cause__
+raise RuntimeError from None                 # suppress context
+
+class AppError(Exception): ...               # custom hierarchy
+class ConfigError(AppError):
+    def __init__(self, key, msg="missing"):
+        self.key = key
+        super().__init__(f"{key}: {msg}")
+
+assert cond, "message"     # debug-time; stripped by python -O
+
+from contextlib import suppress
+with suppress(FileNotFoundError):     # explicit "ignore"
+    os.remove(tmp)
+
+try:                       # 3.11+: exception groups
+    parallel_work()
+except* ValueError as eg:  # handles matching subgroup
+    ...</code></pre></div>
+<table><tr><th>common</th><th>raised when</th></tr>
+<tr><td>ValueError</td><td>right type, bad value</td></tr>
+<tr><td>TypeError</td><td>wrong type</td></tr>
+<tr><td>KeyError / IndexError</td><td>missing dict key / seq index (both ⊂ LookupError)</td></tr>
+<tr><td>AttributeError</td><td>missing attribute</td></tr>
+<tr><td>FileNotFoundError / PermissionError</td><td>⊂ OSError</td></tr>
+<tr><td>StopIteration</td><td>iterator exhausted</td></tr>
+<tr><td>KeyboardInterrupt / SystemExit</td><td>⊂ BaseException, NOT Exception</td></tr></table>
+<div class="note">EAFP — "easier to ask forgiveness than permission": try/except beats pre-checking in Python. Catch narrowly, fail loudly.</div>
+</section>
+
+<section class="card" id="modules"><h2>Modules &amp; Imports<span class="tag">structure</span></h2>
+<div class="codewrap"><pre><code class="language-python">import math
+import numpy as np
+from pathlib import Path
+from collections import Counter, deque
+from .sibling import helper        # relative (inside package)
+from ..parent import thing
+
+if __name__ == "__main__":         # run-as-script guard
+    main()
+
+# package layout
+# mypkg/
+#   __init__.py        # runs on import; controls `from mypkg import *`
+#   core.py
+#   utils/
+#     __init__.py
+#     text.py          # mypkg.utils.text
+
+__all__ = ["public_fn"]            # star-import surface
+
+import importlib
+importlib.reload(module)           # re-exec (REPL/dev)
+mod = importlib.import_module("pkg.name")   # dynamic
+
+import sys
+sys.path                           # module search paths
+sys.modules                        # import cache
+
+# lazy import for heavy deps
+def plot(data):
+    import matplotlib.pyplot as plt   # only paid when called
+    ...</code></pre></div>
+<div class="note warn">Circular imports: usually a design smell — extract shared code to a third module, import inside functions, or use <code>from __future__ import annotations</code> for type-only cycles.</div>
+</section>
+
+<section class="card" id="tooling"><h2>venv · pip · Tooling<span class="tag">env</span></h2>
+<div class="codewrap"><pre><code class="language-bash">python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+deactivate
+
+pip install requests "django>=4.2,<5" pkg==1.2.3
+pip install -e .                   # editable local install
+pip install -r requirements.txt
+pip freeze > requirements.txt
+pip list --outdated; pip show requests; pip uninstall pkg
+
+# uv — fast modern manager (recommended)
+uv venv && uv pip install requests
+uv add requests && uv run script.py
+uv sync                            # from pyproject/lockfile
+
+python -m module                   # run module as script
+python -c "import sys; print(sys.version)"
+python -i script.py                # drop into REPL after
+python -X dev script.py            # dev mode: extra checks</code></pre></div>
+<div class="codewrap"><pre><code class="language-toml"># pyproject.toml (modern standard)
+[project]
+name = "mypkg"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["httpx", "pydantic>=2"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy"]</code></pre></div>
+<p>Quality stack: <code>ruff</code> (lint+format, replaces flake8/black/isort), <code>mypy</code>/<code>pyright</code> (types), <code>pytest</code> (tests), <code>pre-commit</code> (hooks).</p>
+</section>
+
+<!-- ══════════ CONCURRENCY ══════════ -->
+<section class="card" id="async"><h2>asyncio<span class="tag">async/await</span></h2>
+<div class="codewrap"><pre><code class="language-python">import asyncio
+
+async def fetch(url):              # coroutine function
+    await asyncio.sleep(1)         # yield control — never time.sleep!
+    return url
+
+async def main():
+    r = await fetch("a")                       # sequential
+
+    a, b = await asyncio.gather(               # concurrent
+        fetch("a"), fetch("b"))
+    rs = await asyncio.gather(*tasks, return_exceptions=True)
+
+    t = asyncio.create_task(fetch("bg"))       # start now
+    ...
+    result = await t
+
+    async with asyncio.timeout(5):             # 3.11+
+        await slow()
+    r = await asyncio.wait_for(slow(), timeout=5)   # older
+
+    async with asyncio.TaskGroup() as tg:      # 3.11+ structured
+        t1 = tg.create_task(fetch("a"))        # auto-await + cancel
+        t2 = tg.create_task(fetch("b"))        # errors → ExceptionGroup
+
+asyncio.run(main())                # entry point — once
+
+sem = asyncio.Semaphore(10)        # limit concurrency
+async def bounded(url):
+    async with sem:
+        return await fetch(url)
+
+async for item in aiter: ...       # async iteration
+async with session.get(url) as r:  # async context manager
+
+q = asyncio.Queue()
+await q.put(x); x = await q.get(); q.task_done()
+
+# CPU-bound / blocking calls: don't block the loop
+await asyncio.to_thread(blocking_io, arg)
+loop = asyncio.get_running_loop()
+await loop.run_in_executor(None, cpu_task)</code></pre></div>
+<div class="note">Async helps I/O-bound concurrency (many sockets), not CPU-bound work — one thread, cooperative switching at <code>await</code> points only. A forgotten <code>await</code> gives you a coroutine object, not a result.</div>
+</section>
+
+<section class="card" id="concurrency"><h2>Threads &amp; Processes<span class="tag">parallel</span></h2>
+<div class="codewrap"><pre><code class="language-python">from concurrent.futures import (ThreadPoolExecutor,
+    ProcessPoolExecutor, as_completed)
+
+# I/O-bound → threads (GIL released during I/O)
+with ThreadPoolExecutor(max_workers=8) as ex:
+    results = list(ex.map(fetch, urls))        # ordered
+    futs = {ex.submit(fetch, u): u for u in urls}
+    for fut in as_completed(futs):             # arrival order
+        try: print(futs[fut], fut.result())
+        except Exception as e: print("failed:", e)
+
+# CPU-bound → processes (sidesteps the GIL)
+with ProcessPoolExecutor() as ex:              # picklable args only
+    out = list(ex.map(crunch, chunks, chunksize=100))
+
+import threading
+lock = threading.Lock()
+with lock:                        # guard shared mutable state
+    counter += 1
+threading.RLock(); threading.Event(); threading.Semaphore(5)
+t = threading.Thread(target=work, args=(q,), daemon=True)
+t.start(); t.join()
+
+from queue import Queue           # thread-safe channel
+q = Queue()
+q.put(item); item = q.get(); q.task_done(); q.join()
+
+import multiprocessing as mp
+if __name__ == "__main__":        # REQUIRED on spawn platforms
+    with mp.Pool() as pool:
+        pool.map(f, data)</code></pre></div>
+<div class="note">GIL: one thread executes Python bytecode at a time. Threads → concurrency for I/O; processes → parallelism for CPU. (3.13+ has experimental free-threaded builds.)</div>
+</section>
+
+<section class="card" id="subprocess"><h2>subprocess · os · sys<span class="tag">system</span></h2>
+<div class="codewrap"><pre><code class="language-python">import subprocess as sp
+r = sp.run(["git", "status"], capture_output=True,
+           text=True, check=True, timeout=30)
+r.stdout, r.stderr, r.returncode
+# check=True → raises CalledProcessError on non-zero
+out = sp.check_output(["ls", "-la"], text=True)
+p = sp.Popen(cmd, stdout=sp.PIPE)         # streaming/async control
+for line in p.stdout: ...
+# avoid shell=True with untrusted input (injection)
+
+import sys
+sys.argv                # [script, arg1, ...]
+sys.exit(1)             # exit code
+sys.stdin.read(); print("err", file=sys.stderr)
+sys.version_info >= (3, 11)
+sys.getsizeof(obj)      # shallow size in bytes
+
+import os
+os.environ.get("API_KEY", "")
+os.environ["MODE"] = "prod"
+os.getpid(); os.cpu_count(); os.getcwd(); os.chdir(p)
+os.urandom(16)          # crypto-grade bytes
+
+import argparse         # CLI args
+ap = argparse.ArgumentParser(description="tool")
+ap.add_argument("path")
+ap.add_argument("-n", "--count", type=int, default=1)
+ap.add_argument("-v", action="store_true")
+args = ap.parse_args(); args.count</code></pre></div>
+</section>
+
+<!-- ══════════ QUALITY ══════════ -->
+<section class="card" id="testing"><h2>Testing (pytest)<span class="tag">quality</span></h2>
+<div class="codewrap"><pre><code class="language-python"># test_calc.py — files/functions must start with test_
+def test_add():
+    assert add(2, 3) == 5          # plain assert, rich diffs
+
+def test_raises():
+    import pytest
+    with pytest.raises(ValueError, match="negative"):
+        sqrt(-1)
+
+@pytest.mark.parametrize("a,b,want", [
+    (1, 2, 3), (0, 0, 0), (-1, 1, 0),
+])
+def test_add_many(a, b, want):
+    assert add(a, b) == want
+
+@pytest.fixture
+def db():                          # setup/teardown
+    conn = connect(":memory:")
+    yield conn                     # ← test runs here
+    conn.close()
+
+def test_query(db):                # injected by name
+    assert db.query("...") == []
+
+def test_float():
+    assert 0.1 + 0.2 == pytest.approx(0.3)
+
+@pytest.fixture(scope="module")    # share across a module
+def server(): ...
+@pytest.mark.skip(reason="wip")
+@pytest.mark.xfail                 # expected failure
+
+# built-in fixtures: tmp_path, monkeypatch, capsys
+def test_env(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("MODE", "test")
+    monkeypatch.setattr(mod, "fetch", lambda u: "stub")
+    (tmp_path / "f.txt").write_text("x")
+    print("hi"); assert capsys.readouterr().out == "hi\n"
+
+from unittest.mock import Mock, patch
+m = Mock(return_value=42); m(1); m.assert_called_once_with(1)
+with patch("mymod.requests.get") as g:
+    g.return_value.json.return_value = {"ok": True}</code></pre></div>
+<div class="codewrap"><pre><code class="language-bash">pytest -x -q                 # stop at first failure, quiet
+pytest -k "add and not slow" # filter by name
+pytest --lf                  # rerun last failures
+pytest -s                    # show prints
+pytest --cov=mypkg           # coverage (pytest-cov)</code></pre></div>
+</section>
+
+<section class="card" id="debugging"><h2>Debug &amp; Profile<span class="tag">perf</span></h2>
+<div class="codewrap"><pre><code class="language-python">breakpoint()            # drop into pdb here (3.7+)
+# pdb: n(ext) s(tep) c(ontinue) l(ist) p expr  w(here)  q(uit)
+# up/down = walk stack;  b file:42 = breakpoint
+python -m pdb script.py           # post-mortem from start
+import pdb; pdb.pm()              # inspect last traceback
+
+import timeit
+timeit.timeit("x in s", setup="s=set(range(1000)); x=999",
+              number=100_000)
+# shell:  python -m timeit "'-'.join(map(str, range(100)))"
+
+import cProfile, pstats
+cProfile.run("main()", "out.prof")
+pstats.Stats("out.prof").sort_stats("cumulative").print_stats(15)
+# shell:  python -m cProfile -s tottime script.py
+
+import tracemalloc                 # memory
+tracemalloc.start()
+...
+for s in tracemalloc.take_snapshot().statistics("lineno")[:10]:
+    print(s)
+
+import logging
+logging.basicConfig(level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+log = logging.getLogger(__name__)
+log.debug("x=%s", x); log.info(...); log.warning(...)
+log.exception("boom")              # inside except: adds traceback
+
+import dis
+dis.dis(fn)                        # bytecode — settle perf debates
+
+from pprint import pprint; pprint(nested, width=100)
+import reprlib; reprlib.repr(huge)  # truncated repr</code></pre></div>
+<p>Order of operations: measure (profile) → find hot spot → fix algorithm/data structure → only then micro-optimize.</p>
+</section>
+
+<section class="card" id="gotchas"><h2>Gotchas<span class="tag">read this</span></h2>
+<div class="codewrap"><pre><code class="language-python"># 1. mutable default — shared across calls
+def bad(x, acc=[]): acc.append(x); return acc
+bad(1); bad(2)          # [1, 2]  !!
+
+# 2. late-binding closures — all lambdas see final i
+fns = [lambda: i for i in range(3)]
+[f() for f in fns]      # [2, 2, 2]
+fns = [lambda i=i: i for i in range(3)]   # fix: default-capture
+
+# 3. is vs == ; small-int caching makes `is` "work" sometimes
+a = 256; b = 256; a is b   # True  (cached -5..256)
+a = 257; b = 257; a is b   # False (usually) — use ==
+
+# 4. shallow copy shares nested objects
+row = [[0]*3]*3; row[0][0] = 9    # ALL rows change
+import copy; safe = copy.deepcopy(nested)
+
+# 5. mutating a list while iterating skips items
+for x in xs:                       # BAD if removing
+    if bad(x): xs.remove(x)
+xs[:] = [x for x in xs if not bad(x)]   # good
+
+# 6. tuple needs the comma
+t = (1)      # int 1!
+t = (1,)     # tuple
+
+# 7. sort()/reverse()/append() return None
+xs = xs.sort()          # xs is now None !!
+
+# 8. chained "equality" surprise
+x == y == z             # means x==y and y==z (usually wanted)
+0.1 + 0.2 == 0.3        # False — math.isclose()
+
+# 9. bool is an int subclass
+True + True             # 2 ;  isinstance(True, int) → True
+
+# 10. except swallowing everything
+try: ...
+except: pass            # hides even KeyboardInterrupt — never
+
+# 11. default args evaluated ONCE at def-time
+def f(when=datetime.now()): ...   # frozen timestamp!
+
+# 12. string interning / identity
+"a" * 1000 is "a" * 1000    # implementation detail — never rely</code></pre></div>
+</section>
+
+<section class="card" id="idioms"><h2>Idioms &amp; One-liners<span class="tag">pythonic</span></h2>
+<div class="codewrap"><pre><code class="language-python">a, b = b, a                              # swap
+xs[::-1]                                 # reverse copy
+list(dict.fromkeys(xs))                  # dedupe, keep order
+[x for row in m for x in row]            # flatten
+list(zip(*m))                            # transpose
+dict(zip(keys, vals))                    # pair-up
+{**d1, **d2} or d1 | d2                  # merge dicts
+max(set(xs), key=xs.count)               # mode (small lists)
+Counter(xs).most_common(1)[0][0]         # mode (proper)
+sum(1 for x in xs if pred(x))            # count matching
+next((x for x in xs if pred(x)), None)   # first match or None
+all(x > 0 for x in xs); any(...)
+sorted(xs, key=str.lower)                # case-insensitive
+min(points, key=lambda p: p[0]**2+p[1]**2)
+[xs[i:i+n] for i in range(0, len(xs), n)]  # chunk
+s == s[::-1]                             # palindrome
+" ".join(w.capitalize() for w in s.split())
+print(*xs, sep=", ")                     # no join needed
+x = val if cond else other
+value = d.get(key) or default            # careful: falsy values!
+value = d.get(key, default)              # usually what you want
+globals().get("DEBUG", False)
+isinstance(x, (list, tuple))
+path.read_text().splitlines()            # file → lines
+try: return cache[k]
+except KeyError: ...                     # EAFP over LBYL
+
+# unpack in loops
+for (a, b), c in zip(pairs, cs): ...
+# conditional expression in f-string
+f"{'yes' if ok else 'no'}"
+# ternary chain? no — use a dict dispatch
+handler = {"add": do_add, "del": do_del}[cmd]</code></pre></div>
+<div class="note">import this — the Zen: explicit beats implicit, flat beats nested, readability counts, errors never pass silently.</div>
+</section>
+
+</div>
+  </main>
+  </div>
+
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <script>
+hljs.highlightAll();
+
+// copy buttons
+document.querySelectorAll('.codewrap').forEach(w => {
+  const btn = document.createElement('button');
+  btn.className = 'copy'; btn.textContent = 'copy';
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(w.querySelector('code').innerText).then(() => {
+      btn.textContent = 'copied!'; setTimeout(() => btn.textContent = 'copy', 1200);
+    });
+  });
+  w.appendChild(btn);
+});
+
+// search filter
+const search = document.getElementById('search');
+const cards = [...document.querySelectorAll('.card')];
+const hit = document.getElementById('hitcount');
+const index = cards.map(c => ({el: c, text: c.innerText.toLowerCase()}));
+function applyFilter() {
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  index.forEach(({el, text}) => {
+    const ok = !q || text.includes(q);
+    el.classList.toggle('dim', !ok);
+    if (ok) shown++;
+  });
+  hit.textContent = q ? `${shown}/${cards.length} cards` : `${cards.length} cards`;
+}
+search.addEventListener('input', applyFilter);
+applyFilter();
+
+// "/" focuses search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== search) { e.preventDefault(); search.focus(); }
+  if (e.key === 'Escape' && document.activeElement === search) { search.value=''; applyFilter(); search.blur(); }
+});
+
+// active nav on scroll
+const links = [...document.querySelectorAll('nav#sidebar a')];
+const byId = Object.fromEntries(links.map(a => [a.getAttribute('href').slice(1), a]));
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const link = byId[en.target.id];
+      if (link) link.classList.add('active');
+    }
+  });
+}, {rootMargin: '-20% 0px -70% 0px'});
+cards.forEach(c => obs.observe(c));
+
+// mobile nav toggle
+const sidebar = document.getElementById('sidebar');
+document.getElementById('navtoggle').addEventListener('click', () => sidebar.classList.toggle('open'));
+sidebar.addEventListener('click', e => { if (e.target.tagName === 'A') sidebar.classList.remove('open'); });
+  </script>
+</body>
+</html>
