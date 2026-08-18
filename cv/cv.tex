@@ -1,0 +1,245 @@
+%==============================================================
+%  Nwele Uchenna David — Curriculum Vitae
+%  Layout/typography replicated from supplied template
+%  Compile with: ./build.sh   (or: pdflatex cv.tex)
+%==============================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[left=0.7in,right=0.7in,top=0.4in,bottom=0.35in]{geometry}
+% NOTE: T1 fontenc deliberately omitted - it makes Computer Modern ligatures
+% (fi, fl, ff) extract as control characters, garbling words for ATS parsers.
+% Default OT1 + glyphtounicode extracts cleanly. Do not re-add fontenc.
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+% - ATS: make PDF text extraction reliable -------------------
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\raggedbottom
+\setlength{\parindent}{0pt}
+
+% --------------------- EDIT THESE -----------------------------
+\newcommand{\myemail}{developeruche@gmail.com}
+% Phone: fill in between the braces to show it in the header's second row.
+% Left empty, the slot simply collapses and nothing is printed.
+\newcommand{\myphone}{}
+% --------------------------------------------------------------
+
+\definecolor{sectbg}{gray}{0.86}
+
+% Section header: bordered, gray-filled, sans-serif bold bar
+\newcommand{\cvsection}[1]{%
+  \vspace{6pt}%
+  \noindent\fcolorbox{black}{sectbg}{%
+    \parbox[c][19pt][c]{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}{%
+      \hspace{7pt}\sffamily\bfseries\large #1}%
+  }%
+  \par\vspace{5pt}%
+}
+
+% Outer list of entries (bullet markers)
+\newlist{cventries}{itemize}{1}
+\setlist[cventries]{label=\textbullet,leftmargin=1.3em,itemsep=3.5pt,%
+                   parsep=0pt,topsep=2pt,partopsep=0pt}
+
+% Inner achievement bullets (dash markers)
+\newlist{cvbullets}{itemize}{1}
+\setlist[cvbullets]{label=\textbf{-},leftmargin=1.4em,itemsep=0.5pt,%
+                    parsep=0pt,topsep=3pt,partopsep=0pt}
+
+% Entry heading: {org}{location}{title}{dates}
+\newcommand{\cventry}[4]{%
+  \begin{tabular*}{\linewidth}[t]{@{\extracolsep{\fill}}l r@{}}
+    \textbf{#1} & #2 \\
+    \textit{#3} & \textit{#4}
+  \end{tabular*}%
+}
+
+% Two-column line for open-source / project rows
+\newcommand{\cvrow}[2]{%
+  \begin{tabular*}{\linewidth}[t]{@{\extracolsep{\fill}}l r@{}}
+    \textbf{#1} & \textit{#2}
+  \end{tabular*}%
+}
+
+\begin{document}
+
+%==============================================================
+% HEADER
+%==============================================================
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l r@{}}
+  {\Huge Nwele Uchenna David} & \myemail \\[3pt]
+  Systems Engineer - Rust, Ethereum Execution Layer, zkVMs & \myphone \\[1pt]
+  Open to: Remote (global), Relocation
+    & \href{https://github.com/developeruche}{github.com/developeruche} \\[1pt]
+  \href{https://developeruche.com}{developeruche.com}
+    & \href{https://linkedin.com/in/developeruche}{linkedin.com/in/developeruche}
+\end{tabular*}
+
+%==============================================================
+\cvsection{Work Experience}
+
+\begin{cventries}
+
+
+%--------------------------------------------------------------
+\item \cventry{Ethereum Foundation - zkEVM Team}{Remote}
+              {Research Engineer (Contract)}{May - August 2026}
+\begin{cvbullets}
+  \item Proposed and drafted a REST/SSZ \texttt{newPayloadWithWitness} Engine API endpoint for Reth and
+        Ethrex, motivated by EIP-8025 and real-time zkVM attestation; benchmarks showed order-of-magnitude
+        witness-delivery latency reduction over the existing round-trip.
+  \item Implemented \texttt{zilkworm-stateless}, a C++ zkVM guest program for stateless Ethereum block
+        validation, covering EEST spec compliance and Merkle-Patricia Trie changes.
+  \item Contributed to \texttt{ere-guests}, a collection of stateless block-validation guest programs for
+        Ethereum blocks, and to \texttt{ere}, the Foundation's unified zkVM interface and toolkit.
+  \item Integrated a purpose-built TCP engine into Scroll's \texttt{reth-witness-indexer}.
+\end{cvbullets}
+
+%--------------------------------------------------------------
+\item \cventry{Ethereum Foundation - zkEVM Team}{Remote, Buenos Aires, Argentina}
+              {Research Engineer, Ethereum Protocol Fellowship}{June - Nov 2025}
+\begin{cvbullets}
+  \item Benchmarked precompiles across four major zkVM platforms (RISC0, SP1, OpenVM, Ziren), showing
+        that optimized software with lean precompiles outperforms generic implementations with fat
+        precompiles by roughly 27$\times$; published the findings as \textit{Fat vs.\ Lean Precompiles in
+        zkVMs}, arguing for a precompile strategy that avoids ecosystem fragmentation.
+  \item Identified AOT compilation as the primary lever for 10$\times$ zkVM performance gains, reaching
+        36M gas in 0.5s on consumer hardware, after profiling trace-generation bottlenecks.
+  \item Designed and prototyped a hybrid Ethereum architecture replacing the EVM with a RISC-V execution
+        engine while preserving backward compatibility, via magic-number detection and a mini-EVM
+        interpreter running as a RISC-V program.
+  \item Integrated the hybrid VM into a production Reth node and built \texttt{cargo-hybrid}, a CLI
+        toolchain for scaffolding, compiling and deploying RISC-V smart contracts; benchmarked end-to-end
+        against \texttt{revm}.
+  \item Prototyped ``Stateless Attestors'' with the Prysm team, enabling consensus-layer nodes to verify
+        execution payloads through zkEVM proofs without a full execution-layer dependency.
+  \item Built a stateless Ethereum block validator running inside \texttt{ziskemu}; compiled Geth
+        bare-metal with the Tamago toolchain to eliminate Linux syscall dependencies on zkVM targets.
+\end{cvbullets}
+
+
+%--------------------------------------------------------------
+\item \cventry{Independent Research - Rust Systems, zkVMs \& ZKPs}{Lagos, Nigeria}
+              {Research Engineer (self-directed)}{June 2024 - June 2025}
+\begin{cvbullets}
+  \item Stepped back from full-time engineering to work on cryptography and zero-knowledge full time -
+        reading papers daily, running research calls with peers, and implementing each result in Rust
+        rather than stopping at the write-up; converged on zkVMs as the specialism.
+  \item Built the polynomial layer the rest of the work rests on - univariate and multilinear
+        representations with their evaluation, interpolation and arithmetic.
+  \item Implemented the sum-check protocol and GKR, then succinct GKR - GKR composed with a multilinear
+        KZG commitment scheme.
+  \item Implemented Groth16, and KZG polynomial commitments in both univariate and multilinear form.
+  \item Implemented PLONK end to end - prover, verifier, circuit compiler, and a transpiler lowering
+        GKR circuits to Plonkish arithmetization.
+  \item Published the whole body of work as \texttt{cryptography-n-zk-research}, an open repository with
+        accompanying notes on computational proof systems.
+\end{cvbullets}
+
+
+%--------------------------------------------------------------
+\item \cventry{MyAI - Me Protocol}{USA, Remote}
+              {Senior Blockchain Engineer}{Nov 2022 - July 2025}
+\begin{cvbullets}
+  \item Led the blockchain engineering team delivering Me Protocol V3, V4 and V5 alongside the CTO,
+        owning architecture through to mainnet deployment.
+  \item Architected the protocol in Solidity and Yul on a custom Diamond-standard design, with
+        Foundry-based deployment and testing and an in-house migration toolkit supporting both upgrades
+        and rollbacks across a system of contracts.
+  \item Led development of a custom optimistic rollup in Rust settling to Polygon for asset transfer and
+        L2-to-L1 bridging; omitting a sandboxed VM kept it substantially lighter than a general-purpose
+        EVM rollup for the workload.
+\end{cvbullets}
+
+%--------------------------------------------------------------
+\item \cventry{Polytope Labs - Hyperbridge}{Remote}
+              {Blockchain Engineer}{Jan - April 2024}
+\begin{cvbullets}
+  \item Rust engineer on Tesseract, the Hyperbridge cross-chain relayer, and Substrate runtime engineer
+        on the Nexus runtime deployed to Polkadot mainnet.
+  \item Built HyperClient, a Rust library compiled to WebAssembly that lets Hyperbridge clients manage
+        in-flight ISMP requests; implemented teleport support for DOT addresses.
+\end{cvbullets}
+
+%--------------------------------------------------------------
+\item \cventry{Scroll}{Remote}
+              {Smart Contract Engineer (Contract)}{April - June 2024}
+\begin{cvbullets}
+  \item Built the on-chain contract layer for Scroll Pass, a zero-knowledge event ticketing platform
+        delivered with the Ethereum Community Fund.
+\end{cvbullets}
+
+%--------------------------------------------------------------
+\item \cventry{Nethermind}{Remote}
+              {Smart Contract Engineer (Intern)}{Jan - April 2023}
+\begin{cvbullets}
+  \item \textbf{Valantra:} built a DEX combining a Limit Order Book with constant-product and
+        constant-sum AMM algorithms over a shared liquidity base, avoiding fragmentation; exchange, pool
+        and management logic fully modularized.
+  \item \textbf{Libre:} contributed to a decentralized stock-market protocol for on-chain IPOs.
+\end{cvbullets}
+
+%--------------------------------------------------------------
+\item \cventry{AfriOne, Nahmii \& Web3Bridge}{Remote / Lagos, Nigeria}
+              {Smart Contract Engineer, Design Architect \& Team Lead (Contract)}{2021 - 2023}
+\begin{cvbullets}
+  \item \textbf{AfriOne:} led the blockchain team; shipped a contract system on a private Geth network
+        backing a consumer finance product, plus an SDK for the mobile and backend teams.
+  \item \textbf{Nahmii:} built Bondii, an asset-bonding system, and a cross-chain staking platform
+        unifying assets across Ethereum L1 and Nahmii 3; ported the Uniswap contracts and UI to Nahmii 3.
+  \item \textbf{Web3Bridge:} smart contract team lead for an on-chain governance system built on the Diamond standard.
+\end{cvbullets}
+
+\end{cventries}
+
+%==============================================================
+\cvsection{Open Source \& Research}
+
+\begin{cventries}
+
+\item \cvrow{Ethereum core tooling in Rust - Alloy, REVM, OpenZeppelin Stylus}{Merged contributions}
+\begin{cvbullets}
+  \item Contributor to \textbf{Alloy} (the ground-up rewrite of ethers-rs), \textbf{REVM} (the Rust EVM
+        used across the client ecosystem), and \textbf{OpenZeppelin's} Stylus contract library.
+\end{cvbullets}
+
+\item \cvrow{RISC-V EVM Experiment - research \& Rust proof of concept}{2025}
+\begin{cvbullets}
+  \item Evaluated RISC-V as an alternative execution environment for smart contracts; published
+        \textit{Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with the
+        Ethereum Virtual Machine}. Shipped a supporting RV32IM assembler and emulator in Rust.
+\end{cvbullets}
+
+\end{cventries}
+
+%==============================================================
+\cvsection{Skills}
+
+\begin{cventries}[itemsep=3pt]
+  \item \textbf{Languages:} Rust, Solidity, C++, TypeScript, Go
+  \item \textbf{Ethereum:} Reth, REVM, Alloy, Foundry, Engine API, SSZ, Merkle-Patricia Tries, EIP authorship
+  \item \textbf{Zero-Knowledge:} zkVMs (RISC0, SP1, OpenVM, Ziren, ZisK), Groth16, PLONK, KZG, GKR, sum-check
+  \item \textbf{Systems:} RISC-V (RV32IM), compilers, emulators, AOT compilation, performance benchmarking, WebAssembly
+  \item \textbf{Distributed Systems:} Substrate / Polkadot SDK, optimistic rollups, cross-chain messaging (ISMP)
+\end{cventries}
+
+%==============================================================
+\cvsection{Education}
+
+\begin{cventries}
+  \item \cvrow{University of Benin - B.Eng, Computer Engineering}{Benin City, Nigeria \quad 2019 - 2024}
+  \item \cventry{Polkadot Blockchain Academy}{Singapore}
+                {Blockchain Development - Rust, Substrate Runtime Engineering}{May - June 2024}
+\end{cventries}
+
+\end{document}

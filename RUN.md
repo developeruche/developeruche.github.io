@@ -37,6 +37,8 @@ Install the **Live Server** extension, then right-click `index.html` →
 | `/blog.html` | `blog.html` | All blog posts (cards open the external source) |
 | `/publications.html` | `publications.html` | Research papers + publications |
 | `/blog-post.html` | `blog-post.html` | Dummy post detail template (not yet linked) |
+| `/cv` | `cv/index.html` | Downloads the CV PDF (auto-starts on load) |
+| `/cv/preview.html` | `cv/preview.html` | Live LaTeX preview — dev only, `noindex` |
 
 Filtered views are shareable via query string, e.g.
 `/projects.html?tags=rust,evm`.
@@ -62,6 +64,23 @@ Notes:
   set a URL to render a real image instead.
 - Toggle `FILTER_MODE` in `assets/js/data.js` between `'OR'` (default) and
   `'AND'` to change how multiple selected tags combine.
+
+## Editing the CV
+
+The CV is LaTeX, compiled to `assets/cv/nwele-uchenna-david-cv.pdf` — the file
+`/cv` hands out. It needs `pdflatex` (`brew install texlive`).
+
+```bash
+./cv/dev.sh
+```
+
+Starts a server **and** a watcher on `cv/cv.tex`; open
+<http://localhost:8000/cv/preview.html> and every save recompiles and refreshes
+the preview. `./cv/build.sh` does a single build. Full notes in
+[`cv/README.md`](cv/README.md).
+
+Commit the regenerated PDF along with the `.tex` — Pages serves it as a static
+file, so an un-rebuilt PDF means a stale `/cv`.
 
 ## Deploying
 

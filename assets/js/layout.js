@@ -66,6 +66,7 @@ function renderFooter() {
           <div class="footer-col">
             <h4>// Resources</h4>
             <a href="/python-cheatsheet.html">Python Cheat Sheet →</a>
+            <a href="/cv/">CV / Résumé →</a>
           </div>
         </div>
       </div>
