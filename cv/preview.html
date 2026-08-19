@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Live Preview — Developer Uche</title>
+  <!-- Local editing tool, not site content. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex; flex-direction: column;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-ui);
+      font-size: var(--text-base);
+    }
+
+    .bar {
+      display: flex; align-items: center; gap: var(--space-sm);
+      flex-wrap: wrap;
+      padding: var(--space-12) var(--space-20);
+      border-bottom: var(--border-1) solid var(--color-border);
+      background: var(--color-surface);
+    }
+    .bar h1 {
+      margin: 0; font-family: var(--font-heading); font-weight: var(--font-weight-normal);
+      font-size: var(--text-xl); letter-spacing: var(--tracking-wide);
+    }
+    .spacer { flex: 1; }
+
+    /* Build state pill — the one thing you glance at while editing. */
+    .pill {
+      display: inline-flex; align-items: center; gap: var(--space-8);
+      padding: var(--space-5) var(--space-12);
+      border: var(--border-1) solid var(--color-border);
+      border-radius: var(--radius-pill-sm);
+      font-size: var(--text-xs); text-transform: uppercase;
+      letter-spacing: 1px; white-space: nowrap;
+    }
+    .dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-text-muted); }
+    .pill[data-state="ok"]       { border-color: var(--color-accent); color: var(--color-accent); }
+    .pill[data-state="ok"] .dot  { background: var(--color-accent); }
+    .pill[data-state="error"]      { border-color: #B0323A; color: #B0323A; }
+    .pill[data-state="error"] .dot { background: #B0323A; }
+    .pill[data-state="building"] .dot { animation: pulse 0.8s var(--ease-standard) infinite alternate; }
+    @keyframes pulse { from { opacity: 0.25; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { .pill[data-state="building"] .dot { animation: none; } }
+
+    .bar label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted); }
+    .bar button, .bar a.linkish {
+      font-family: var(--font-ui); font-size: var(--text-xs);
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: var(--space-5) var(--space-12);
+      border: var(--border-1) solid var(--color-border);
+      border-radius: var(--radius-pill-sm);
+      background: transparent; color: var(--color-text);
+      cursor: pointer; text-decoration: none;
+      transition: border-color var(--motion-fast);
+    }
+    .bar button:hover, .bar a.linkish:hover { border-color: var(--color-accent); }
+
+    .stage { flex: 1; position: relative; min-height: 0; }
+    iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--color-bg); }
+
+    /* Error log overlays the PDF so the last good render stays visible behind. */
+    .errbox {
+      position: absolute; inset: auto var(--space-20) var(--space-20) var(--space-20);
+      max-height: 45%; overflow: auto;
+      padding: var(--space-15) var(--space-20);
+      background: var(--color-surface);
+      border: var(--border-2) solid #B0323A;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-card-hover);
+      display: none;
+    }
+    .errbox[data-show="1"] { display: block; }
+
+    /* Shown on a fresh clone, before any PDF has been produced — otherwise the
+       iframe would render the static server's raw 404 page. */
+    .empty {
+      position: absolute; inset: 0;
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: var(--space-12);
+      background: var(--color-bg); text-align: center; padding: var(--space-md);
+    }
+    .empty[data-show="1"] { display: flex; }
+    .empty p { margin: 0; color: var(--color-text-muted); }
+    .empty code {
+      font-family: var(--font-ui); color: var(--color-accent);
+      border: var(--border-1) solid var(--color-border);
+      border-radius: var(--radius-xs); padding: var(--space-2) var(--space-8);
+    }
+    .errbox h2 {
+      margin: 0 0 var(--space-8); font-size: var(--text-xs);
+      text-transform: uppercase; letter-spacing: 1px; color: #B0323A;
+    }
+    .errbox pre {
+      margin: 0; white-space: pre-wrap; word-break: break-word;
+      font-family: var(--font-ui); font-size: var(--text-sm);
+      color: var(--color-text); line-height: var(--leading-base);
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <h1>CV LIVE PREVIEW</h1>
+    <span class="pill" id="pill" data-state="idle"><span class="dot"></span><span id="pill-text">connecting…</span></span>
+    <span class="spacer"></span>
+    <label><input type="checkbox" id="auto" checked /> auto-reload</label>
+    <button type="button" id="reload">Reload now</button>
+    <a class="linkish" href="/cv/" >Download page ↗</a>
+  </div>
+
+  <div class="stage">
+    <iframe id="frame" title="CV preview" src="/assets/cv/nwele-uchenna-david-cv.pdf"></iframe>
+    <div class="empty" id="empty">
+      <p>// No PDF built yet</p>
+      <p>Save <code>cv/cv.tex</code>, or run <code>./cv/build.sh</code> once.</p>
+    </div>
+    <div class="errbox" id="errbox">
+      <h2>LaTeX build failed — showing last good render</h2>
+      <pre id="errlog"></pre>
+    </div>
+  </div>
+
+  <script>
+    const PDF = '/assets/cv/nwele-uchenna-david-cv.pdf';
+    const STATUS = '/cv/.build-status.json';
+    const POLL_MS = 500;
+
+    const frame = document.getElementById('frame');
+    const pill = document.getElementById('pill');
+    const pillText = document.getElementById('pill-text');
+    const errbox = document.getElementById('errbox');
+    const errlog = document.getElementById('errlog');
+    const auto = document.getElementById('auto');
+    const empty = document.getElementById('empty');
+
+    let lastStamp = null;
+
+    // Keep the "nothing built yet" panel in sync with whether the PDF exists.
+    async function checkPdfExists() {
+      try {
+        const res = await fetch(PDF, { method: 'HEAD', cache: 'no-store' });
+        empty.dataset.show = res.ok ? '0' : '1';
+        return res.ok;
+      } catch {
+        empty.dataset.show = '1';
+        return false;
+      }
+    }
+
+    function setPill(state, text) {
+      pill.dataset.state = state;
+      pillText.textContent = text;
+    }
+
+    function reloadPdf() {
+      // Cache-bust so the browser fetches the freshly written file rather than
+      // re-showing the copy it already has.
+      frame.src = PDF + '?t=' + Date.now();
+      empty.dataset.show = '0';
+    }
+
+    function clockOf(t) {
+      return new Date(t * 1000).toLocaleTimeString();
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch(STATUS, { cache: 'no-store' });
+        if (!res.ok) throw new Error('no status file');
+        const s = await res.json();
+
+        // Only react when the watcher has actually written a new build.
+        if (s.time !== lastStamp) {
+          const first = lastStamp === null;
+          lastStamp = s.time;
+          if (s.ok) {
+            errbox.dataset.show = '0';
+            setPill('ok', 'built ' + clockOf(s.time));
+            if (auto.checked && (!first || empty.dataset.show === '1')) reloadPdf();
+          } else {
+            errlog.textContent = s.log || '(no log captured)';
+            errbox.dataset.show = '1';
+            setPill('error', 'build failed ' + clockOf(s.time));
+          }
+        }
+      } catch {
+        setPill('idle', 'watcher not running — run ./cv/dev.sh');
+      }
+    }
+
+    document.getElementById('reload').addEventListener('click', reloadPdf);
+    checkPdfExists();
+    poll();
+    setInterval(poll, POLL_MS);
+  </script>
+</body>
+</html>

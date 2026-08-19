@@ -8,3 +8,7 @@ __pycache__/
 # Editor/OS cruft
 *.swp
 .idea/
+
+# LaTeX build artifacts (CV) — the published PDF in assets/cv/ IS committed
+cv/.build/
+cv/.build-status.json

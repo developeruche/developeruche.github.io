@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV / Résumé — Developer Uche</title>
+  <meta name="description" content="Download the CV of Nwele Uchenna David (Developer Uche) — systems engineer working in Rust, the Ethereum execution layer, and zkVMs." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://developeruche.com/cv/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="CV / Résumé — Developer Uche" />
+  <meta property="og:description" content="Systems engineer — Rust, Ethereum execution layer, zkVMs. Download the full CV as a PDF." />
+  <meta property="og:url" content="https://developeruche.com/cv/" />
+  <meta property="og:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <meta property="og:image:alt" content="Portrait of Developer Uche" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="CV / Résumé — Developer Uche" />
+  <meta name="twitter:description" content="Systems engineer — Rust, Ethereum execution layer, zkVMs. Download the full CV as a PDF." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "CV / Résumé — Developer Uche",
+    "description": "Downloadable CV of Nwele Uchenna David (Developer Uche), systems engineer working in Rust, the Ethereum execution layer, and zkVMs.",
+    "url": "https://developeruche.com/cv/",
+    "isPartOf": { "@type": "WebSite", "name": "Developer Uche", "url": "https://developeruche.com/" },
+    "about": { "@type": "Person", "name": "Nwele Uchenna David", "alternateName": "Developer Uche", "url": "https://developeruche.com/" }
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <style>
+    /* Status line under the CTAs — mirrors .section-label's terminal voice. */
+    .cv-status {
+      margin-top: var(--space-md);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      min-height: 1.4em;
+    }
+    .cv-status[data-state="done"] { color: var(--color-accent); }
+    .cv-meta {
+      margin-top: var(--space-sm);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      text-transform: none;
+    }
+  </style>
+</head>
+<body data-page="cv">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <span class="section-label">// CURRICULUM VITAE</span>
+        <h1 class="hero-title">DOWNLOAD<br /><span class="text-gradient">MY CV</span></h1>
+        <p class="subline">Nwele Uchenna David — systems engineer working in Rust, the Ethereum execution layer, and zkVMs. The download should start on its own; if your browser blocked it, use the button below.</p>
+
+        <div class="hero-cta">
+          <a class="btn-primary" id="cv-download"
+             href="/assets/cv/nwele-uchenna-david-cv.pdf"
+             download="Nwele-Uchenna-David-CV.pdf">Download PDF <span aria-hidden="true">↓</span></a>
+          <a class="btn-secondary" href="/assets/cv/nwele-uchenna-david-cv.pdf"
+             target="_blank" rel="noopener">View in browser <span aria-hidden="true">↗</span></a>
+          <a class="btn-secondary" href="/index.html">Back home <span aria-hidden="true">→</span></a>
+        </div>
+
+        <p class="cv-status" id="cv-status" role="status"></p>
+        <p class="cv-meta">PDF · A4 · updated <span id="cv-updated">—</span></p>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+
+    const PDF = '/assets/cv/nwele-uchenna-david-cv.pdf';
+    const link = document.getElementById('cv-download');
+    const status = document.getElementById('cv-status');
+
+    // Kick the download off automatically. Same-origin + [download] means the
+    // browser saves the file instead of navigating away, so the page stays put
+    // and the buttons remain available as a fallback.
+    function startDownload() {
+      link.click();
+      status.textContent = '// Download started — check your downloads folder.';
+      status.dataset.state = 'done';
+    }
+
+    // Show when the PDF was last built, straight from the response header —
+    // no separate metadata file to keep in sync.
+    fetch(PDF, { method: 'HEAD', cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        const mod = res.headers.get('last-modified');
+        if (mod) {
+          document.getElementById('cv-updated').textContent =
+            new Date(mod).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        startDownload();
+      })
+      .catch(() => {
+        status.textContent = '// Automatic download unavailable — use the Download PDF button.';
+      });
+  </script>
+</body>
+</html>
