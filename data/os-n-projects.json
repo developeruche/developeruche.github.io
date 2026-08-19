@@ -1,5 +1,23 @@
 [
   {
+    "name": "RAX",
+    "type": "contribution",
+    "description": "A RISC-V to x86-64 ahead-of-time (AOT) compiler for ELF binaries, with interpreter and JIT backends for validation and comparison.",
+    "tags": [
+      "Rust",
+      "RISC-V",
+      "Compiler"
+    ],
+    "links": [
+      {
+        "label": "VIEW PRs",
+        "url": "https://github.com/sublinearlabs/rax/commits?author=developeruche"
+      }
+    ],
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "name": "Witnet",
     "type": "personal",
     "description": "Witnet is a lightweight, high-performance HTTP-like TCP server framework built explicitly for ultra-fast transfers of \"Execution Witnesses\" between Execution Clients and Provers.",

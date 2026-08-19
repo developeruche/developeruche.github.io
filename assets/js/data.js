@@ -78,7 +78,7 @@ export const PROJECT_CATEGORIES = [
   { key: 'zero-knowledge', display: 'Zero-Knowledge', match: ['zero-knowledge', 'zkvm', 'groth16'] },
   { key: 'evm', display: 'EVM & Contracts', match: ['evm', 'smart contract', 'solidity', 'erc-2771', 'meta-tx', 'dex', 'payments'] },
   { key: 'protocols', display: 'Protocols & Interop', match: ['protocol', 'interoperability', 'cross-chain', 'bridging', 'layer 2', 'ethereum', 'polkadot sdk'] },
-  { key: 'systems', display: 'Systems & Tooling', match: ['cli', 'indexer', 'library', 'sdk', 'api', 'networking', 'architecture', 'experiment', 'risc-v'] },
+  { key: 'systems', display: 'Systems & Tooling', match: ['cli', 'indexer', 'library', 'sdk', 'api', 'networking', 'architecture', 'experiment', 'risc-v', 'compiler'] },
 ];
 
 // Resolve the categories actually usable for a dataset: drop categories with no
