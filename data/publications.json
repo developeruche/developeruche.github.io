@@ -1,22 +1,55 @@
 [
   {
     "title": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM",
-    "tags": ["RISC-V", "EVM", "Blockchain", "Performance"],
-    "abstract": "This research explores the technical feasibility and performance implications of integrating the RISC-V instruction set architecture with the Ethereum Virtual Machine (EVM). As blockchain platforms seek improved efficiency and accessibility, this work examines whether RISC-V's open architecture can provide a viable alternative execution environment for smart contracts. Through experimental implementation and benchmarking, we evaluate both the technical challenges of this integration and its potential benefits, including multi-language smart contract development, execution efficiency, and architectural compatibility. My findings indicate that while RISC-V integration presents promising opportunities for blockchain development diversity, significant challenges remain in reconciling RISC-V's register limitations with complex EVM operations and preserving the security guarantees of traditional EVM environments. This work contributes to the ongoing discourse on blockchain virtual machine evolution and provides empirical insights into the future architectural directions for Ethereum and similar platforms.",
+    "slug": "risc-v-evm-integration-performance-feasibility",
+    "authors": [
+      "Nwele Uchenna (developeruche)"
+    ],
+    "date": "18 April 2025",
+    "venue": "Independent research, full draft report",
+    "paper": "assets/papers/risc-v-evm-integration-performance-feasibility.pdf",
+    "tags": [
+      "RISC-V",
+      "EVM",
+      "Blockchain",
+      "Performance"
+    ],
+    "abstract": "This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to blockchain state through an environment-call surface of 44 ecalls, so that contract logic executes as ordinary RISC-V code while storage, account and block context remain outside the sandbox. A counter contract written in RV32IM assembly deploys and executes against this VM, storing RISC-V bytecode in the account code slot that normally holds EVM bytecode. Our central finding concerns the register budget rather than speed. The calling convention leaves 30 of the 32 architectural registers free for ecall arguments, and because a 256-bit EVM word occupies eight of them, the opcodes that carry several words saturate the file: CALL consumes 26 registers and SSTORE 16, while LOG2, LOG3, LOG4, DELEGATECALL, STATICCALL and CALLCODE have no calling convention in the implementation at all. LOG4 alone requires 34 argument registers and cannot be expressed in a register-only mapping; supporting it needs a memory-backed calling convention we have not built. We make no claim about execution speed relative to the EVM: gas metering is absent and the REVM integration is incomplete, so no comparison against an optimised EVM implementation was possible.",
     "links": [
-      { "label": "READ PAPER", "url": "https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl" },
-      { "label": "RUST PoC CODE", "url": "https://github.com/developeruche/riscv-evm-experiment" }
+      {
+        "label": "READ PAPER",
+        "url": "/publications/risc-v-evm-integration-performance-feasibility/"
+      },
+      {
+        "label": "RUST PoC CODE",
+        "url": "https://github.com/developeruche/riscv-evm-experiment"
+      },
+      {
+        "label": "HACKMD DRAFT",
+        "url": "https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl"
+      }
     ],
     "highlight": true,
     "thumbnail": null
   },
   {
     "title": "Cryptography and Zero Knowledge Proof Research Repository",
-    "tags": ["Cryptography", "Zero-Knowledge", "Rust", "Research"],
+    "tags": [
+      "Cryptography",
+      "Zero-Knowledge",
+      "Rust",
+      "Research"
+    ],
     "abstract": "A living research repository dedicated to implementing academic research papers, defining cryptographic primitives from scratch in Rust, and analyzing theoretical exploits in proof systems.",
     "links": [
-      { "label": "RESEARCH NOTES", "url": "https://developeruche.gitbook.io/computational-proof-systems" },
-      { "label": "SOURCE CODE", "url": "https://github.com/developeruche/cryptography-n-zk-research" }
+      {
+        "label": "RESEARCH NOTES",
+        "url": "https://developeruche.gitbook.io/computational-proof-systems"
+      },
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/cryptography-n-zk-research"
+      }
     ],
     "highlight": true,
     "thumbnail": null

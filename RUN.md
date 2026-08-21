@@ -38,6 +38,8 @@ Install the **Live Server** extension, then right-click `index.html` →
 | `/publications.html` | `publications.html` | Research papers + publications |
 | `/blog-post.html` | `blog-post.html` | Dummy post detail template (not yet linked) |
 | `/cv` | `cv/index.html` | Downloads the CV PDF (auto-starts on load) |
+| `/publications/<slug>/` | `publications/<slug>/index.html` | Paper detail page: metadata + in-page PDF reader |
+| `/papers/preview.html` | `papers/preview.html` | Live paper preview — dev only, `noindex` |
 | `/cv/preview.html` | `cv/preview.html` | Live LaTeX preview — dev only, `noindex` |
 
 Filtered views are shareable via query string, e.g.
@@ -81,6 +83,24 @@ the preview. `./cv/build.sh` does a single build. Full notes in
 
 Commit the regenerated PDF along with the `.tex` — Pages serves it as a static
 file, so an un-rebuilt PDF means a stale `/cv`.
+
+## Writing a paper
+
+Papers are markdown, compiled to a typeset PDF and a detail page at
+`/publications/<slug>/`. Needs `pandoc` and `pdflatex`
+(`brew install pandoc texlive`).
+
+```bash
+./papers/dev.sh <slug>
+```
+
+Starts a server **and** a watcher; open
+<http://localhost:8000/papers/preview.html> and every save recompiles. To add a
+new paper use the `add-paper` skill. Full notes in
+[`papers/README.md`](papers/README.md).
+
+Commit the regenerated PDF and detail page along with the markdown — Pages
+serves them as static files.
 
 ## Deploying
 

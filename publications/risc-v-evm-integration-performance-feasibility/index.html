@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM — Developer Uche</title>
+  <meta name="description" content="This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to…" />
+  <meta name="author" content="Nwele Uchenna (developeruche)" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/publications/risc-v-evm-integration-performance-feasibility/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM — Developer Uche" />
+  <meta property="og:description" content="This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to…" />
+  <meta property="og:url" content="https://developeruche.com/publications/risc-v-evm-integration-performance-feasibility/" />
+  <meta property="og:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <meta property="og:image:alt" content="Developer Uche — Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM — Developer Uche" />
+  <meta name="twitter:description" content="This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to…" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
+  <!-- Structured data: ScholarlyArticle -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM",
+  "name": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM",
+  "abstract": "This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to blockchain state through an environment-call surface of 44 ecalls, so that contract logic executes as ordinary RISC-V code while storage, account and block context remain outside the sandbox. A counter contract written in RV32IM assembly deploys and executes against this VM, storing RISC-V bytecode in the account code slot that normally holds EVM bytecode. Our central finding concerns the register budget rather than speed. The calling convention leaves 30 of the 32 architectural registers free for ecall arguments, and because a 256-bit EVM word occupies eight of them, the opcodes that carry several words saturate the file: CALL consumes 26 registers and SSTORE 16, while LOG2, LOG3, LOG4, DELEGATECALL, STATICCALL and CALLCODE have no calling convention in the implementation at all. LOG4 alone requires 34 argument registers and cannot be expressed in a register-only mapping; supporting it needs a memory-backed calling convention we have not built. We make no claim about execution speed relative to the EVM: gas metering is absent and the REVM integration is incomplete, so no comparison against an optimised EVM implementation was possible.",
+  "url": "https://developeruche.com/publications/risc-v-evm-integration-performance-feasibility/",
+  "datePublished": "18 April 2025",
+  "inLanguage": "en",
+  "keywords": "RISC-V, EVM, Blockchain, Performance",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Nwele Uchenna (developeruche)"
+    }
+  ],
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "encoding": {
+    "@type": "MediaObject",
+    "contentUrl": "https://developeruche.com/assets/papers/risc-v-evm-integration-performance-feasibility.pdf",
+    "encodingFormat": "application/pdf"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <style>
+    /* ── Publication detail ────────────────────────────────────────────── */
+    .pub { max-width: var(--container-narrow); }
+    .pub-head { margin-bottom: var(--space-md); }
+    .pub-title {
+      font-family: var(--font-heading); font-weight: var(--font-weight-normal);
+      font-size: clamp(2rem, 4.5vw, 3.2rem); line-height: var(--leading-tight);
+      letter-spacing: 1px; margin: var(--space-sm) 0 var(--space-12);
+      text-transform: uppercase;
+    }
+    .pub-byline {
+      display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-12);
+      align-items: baseline; color: var(--color-text-muted);
+      font-size: var(--text-sm); margin-bottom: var(--space-12);
+    }
+    .pub-byline strong { color: var(--color-text); font-weight: var(--font-weight-normal); }
+    .pub-byline .sep { color: var(--color-border); }
+    .pub-abstract {
+      border-left: var(--border-2) solid var(--color-accent);
+      padding: var(--space-8) 0 var(--space-8) var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .pub-abstract h2 {
+      font-size: var(--text-xs); letter-spacing: 2px; text-transform: uppercase;
+      color: var(--color-accent); margin: 0 0 var(--space-8);
+    }
+    .pub-abstract p {
+      margin: 0; color: var(--color-text-muted);
+      line-height: var(--leading-base); font-size: var(--text-md);
+    }
+    .pub-actions { display: flex; flex-wrap: wrap; gap: var(--space-12); margin: var(--space-md) 0; }
+
+    /* ── PDF viewer ────────────────────────────────────────────────────── */
+    .viewer {
+      border: var(--border-1) solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      overflow: hidden; margin-top: var(--space-md);
+    }
+    .viewer-bar {
+      display: flex; align-items: center; gap: var(--space-12); flex-wrap: wrap;
+      padding: var(--space-10) var(--space-15);
+      border-bottom: var(--border-1) solid var(--color-border);
+      font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 1px;
+      color: var(--color-text-muted);
+    }
+    .viewer-bar .spacer { flex: 1; }
+    .viewer-bar button {
+      font-family: var(--font-ui); font-size: var(--text-xs);
+      color: var(--color-text); background: transparent;
+      border: var(--border-1) solid var(--color-border);
+      border-radius: var(--radius-xs);
+      padding: 2px var(--space-8); cursor: pointer;
+      transition: border-color var(--motion-fast);
+    }
+    .viewer-bar button:hover:not(:disabled) { border-color: var(--color-accent); }
+    .viewer-bar button:disabled { opacity: 0.4; cursor: default; }
+    /* Scroll container: tall enough to read in, never taller than the screen. */
+    .viewer-pages {
+      max-height: 80vh; overflow-y: auto; overflow-x: auto;
+      padding: var(--space-15); background: var(--color-bg);
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-15);
+    }
+    .pdf-page {
+      background: #fff; display: block;
+      box-shadow: 0 2px 12px var(--color-scrim-80);
+      border: var(--border-1) solid var(--color-border);
+      max-width: 100%; height: auto;
+    }
+    .pdf-page-wrap { position: relative; }
+    .pdf-page-num {
+      position: absolute; bottom: var(--space-8); right: var(--space-8);
+      font-size: 10px; color: var(--color-text-muted);
+      background: var(--color-surface); border: var(--border-1) solid var(--color-border);
+      border-radius: var(--radius-xs); padding: 1px 6px;
+    }
+    .viewer-msg { padding: var(--space-md); text-align: center; color: var(--color-text-muted); font-size: var(--text-sm); }
+    /* Fallback when the renderer can't load: the browser's own PDF plugin. */
+    .viewer-fallback { width: 100%; height: 80vh; border: 0; display: block; }
+    @media (max-width: 768px) {
+      .viewer-pages { max-height: 65vh; padding: var(--space-8); }
+    }
+  </style>
+</head>
+<body data-page="publications">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="pub container">
+      <a class="back-link" href="/publications.html">← Back to publications</a>
+
+      <header class="pub-head">
+        <span class="section-label">// PUBLICATION</span>
+        <h1 class="pub-title">Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM</h1>
+        <div class="pub-byline">
+          <strong>Nwele Uchenna (developeruche)</strong>
+          <span class="sep" aria-hidden="true">·</span>
+          <span>18 April 2025</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span>Independent research, full draft report</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span id="pdf-pages">PDF</span>
+        </div>
+        <div class="meta-tags">          <span>RISC-V</span>
+          <span>EVM</span>
+          <span>Blockchain</span>
+          <span>Performance</span></div>
+      </header>
+
+      <section class="pub-abstract">
+        <h2>Abstract</h2>
+        <p>This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to blockchain state through an environment-call surface of 44 ecalls, so that contract logic executes as ordinary RISC-V code while storage, account and block context remain outside the sandbox. A counter contract written in RV32IM assembly deploys and executes against this VM, storing RISC-V bytecode in the account code slot that normally holds EVM bytecode. Our central finding concerns the register budget rather than speed. The calling convention leaves 30 of the 32 architectural registers free for ecall arguments, and because a 256-bit EVM word occupies eight of them, the opcodes that carry several words saturate the file: CALL consumes 26 registers and SSTORE 16, while LOG2, LOG3, LOG4, DELEGATECALL, STATICCALL and CALLCODE have no calling convention in the implementation at all. LOG4 alone requires 34 argument registers and cannot be expressed in a register-only mapping; supporting it needs a memory-backed calling convention we have not built. We make no claim about execution speed relative to the EVM: gas metering is absent and the REVM integration is incomplete, so no comparison against an optimised EVM implementation was possible.</p>
+      </section>
+
+      <div class="pub-actions">
+        <a class="btn-primary" href="/assets/papers/risc-v-evm-integration-performance-feasibility.pdf" download="Bridging-Worlds-A-Performance-and-Feasibility-Analysis-of-RISC-V-Integration-wit.pdf">Download PDF <span aria-hidden="true">↓</span></a>
+        <a class="btn-secondary" href="/assets/papers/risc-v-evm-integration-performance-feasibility.pdf" target="_blank" rel="noopener">Open in new tab <span aria-hidden="true">↗</span></a>
+        <a class="btn-secondary" href="https://github.com/developeruche/riscv-evm-experiment" target="_blank" rel="noopener noreferrer">RUST PoC CODE <span aria-hidden="true">↗</span></a>
+        <a class="btn-secondary" href="https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl" target="_blank" rel="noopener noreferrer">HACKMD DRAFT <span aria-hidden="true">↗</span></a>
+      </div>
+
+      <section class="viewer" aria-label="Paper preview">
+        <div class="viewer-bar">
+          <span id="v-status">Loading paper…</span>
+          <span class="spacer"></span>
+          <button type="button" id="v-out" aria-label="Zoom out" disabled>−</button>
+          <span id="v-zoom">100%</span>
+          <button type="button" id="v-in" aria-label="Zoom in" disabled>+</button>
+        </div>
+        <div class="viewer-pages" id="v-pages">
+          <p class="viewer-msg" id="v-msg">// Rendering…</p>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+
+  <!-- PDF rendering. If this CDN script fails, the inline script below falls
+       back to the browser's built-in PDF plugin so the paper is still readable. -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"
+          integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e"
+          crossorigin="anonymous"></script>
+  <script>
+  (function () {
+    const PDF_URL = '/assets/papers/risc-v-evm-integration-performance-feasibility.pdf';
+    const pagesEl  = document.getElementById('v-pages');
+    const msgEl    = document.getElementById('v-msg');
+    const statusEl = document.getElementById('v-status');
+    const zoomEl   = document.getElementById('v-zoom');
+    const inBtn    = document.getElementById('v-in');
+    const outBtn   = document.getElementById('v-out');
+    const pagesLbl = document.getElementById('pdf-pages');
+
+    // Browser's own viewer — used when pdf.js is unavailable or errors out.
+    function fallback(reason) {
+      pagesEl.style.padding = '0';
+      pagesEl.style.maxHeight = 'none';
+      pagesEl.innerHTML =
+        '<iframe class="viewer-fallback" src="' + PDF_URL + '" title="Paper PDF"></iframe>';
+      statusEl.textContent = 'Browser viewer';
+      if (reason) console.warn('pdf.js unavailable, using browser viewer:', reason);
+    }
+
+    if (!window.pdfjsLib) { fallback('script did not load'); return; }
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+    let pdf = null, scale = 1, ratio = 1.414;  // h/w; corrected from page 1
+    // page -> { scale, task, promise }. One record per page so a re-render can
+    // cancel the one in flight; pdf.js throws if two renders share a canvas.
+    const state = new Map();
+
+    // A hidden or not-yet-laid-out container reports ~0 width. Painting then
+    // bakes in a wrong size that survives until something forces a redraw, so
+    // we wait for real layout instead.
+    const laidOut = () => pagesEl.clientWidth >= 50;
+    const cssWidth = () => Math.min(pagesEl.clientWidth - 32, 1100) * scale;
+
+    function renderPage(num, wrap) {
+      if (!laidOut()) return Promise.resolve();
+      // Key on the pixel width actually being drawn, not the zoom factor: a
+      // container resize changes the target width while zoom stays put, and a
+      // zoom-keyed cache would skip the redraw and leave a stale canvas.
+      const key = Math.round(cssWidth());
+      const prev = state.get(num);
+      if (prev && prev.key === key) return prev.promise;   // done or in flight
+      if (prev && prev.task) { try { prev.task.cancel(); } catch (e) { /* settled */ } }
+
+      const rec = { key: key, task: null, promise: null };
+      state.set(num, rec);
+      rec.promise = (async () => {
+        // pdf.js keeps a canvas locked until a cancelled render finishes
+        // unwinding; starting the next one early throws "same canvas".
+        if (prev && prev.promise) { try { await prev.promise; } catch (e) { /* cancelled */ } }
+        if (state.get(num) !== rec) return;          // superseded while awaiting
+        const page = await pdf.getPage(num);
+        if (state.get(num) !== rec) return;
+        const dpr = window.devicePixelRatio || 1;
+        const target = key;
+        const vp = page.getViewport({ scale: (target / page.getViewport({ scale: 1 }).width) * dpr });
+        const canvas = wrap.querySelector('canvas');
+        canvas.width = vp.width;
+        canvas.height = vp.height;
+        // Backing store is DPR-scaled for sharpness; CSS width is layout px.
+        canvas.style.width = target + 'px';
+        const task = page.render({ canvasContext: canvas.getContext('2d'), viewport: vp });
+        rec.task = task;
+        try {
+          await task.promise;
+        } catch (err) {
+          if (err && err.name === 'RenderingCancelledException') return;
+          throw err;
+        } finally {
+          rec.task = null;
+        }
+      })();
+      rec.promise.catch((e) => { state.delete(num); console.warn('page ' + num + ':', e); });
+      return rec.promise;
+    }
+
+    // Reserve each sheet's real footprint before it paints, so the scrollbar is
+    // honest from the start and nothing reflows as pages stream in.
+    function sizeSheets() {
+      if (!laidOut()) return;
+      const w = cssWidth();
+      Array.from(pagesEl.children).forEach((wrap) => {
+        const c = wrap.querySelector('canvas');
+        c.style.width = w + 'px';
+        if (!state.has(Number(wrap.dataset.page))) c.style.height = Math.round(w * ratio) + 'px';
+        else c.style.height = '';
+      });
+    }
+
+    // Deterministic scroll math rather than IntersectionObserver: an observer
+    // never fires while the document is hidden, which would leave every page
+    // after the first blank until the user interacted.
+    function paintVisible(margin) {
+      if (!laidOut()) return;
+      const m = margin || 600;
+      // Rect-based rather than offsetTop: the sheets' offsetParent is not
+      // guaranteed to be the scroll container, which makes offsetTop and
+      // scrollTop incomparable and silently paints nothing.
+      const box = pagesEl.getBoundingClientRect();
+      Array.from(pagesEl.children).forEach((wrap) => {
+        const r = wrap.getBoundingClientRect();
+        if (r.bottom >= box.top - m && r.top <= box.bottom + m) {
+          renderPage(Number(wrap.dataset.page), wrap);
+        }
+      });
+    }
+
+    function build() {
+      pagesEl.innerHTML = '';
+      state.clear();
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const wrap = document.createElement('div');
+        wrap.className = 'pdf-page-wrap';
+        wrap.dataset.page = String(n);
+        wrap.innerHTML =
+          '<canvas class="pdf-page"></canvas><span class="pdf-page-num">' + n + ' / ' + pdf.numPages + '</span>';
+        pagesEl.appendChild(wrap);
+      }
+      sizeSheets();
+      paintVisible();
+    }
+
+    function setZoom(next) {
+      scale = Math.min(Math.max(next, 0.6), 2.5);
+      zoomEl.textContent = Math.round(scale * 100) + '%';
+      outBtn.disabled = scale <= 0.6;
+      inBtn.disabled = scale >= 2.5;
+      // Cancel in flight work before dropping the records, or the abandoned
+      // tasks keep their canvases locked and the next render throws.
+      state.forEach((rec) => { if (rec.task) { try { rec.task.cancel(); } catch (e) {} } });
+      sizeSheets();
+      paintVisible();
+    }
+
+    pdfjsLib.getDocument(PDF_URL).promise.then(async (doc) => {
+      pdf = doc;
+      msgEl.remove();
+      statusEl.textContent = doc.numPages + (doc.numPages === 1 ? ' page' : ' pages');
+      if (pagesLbl) pagesLbl.textContent = 'PDF · ' + doc.numPages + ' pages';
+      inBtn.disabled = outBtn.disabled = false;
+
+      const first = await doc.getPage(1);
+      const v = first.getViewport({ scale: 1 });
+      ratio = v.height / v.width;
+
+      build();
+      inBtn.addEventListener('click', () => setZoom(scale + 0.2));
+      outBtn.addEventListener('click', () => setZoom(scale - 0.2));
+
+      let st;
+      pagesEl.addEventListener('scroll', () => {
+        clearTimeout(st);
+        st = setTimeout(() => paintVisible(), 80);
+      }, { passive: true });
+
+      // Re-render when the container's width actually changes. A ResizeObserver
+      // (rather than window.onresize) also covers the case where the page was
+      // laid out at zero width — a background tab, or a hidden pane — and only
+      // gets real dimensions once it becomes visible.
+      let lastW = pagesEl.clientWidth, t;
+      const relayout = () => {
+        if (!laidOut()) return;
+        clearTimeout(t);
+        t = setTimeout(() => { sizeSheets(); paintVisible(); }, 150);
+      };
+      new ResizeObserver(() => {
+        const w = pagesEl.clientWidth;
+        if (Math.abs(w - lastW) < 2) return;
+        lastW = w;
+        relayout();
+      }).observe(pagesEl);
+      // A background tab lays out at zero width and fires no resize; the first
+      // real paint has to be triggered when the tab is actually shown.
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) relayout();
+      });
+    }).catch((err) => fallback(err && err.message));
+  })();
+  </script>
+</body>
+</html>

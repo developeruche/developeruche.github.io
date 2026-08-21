@@ -1,0 +1,33 @@
+{
+  "title": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with the Ethereum Virtual Machine",
+  "shorttitle": "Bridging Worlds: RISC-V and the EVM",
+  "subtitle": "Full Draft Report",
+  "author": [
+    "Nwele Uchenna (developeruche)"
+  ],
+  "author-note": "x.com/developeruche · github.com/developeruche",
+  "date": "18 April 2025",
+  "toc": true,
+  "abstract": "This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to blockchain state through an environment-call surface of 44 ecalls, so that contract logic executes as ordinary RISC-V code while storage, account and block context remain outside the sandbox. A counter contract written in RV32IM assembly deploys and executes against this VM, storing RISC-V bytecode in the account code slot that normally holds EVM bytecode. Our central finding concerns the register budget rather than speed. The calling convention leaves 30 of the 32 architectural registers free for ecall arguments, and because a 256-bit EVM word occupies eight of them, the opcodes that carry several words saturate the file: CALL consumes 26 registers and SSTORE 16, while LOG2, LOG3, LOG4, DELEGATECALL, STATICCALL and CALLCODE have no calling convention in the implementation at all. LOG4 alone requires 34 argument registers and cannot be expressed in a register-only mapping; supporting it needs a memory-backed calling convention we have not built. We make no claim about execution speed relative to the EVM: gas metering is absent and the REVM integration is incomplete, so no comparison against an optimised EVM implementation was possible.",
+  "slug": "risc-v-evm-integration-performance-feasibility",
+  "tags": [
+    "RISC-V",
+    "EVM",
+    "Blockchain",
+    "Performance"
+  ],
+  "links": [
+    {
+      "label": "DRAFT CODE",
+      "url": "https://github.com/developeruche/riscv-evm-experiment/tree/main/crates/research-draft"
+    },
+    {
+      "label": "RUST PoC CODE",
+      "url": "https://github.com/developeruche/riscv-evm-experiment"
+    },
+    {
+      "label": "HACKMD",
+      "url": "https://hackmd.io/@0xdeveloperuche/Hk18BWxkxl"
+    }
+  ]
+}

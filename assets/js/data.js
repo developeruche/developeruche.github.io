@@ -208,14 +208,14 @@ export function metaTags(tags) {
 export function linkRow(links) {
   if (!links || !links.length) return null;
   return el('div', { class: 'card-links' },
-    links.map((l) =>
-      el('a', {
-        class: 'btn-secondary btn-sm',
-        href: l.url,
-        target: '_blank',
-        rel: 'noopener noreferrer',
-      }, [l.label, el('span', { 'aria-hidden': 'true', text: ' →' })])
-    ));
+    links.map((l) => {
+      // Root-relative URLs point at our own pages (e.g. a publication's detail
+      // page), so they navigate in place; only outbound links open a new tab.
+      const internal = l.url.startsWith('/');
+      const attrs = { class: 'btn-secondary btn-sm', href: l.url };
+      if (!internal) { attrs.target = '_blank'; attrs.rel = 'noopener noreferrer'; }
+      return el('a', attrs, [l.label, el('span', { 'aria-hidden': 'true', text: internal ? ' →' : ' ↗' })]);
+    }));
 }
 
 /* ── Universal card ────────────────────────────────────────────────────── */
