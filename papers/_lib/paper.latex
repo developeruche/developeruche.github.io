@@ -1,0 +1,178 @@
+%%=============================================================================
+%%  Academic paper template — developeruche.com
+%%
+%%  Rendered by pandoc:  pandoc paper.md --template=paper.latex ...
+%%  Placeholders written with dollar-delimiters are pandoc template
+%%  variables, NOT LaTeX math. A literal dollar sign must be doubled.
+%%
+%%  Design notes
+%%  ------------
+%%  Single column, generous margins, Times-family text (newtx) — the
+%%  conventional look for a technical report, and the most readable setting
+%%  when the PDF is embedded in a web page at partial width.
+%%  Navy accents on links and rules tie the paper to the site's palette
+%%  without making it look like a web page that got printed.
+%%=============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[left=1.15in,right=1.15in,top=1.1in,bottom=1.15in]{geometry}
+
+%% ── Type ────────────────────────────────────────────────────────────────
+\usepackage{newtxtext}          % Times-like serif for body copy
+\usepackage{newtxmath}          % matching math
+\usepackage[varqu,scaled=0.94]{zi4}  % Inconsolata for code; varqu = upright quotes
+\usepackage{microtype}          % optical margins + subtle tracking
+
+%% ── Colour ──────────────────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{ink}{HTML}{0B1A2E}      % near-black navy, body text
+\definecolor{accent}{HTML}{1B3A6B}   % navy — links, rules
+\definecolor{muted}{HTML}{54627A}    % secondary text
+\definecolor{rule}{HTML}{C9D0DB}     % hairlines
+\definecolor{codebg}{HTML}{F7F6F2}   % code block ground
+\color{ink}
+
+%% ── Links ───────────────────────────────────────────────────────────────
+\usepackage[unicode]{hyperref}
+\usepackage{xurl}               % allow URLs to break anywhere (no overfull)
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent, citecolor=accent, urlcolor=accent, filecolor=accent,
+  breaklinks=true,
+  pdftitle={$if(title-meta)$$title-meta$$else$$title$$endif$},
+  pdfauthor={$for(author)$$author$$sep$, $endfor$},
+  pdfsubject={$if(subtitle)$$subtitle$$endif$},
+  pdfcreator={pandoc + pdflatex}
+}
+
+%% ── Sectioning ──────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\large\bfseries\color{ink}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\color{ink}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape\color{ink}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.6em plus .3em minus .2em}{0.7em}
+\titlespacing*{\subsection}{0pt}{1.2em plus .2em minus .2em}{0.5em}
+\titlespacing*{\subsubsection}{0pt}{1.0em plus .2em minus .2em}{0.4em}
+\setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$3$endif$}
+
+%% ── Running head ────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{muted}$if(shorttitle)$$shorttitle$$else$$title$$endif$}
+\fancyfoot[C]{\footnotesize\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\makeatletter
+\@ifundefined{headrule}{}{\renewcommand{\headrule}{\color{rule}\hrule height 0.4pt}}
+\makeatother
+\setlength{\headheight}{14pt}
+
+%% ── Lists, spacing ──────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{itemsep=2pt, parsep=0pt, topsep=4pt, partopsep=0pt}
+\setlist[itemize]{label=\textcolor{accent}{\textbullet}}
+\linespread{1.06}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1.2em}
+\raggedbottom
+
+%% ── Tables / figures ────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\setlength{\emergencystretch}{3em}   % last resort against overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}}
+
+% Keep oversized images inside the text block.
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+%% ── Code ────────────────────────────────────────────────────────────────
+%% pandoc emits Shaded/Highlighting; fvextra gives us wrapping so long
+%% assembly/Rust lines never bleed into the margin.
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{framed}
+\usepackage{upquote}
+\definecolor{shadecolor}{named}{codebg}
+\setlength{\fboxsep}{5pt}
+% Inline \texttt{} at a hair under body size so it doesn't tower over serif text.
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{{\small\oldtexttt{#1}}}
+
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
+%% pandoc's highlighting macros define Highlighting/Shaded themselves, so these
+%% overrides MUST come after them or they are silently discarded.
+%%   - Highlighting: wrap long lines instead of letting them run off the page.
+%%     Assembly comment columns and Rust generics are both wider than the text
+%%     block, and an unwrapped Verbatim clips without any warning.
+%%   - Shaded: pandoc leaves this empty; snugshade paints the code ground.
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+  commandchars=\\\{\},
+  fontsize=\scriptsize,
+  breaklines=true, breakanywhere=true,
+  breakindent=1.2em,
+  breaksymbolleft={}, breaksymbolright={\tiny\textcolor{muted}{\ensuremath{\hookleftarrow}}}%
+}
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
+%% ── Block quotes ────────────────────────────────────────────────────────
+\usepackage{etoolbox}
+\AtBeginEnvironment{quote}{\small\color{muted}}
+
+%% ── Title block ─────────────────────────────────────────────────────────
+\usepackage{titling}
+\setlength{\droptitle}{-2.4em}
+\pretitle{\begin{flushleft}\LARGE\bfseries\color{ink}}
+\posttitle{\end{flushleft}\vspace{0.15em}}
+\preauthor{\begin{flushleft}\normalsize\color{ink}}
+\postauthor{\end{flushleft}}
+\predate{\begin{flushleft}\footnotesize\color{muted}}
+\postdate{\end{flushleft}}
+
+\title{$title$$if(subtitle)$\\[0.35em]{\large\mdseries\color{muted}$subtitle$}$endif$}
+\author{$for(author)$$author$$sep$ \\ $endfor$$if(author-note)$\\[0.2em]{\footnotesize\color{muted}$author-note$}$endif$}
+\date{$if(date)$$date$$endif$}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{plain}
+
+$if(abstract)$
+\vspace{-0.6em}
+{\color{rule}\hrule height 0.4pt}
+\vspace{0.9em}
+\noindent\begin{minipage}{\linewidth}
+  {\footnotesize\bfseries\color{accent}ABSTRACT}\\[0.45em]
+  {\small $abstract$}
+\end{minipage}
+\vspace{0.9em}
+{\color{rule}\hrule height 0.4pt}
+\vspace{1.2em}
+$endif$
+
+$if(toc)$
+{\hypersetup{linkcolor=ink}
+\setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$2$endif$}
+\tableofcontents
+}
+\vspace{1em}
+$endif$
+
+$body$
+
+\end{document}

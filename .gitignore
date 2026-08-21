@@ -12,3 +12,7 @@ __pycache__/
 # LaTeX build artifacts (CV) — the published PDF in assets/cv/ IS committed
 cv/.build/
 cv/.build-status.json
+
+# Paper build artifacts — the published PDFs in assets/papers/ ARE committed
+papers/*/.build/
+papers/*/.build-status.json
