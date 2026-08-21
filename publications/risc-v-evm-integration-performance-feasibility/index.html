@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM — Developer Uche</title>
-  <meta name="description" content="This research explores the technical feasibility and performance implications of integrating the RISC-V instruction set architecture with the Ethereum Virtual Machine (EVM). As blockchain platforms seek improved efficiency and accessibility, this work examines whether RISC-V&#x27;s open architecture…" />
+  <meta name="description" content="This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to…" />
   <meta name="author" content="Nwele Uchenna (developeruche)" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/publications/risc-v-evm-integration-performance-feasibility/" />
@@ -13,7 +13,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
   <meta property="og:title" content="Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM — Developer Uche" />
-  <meta property="og:description" content="This research explores the technical feasibility and performance implications of integrating the RISC-V instruction set architecture with the Ethereum Virtual Machine (EVM). As blockchain platforms seek improved efficiency and accessibility, this work examines whether RISC-V&#x27;s open architecture…" />
+  <meta property="og:description" content="This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to…" />
   <meta property="og:url" content="https://developeruche.com/publications/risc-v-evm-integration-performance-feasibility/" />
   <meta property="og:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
   <meta property="og:image:alt" content="Developer Uche — Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM" />
@@ -22,7 +22,7 @@
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
   <meta name="twitter:title" content="Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM — Developer Uche" />
-  <meta name="twitter:description" content="This research explores the technical feasibility and performance implications of integrating the RISC-V instruction set architecture with the Ethereum Virtual Machine (EVM). As blockchain platforms seek improved efficiency and accessibility, this work examines whether RISC-V&#x27;s open architecture…" />
+  <meta name="twitter:description" content="This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to…" />
   <meta name="twitter:image" content="https://developeruche.com/assets/main/developeruche.jpg" />
   <!-- Structured data: ScholarlyArticle -->
   <script type="application/ld+json">
@@ -31,7 +31,7 @@
   "@type": "ScholarlyArticle",
   "headline": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM",
   "name": "Bridging Worlds: A Performance and Feasibility Analysis of RISC-V Integration with EVM",
-  "abstract": "This research explores the technical feasibility and performance implications of integrating the RISC-V instruction set architecture with the Ethereum Virtual Machine (EVM). As blockchain platforms seek improved efficiency and accessibility, this work examines whether RISC-V's open architecture can provide a viable alternative execution environment for smart contracts. Through experimental implementation and benchmarking, we evaluate both the technical challenges of this integration and its potential benefits, including multi-language smart contract development, execution efficiency, and architectural compatibility. My findings indicate that while RISC-V integration presents promising opportunities for blockchain development diversity, significant challenges remain in reconciling RISC-V's register limitations with complex EVM operations and preserving the security guarantees of traditional EVM environments. This work contributes to the ongoing discourse on blockchain virtual machine evolution and provides empirical insights into the future architectural directions for Ethereum and similar platforms.",
+  "abstract": "This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to blockchain state through an environment-call surface of 44 ecalls, so that contract logic executes as ordinary RISC-V code while storage, account and block context remain outside the sandbox. A counter contract written in RV32IM assembly deploys and executes against this VM, storing RISC-V bytecode in the account code slot that normally holds EVM bytecode. Our central finding concerns the register budget rather than speed. The calling convention leaves 30 of the 32 architectural registers free for ecall arguments, and because a 256-bit EVM word occupies eight of them, the opcodes that carry several words saturate the file: CALL consumes 26 registers and SSTORE 16, while LOG2, LOG3, LOG4, DELEGATECALL, STATICCALL and CALLCODE have no calling convention in the implementation at all. LOG4 alone requires 34 argument registers and cannot be expressed in a register-only mapping; supporting it needs a memory-backed calling convention we have not built. We make no claim about execution speed relative to the EVM: gas metering is absent and the REVM integration is incomplete, so no comparison against an optimised EVM implementation was possible.",
   "url": "https://developeruche.com/publications/risc-v-evm-integration-performance-feasibility/",
   "datePublished": "18 April 2025",
   "inLanguage": "en",
@@ -162,7 +162,7 @@
           <span class="sep" aria-hidden="true">·</span>
           <span>18 April 2025</span>
           <span class="sep" aria-hidden="true">·</span>
-          <span>Independent research — full draft report</span>
+          <span>Independent research, full draft report</span>
           <span class="sep" aria-hidden="true">·</span>
           <span id="pdf-pages">PDF</span>
         </div>
@@ -174,7 +174,7 @@
 
       <section class="pub-abstract">
         <h2>Abstract</h2>
-        <p>This research explores the technical feasibility and performance implications of integrating the RISC-V instruction set architecture with the Ethereum Virtual Machine (EVM). As blockchain platforms seek improved efficiency and accessibility, this work examines whether RISC-V&#x27;s open architecture can provide a viable alternative execution environment for smart contracts. Through experimental implementation and benchmarking, we evaluate both the technical challenges of this integration and its potential benefits, including multi-language smart contract development, execution efficiency, and architectural compatibility. My findings indicate that while RISC-V integration presents promising opportunities for blockchain development diversity, significant challenges remain in reconciling RISC-V&#x27;s register limitations with complex EVM operations and preserving the security guarantees of traditional EVM environments. This work contributes to the ongoing discourse on blockchain virtual machine evolution and provides empirical insights into the future architectural directions for Ethereum and similar platforms.</p>
+        <p>This is a design-and-feasibility report: we describe an EVM-compatible execution environment built on the RISC-V instruction set, and we report no performance measurements. We implement an RV32IM interpreter and assembler in Rust, map EVM opcodes onto RV32IM by hand, and route every access to blockchain state through an environment-call surface of 44 ecalls, so that contract logic executes as ordinary RISC-V code while storage, account and block context remain outside the sandbox. A counter contract written in RV32IM assembly deploys and executes against this VM, storing RISC-V bytecode in the account code slot that normally holds EVM bytecode. Our central finding concerns the register budget rather than speed. The calling convention leaves 30 of the 32 architectural registers free for ecall arguments, and because a 256-bit EVM word occupies eight of them, the opcodes that carry several words saturate the file: CALL consumes 26 registers and SSTORE 16, while LOG2, LOG3, LOG4, DELEGATECALL, STATICCALL and CALLCODE have no calling convention in the implementation at all. LOG4 alone requires 34 argument registers and cannot be expressed in a register-only mapping; supporting it needs a memory-backed calling convention we have not built. We make no claim about execution speed relative to the EVM: gas metering is absent and the REVM integration is incomplete, so no comparison against an optimised EVM implementation was possible.</p>
       </section>
 
       <div class="pub-actions">

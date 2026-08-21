@@ -7,11 +7,10 @@
 %%
 %%  Design notes
 %%  ------------
-%%  Single column, generous margins, Times-family text (newtx) — the
-%%  conventional look for a technical report, and the most readable setting
-%%  when the PDF is embedded in a web page at partial width.
-%%  Navy accents on links and rules tie the paper to the site's palette
-%%  without making it look like a web page that got printed.
+%%  Single column, generous margins, Computer Modern text: the conventional
+%%  look for a technical report, and the most readable setting when the PDF is
+%%  embedded in a web page at partial width. Set entirely in black, with no
+%%  running head and no rules around the abstract.
 %%=============================================================================
 \documentclass[11pt,a4paper]{article}
 
@@ -20,26 +19,29 @@
 \usepackage[left=1.15in,right=1.15in,top=1.1in,bottom=1.15in]{geometry}
 
 %% ── Type ────────────────────────────────────────────────────────────────
-\usepackage{newtxtext}          % Times-like serif for body copy
-\usepackage{newtxmath}          % matching math
-\usepackage[varqu,scaled=0.94]{zi4}  % Inconsolata for code; varqu = upright quotes
+%% Computer Modern, the default TeX family, matching the reference exemplar.
+%% Latin Modern is the same design with proper outlines, so it renders cleanly
+%% on screen and extracts as real text.
+\usepackage{lmodern}
 \usepackage{microtype}          % optical margins + subtle tracking
 
 %% ── Colour ──────────────────────────────────────────────────────────────
 \usepackage{xcolor}
-\definecolor{ink}{HTML}{0B1A2E}      % near-black navy, body text
-\definecolor{accent}{HTML}{1B3A6B}   % navy — links, rules
-\definecolor{muted}{HTML}{54627A}    % secondary text
-\definecolor{rule}{HTML}{C9D0DB}     % hairlines
-\definecolor{codebg}{HTML}{F7F6F2}   % code block ground
-\color{ink}
+%% The paper is set entirely in black: no accent colour, no grey secondary
+%% text, no coloured links. `ink', `accent' and `muted' are kept as names so
+%% the rest of the template needs no rewriting, but all three are black now.
+\definecolor{ink}{gray}{0}
+\definecolor{accent}{gray}{0}
+\definecolor{muted}{gray}{0}
+\definecolor{rule}{gray}{0}
+\definecolor{codebg}{HTML}{F2F2F2}   % code block ground (a tint, not text)
+\color{black}
 
 %% ── Links ───────────────────────────────────────────────────────────────
 \usepackage[unicode]{hyperref}
 \usepackage{xurl}               % allow URLs to break anywhere (no overfull)
 \hypersetup{
-  colorlinks=true,
-  linkcolor=accent, citecolor=accent, urlcolor=accent, filecolor=accent,
+  hidelinks,                    % clickable, but black and unboxed
   breaklinks=true,
   pdftitle={$if(title-meta)$$title-meta$$else$$title$$endif$},
   pdfauthor={$for(author)$$author$$sep$, $endfor$},
@@ -57,18 +59,10 @@
 \titlespacing*{\subsubsection}{0pt}{1.0em plus .2em minus .2em}{0.4em}
 \setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$3$endif$}
 
-%% ── Running head ────────────────────────────────────────────────────────
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\footnotesize\color{muted}$if(shorttitle)$$shorttitle$$else$$title$$endif$}
-\fancyfoot[C]{\footnotesize\color{muted}\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0pt}
-\makeatletter
-\@ifundefined{headrule}{}{\renewcommand{\headrule}{\color{rule}\hrule height 0.4pt}}
-\makeatother
-\setlength{\headheight}{14pt}
+%% ── Page style ──────────────────────────────────────────────────────────
+%% No running head and no header rule: just a centred page number, as in the
+%% reference exemplar.
+\pagestyle{plain}
 
 %% ── Lists, spacing ──────────────────────────────────────────────────────
 \usepackage{enumitem}
@@ -136,15 +130,15 @@ $endif$
 %% ── Title block ─────────────────────────────────────────────────────────
 \usepackage{titling}
 \setlength{\droptitle}{-2.4em}
-\pretitle{\begin{flushleft}\LARGE\bfseries\color{ink}}
-\posttitle{\end{flushleft}\vspace{0.15em}}
-\preauthor{\begin{flushleft}\normalsize\color{ink}}
-\postauthor{\end{flushleft}}
-\predate{\begin{flushleft}\footnotesize\color{muted}}
-\postdate{\end{flushleft}}
+\pretitle{\begin{center}\LARGE\bfseries}
+\posttitle{\end{center}\vspace{0.15em}}
+\preauthor{\begin{center}\normalsize}
+\postauthor{\end{center}}
+\predate{\begin{center}\footnotesize}
+\postdate{\end{center}}
 
-\title{$title$$if(subtitle)$\\[0.35em]{\large\mdseries\color{muted}$subtitle$}$endif$}
-\author{$for(author)$$author$$sep$ \\ $endfor$$if(author-note)$\\[0.2em]{\footnotesize\color{muted}$author-note$}$endif$}
+\title{$title$$if(subtitle)$\\[0.45em]{\large\mdseries $subtitle$}$endif$}
+\author{$for(author)$$author$$sep$ \\ $endfor$$if(author-note)$\\[0.25em]{\footnotesize $author-note$}$endif$}
 \date{$if(date)$$date$$endif$}
 
 \begin{document}
@@ -153,23 +147,23 @@ $endif$
 \thispagestyle{plain}
 
 $if(abstract)$
-\vspace{-0.6em}
-{\color{rule}\hrule height 0.4pt}
-\vspace{0.9em}
-\noindent\begin{minipage}{\linewidth}
-  {\footnotesize\bfseries\color{accent}ABSTRACT}\\[0.45em]
-  {\small $abstract$}
+\vspace{0.8em}
+\begin{center}
+\begin{minipage}{0.86\textwidth}
+  {\centering\normalsize\bfseries Abstract\par}
+  \vspace{0.7em}
+  {\small $abstract$\par}
 \end{minipage}
-\vspace{0.9em}
-{\color{rule}\hrule height 0.4pt}
-\vspace{1.2em}
+\end{center}
+\vspace{0.6em}
 $endif$
 
+%% Title and abstract stand alone; everything else starts on a fresh page.
+\newpage
+
 $if(toc)$
-{\hypersetup{linkcolor=ink}
 \setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$2$endif$}
 \tableofcontents
-}
 \vspace{1em}
 $endif$
 

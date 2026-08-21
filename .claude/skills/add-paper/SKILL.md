@@ -137,10 +137,11 @@ After editing, rebuild and re-render before committing:
 
 ## Writing rules for the paper itself
 
-The template is a single-column technical report: Times-family text (newtx),
-Inconsolata for code, navy accents, numbered sections, a table of contents, and
-an abstract block. When drafting or editing prose, follow normal technical
-paper conventions:
+The template is a single-column technical report set in Computer Modern
+(Latin Modern), **entirely in black** with no accent colour and no coloured
+links, with a centred abstract in a narrowed measure, no running head, and the
+body starting on its own page after the title and abstract. When drafting or
+editing prose, follow normal technical paper conventions:
 
 - Abstract states problem, method, findings, and contribution — no citations.
 - Numbered sections; keep the conventional arc (Introduction → Background →
@@ -151,6 +152,40 @@ paper conventions:
   **never silently rewrite technical claims** — surface them instead.
 - Code blocks should be tagged with a language for highlighting (` ```rust `,
   ` ```asm `). Long lines wrap automatically; they are not truncated.
+- **Never use an em dash (`—`) in the prose.** Recast with a comma, a colon, a
+  semicolon or parentheses; do not substitute a bare hyphen, which is worse
+  typographically. This applies to the abstract in `meta.json` too, not just
+  `paper.md`. Check with:
+  `grep -n '—' papers/<slug>/paper.md papers/<slug>/meta.json`
+- Put the repository link in a **Code availability.** run-in paragraph directly
+  above the References section, not at the top of the body.
+
+### Citations
+
+- **Never leave a `[Cite …]` placeholder.** Either it becomes a real numbered
+  citation or the sentence goes. Placeholders are the single most obvious
+  machine-generated artefact in a draft.
+- **Verify every reference before writing it. Never cite from memory.** Fetch
+  the source and confirm the exact title, author list and year — this is not
+  optional, and getting it wrong is worse than omitting the citation. Real
+  errors caught this way on the first paper: the RISC-V privileged manual is
+  *Version 1.9*, not 1.9.1; the WebAssembly paper's first author is Haas, not
+  Rossberg (Rossberg leads the later CACM version); a guessed ethresear.ch
+  topic ID 404'd.
+  - dblp for peer-reviewed work: `https://dblp.org/search/publ/api?q=<title>&format=json`
+  - GitHub API for repo descriptions: `https://api.github.com/repos/<owner>/<name>`
+  - `curl -o /dev/null -w '%{http_code}'` to confirm every URL resolves.
+- Cite inline as `[n]` at the point of the claim, not once per paragraph. A
+  related-work paragraph with no citations in it is a defect.
+- The bibliography is a **numbered list with author, title, venue, year** —
+  not a bulleted list of site names. Vendor marketing pages and explainer blogs
+  are not citable for protocol semantics; cite the Yellow Paper or
+  `execution-specs` instead.
+- Organise related work by approach with bolded run-ins (`**WASM-based.**`,
+  `**Register-based VMs.**`), each ending in one sentence on how this work
+  differs.
+- Check for orphans before shipping: every reference should be cited at least
+  once, and every inline number should resolve.
 
 ## Gotchas
 

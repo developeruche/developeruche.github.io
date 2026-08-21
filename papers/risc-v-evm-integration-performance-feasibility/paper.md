@@ -1,36 +1,43 @@
-Draft report code:
-<https://github.com/developeruche/riscv-evm-experiment/tree/main/crates/research-draft>
-
 # Introduction
 
 Ethereum's Virtual Machine (EVM) remains the cornerstone of its smart contract functionality, providing a sandboxed execution environment that has enabled a diverse ecosystem of decentralized applications. However, as blockchain technology matures, questions emerge about the long-term viability and limitations of the current EVM architecture. This research investigates an alternative approach by exploring RISC-V, an open instruction set architecture, as a potential foundation for executing smart contracts.
 
-The convergence of blockchain technology and RISC-V presents intriguing possibilities. RISC-V's open nature, simplicity, and growing ecosystem make it an attractive candidate for reimagining blockchain execution environments. By enabling smart contracts to be written in languages that target RISC-V, this integration could potentially broaden the accessibility of blockchain development while potentially addressing performance and security considerations inherent in the current EVM design.
+The convergence of blockchain technology and RISC-V presents intriguing possibilities. RISC-V's open nature, simplicity, and growing ecosystem make it an attractive candidate for reimagining blockchain execution environments. By enabling smart contracts to be written in languages that target RISC-V, this integration would broaden the set of toolchains that can produce contract code.
 
 This research addresses several fundamental questions:
 
 1. Can RISC-V effectively implement the functionality required for EVM-compatible smart contract execution?
-2. What are the performance implications of this architectural shift?
-3. How might this integration affect the developer experience and ecosystem?
-4. What fundamental design challenges must be overcome for practical implementation?
+2. How might this integration affect the developer experience and ecosystem?
+3. What fundamental design challenges must be overcome for practical implementation?
+
+**Scope.** This is a design-and-feasibility report. We built the interpreter, the assembler and the
+ecall surface, and we ran a contract on them; we did not measure execution speed, and we make no
+claim about it. Gas metering is not implemented, so no cost comparison is possible, and the REVM
+integration described in Section 3.2 is incomplete, so the RISC-V interpreter has not been timed
+against a production EVM. Every architectural finding we report below is a static property of the
+mapping (register counts, calling conventions, which opcodes have one) rather than a measurement.
 
 # Background and Related Work
 
 ## The Ethereum Virtual Machine (EVM)
 
-The EVM is a quasi-Turing complete, 256-bit stack machine [Cite EVM Spec]. Its key components include a stack, volatile memory, and persistent storage. Execution proceeds by interpreting bytecode instructions (opcodes) that manipulate these components. Gas mechanics regulate computational cost. While successful, criticisms often focus on its performance compared to native execution, the complexity of its 256-bit word size on standard 64-bit hardware, and the learning curve associated with Solidity and the EVM's specific execution model [Cite EVM critiques].
+The EVM is a quasi-Turing complete, 256-bit stack machine, specified normatively in the Yellow Paper [1] and, in executable form, in the execution-layer specification [2]. Its key components are a stack, volatile memory, and persistent storage. Execution proceeds by interpreting bytecode instructions (opcodes) that manipulate these components, and gas mechanics regulate computational cost. The 256-bit word is the source of most of the friction: it is four times the width of the registers on the 64-bit hardware that actually runs the interpreter, so every arithmetic operation is emulated in software. That emulation cost is what motivated the EVM optimisation work of 2016 [3] and the just-in-time compiler shipped and later withdrawn from Go Ethereum [11].
 
 ## The RISC-V ISA
 
-RISC-V is an open-source ISA based on reduced instruction set computing (RISC) principles [Cite RISC-V Specs]. Its base integer ISA (e.g., RV32I, RV64I) is small and can be extended with standard extensions (e.g., 'M' for integer multiplication/division, 'A' for atomics, 'C' for compressed instructions). This modularity allows tailoring processors for specific needs. A significant advantage is the mature and growing compiler support (GCC, LLVM), enabling compilation from various languages.
+RISC-V is an open ISA based on reduced instruction set computing (RISC) principles [4, 5]. Its base integer ISA (e.g., RV32I, RV64I) is small and can be extended with standard extensions (e.g., 'M' for integer multiplication/division, 'A' for atomics, 'C' for compressed instructions). This modularity allows tailoring processors for specific needs. A significant advantage is the mature and growing compiler support (GCC, LLVM), enabling compilation from various languages.
 
 ## Alternative Blockchain Execution Environments
 
-Several projects have explored alternatives to the EVM. EOS and Polkadot utilize WebAssembly (WASM) as their execution engine, aiming to leverage its performance potential and language flexibility [Cite Polkadot WASM, EOS WASM]. Solana employs a custom architecture optimized for parallel execution, using LLVM to compile contracts written in languages like Rust and C [Cite Solana VM]. These efforts highlight the ongoing search for more performant and developer-friendly blockchain execution layers.
+**WASM-based.** WebAssembly was designed as a portable, low-level compilation target with a formal semantics and near-native performance [6], which makes it the obvious candidate for a chain that wants an existing toolchain rather than a bespoke one. Polkadot places a WASM runtime at the centre of its design, so that a chain's state-transition function is itself a WASM blob that can be upgraded without a hard fork [7]. EOSIO built its own WASM backend, eos-vm, for lower dispatch latency than a general-purpose engine [8]. Both keep the sandbox and replace only the instruction set. We take the same position, substituting RISC-V for WASM, and inherit the same question they face: how contract code reaches chain state once the instruction set no longer has opcodes for it.
+
+**Register-based VMs.** Solana compiles contracts written in Rust and C through LLVM to a register-based bytecode and schedules non-overlapping transactions in parallel [9]. That design shows a register machine is workable as a contract VM, but it was free to choose its account model and its calling convention together. We are not: our target is EVM semantics on a register machine, and Section 6 shows the register file is exactly where that constraint binds.
+
+**RISC-V for blockchain execution.** RISC-V has been proposed before as a state-transition target, most directly for L2 execution [12]. That line of work treats RISC-V as a proving or verification target rather than as the L1 contract VM. We instead map EVM opcode semantics onto RV32IM directly and keep the account and storage model unchanged.
 
 ## Bridging EVM and Other Architectures
 
-Some research has focused on JIT (Just-In-Time) compilation for the EVM or transpiling Solidity to other languages or bytecode formats [Cite EVM JIT efforts]. Our work differs by exploring the direct implementation of EVM semantics using a fundamentally different ISA (RISC-V) as the target.
+**EVM JIT and transpilation.** Rather than replace the instruction set, this line of work keeps EVM bytecode and compiles it at run time. The evmjit library translated EVM bytecode to LLVM IR [10], and Go Ethereum shipped a JIT-EVM on the same premise [11]; neither survived in production, and the reasons given at the time were compilation latency and the difficulty of keeping a second execution path bug-compatible with the interpreter. Our work differs in target rather than in technique: we do not compile EVM bytecode faster, we replace it, executing contract logic as native RV32IM and leaving the state model alone.
 
 # Methodology: Designing and Implementing a RISC-V EVM
 
@@ -41,7 +48,7 @@ To achieve these goals, the applied methodology would be broken into a two-phase
 1. Design of the core components of this new RISC-V EVM VM; this would also involve blockchain related operations fashioned as `opcodes` ([Rust implementation](https://github.com/developeruche/riscv-evm-experiment/tree/main/crates/research-draft)).
 2. Implementation of a RISC-V IM32 assembler compatible with blockchain requirements. This would be tasked to assemble RISC-V assembly written smart contracts to RISC-V machine code ([code](https://github.com/developeruche/riscv-assembler)).
 3. Optimization of the implementation for performance and security spec constraints.
-4. Benchmarking and preliminary analysis.
+4. Benchmarking and preliminary analysis. *(Planned; not carried out in this draft. See Scope in Section 1.)*
 
 **Phase Two: Integration with Existing Ethereum Runtime**
 
@@ -430,26 +437,36 @@ fn main() {
 
 The aim of the draft implementation is to show that there is little to no change to the main Ethereum protocol in achieving this complete change of the execution sandbox (EVM to RISC-V EVM): storing the RISC-V bytecode in the same location (account code section) where the EVM bytecode is stored, replacing `stack` related operations with `register` operations, and so on.
 
-# Draft Results
+# Implementation Status
 
-After the implementation and test of the draft RISC-V EVM, here are some implementation-based results:
+This section records what the draft implementation covers and what it does not. None of it is a
+performance measurement; the figures below are static properties of the mapping, read off the
+implementation's calling conventions.
 
-1. Simple arithmetic, logic, and stack operations generally mapped efficiently to RISC-V instructions, showing plausible execution times within the interpreter framework.
-2. The already provided `Context` used in EVM implementations like [revm](https://github.com/bluealloy/revm) plugs into the draft implementation cleanly.
-3. 44 environment calls were implemented, including `KECCAK256`, `ADDRESS`, `CALL`, `CREATE` and `CREATE2` ([all ecalls](https://github.com/developeruche/riscv-evm-experiment/blob/main/crates/research-draft/riscv_evm_core/src/e_constants.rs)).
-4. Some Ethereum opcodes almost consume all the registers of the RISC-V EVM (for example `SSTORE`, `LOG2`, `CALL`); sometimes they consume all of them and need more registers still (`LOG3`, `LOG4`), making opcodes like that impossible with registers as their temporary storage.
+Arithmetic, logic and stack opcodes map onto RV32IM without difficulty: each becomes a short
+instruction sequence, and the EVM stack is simulated in registers and memory. The host interface
+was the part we expected to fight and did not. REVM's `Context` [13], which carries storage, balances
+and block data, plugs into the draft unchanged, so the
+RISC-V core reuses an existing state layer rather than a bespoke one.
 
-*Computational results will be available in the final draft.*
+The environment-call surface is complete at 44 calls, covering `KECCAK256`, the account and block
+context accessors, the four `LOG` variants, `SLOAD`/`SSTORE`, and the `CREATE`/`CALL` family
+([all ecalls](https://github.com/developeruche/riscv-evm-experiment/blob/main/crates/research-draft/riscv_evm_core/src/e_constants.rs)).
+
+Complete as a surface, that is, but not as an implementation. Six of the 44 are declared but carry no
+calling convention: `LOG2`, `LOG3`, `LOG4`, `DELEGATECALL`, `STATICCALL` and `CALLCODE` have no
+argument registers assigned to them. The reason is register pressure, and it is the one architectural
+result this draft produces, and the register budget is set out below.
 
 # Discussion
 
 ## Interpreting the Results
 
-The preliminary findings suggest that while using RISC-V for EVM execution is feasible, achieving performance parity or superiority over optimized EVM implementations faces hurdles. The overhead observed, particularly for complex opcodes suffering from register pressure, indicates that a naive mapping of EVM semantics to RISC-V may not yield significant performance gains without substantial optimization efforts (e.g., JIT compilation, ISA extensions tailored for EVM operations) which were beyond the scope of this initial experiment. The lack of gas metering further complicates direct performance comparisons based on economic cost.
+Executing EVM semantics on RV32IM is feasible: the counter contract deploys and runs, and the host interface carries the state access. What the draft cannot tell us is what it costs. We took no timings, so we cannot say whether this mapping is faster or slower than an optimised EVM, and two things stand in the way of finding out. Gas metering is not implemented, which rules out any comparison in the units Ethereum actually charges in. The REVM integration of Section 3.2 is unfinished, which rules out running both interpreters over the same contract in the same harness, the only comparison that would mean anything. Until both exist, the honest position is that this work establishes a mapping, not its cost.
 
 ## Developer Experience Revisited
 
-One motivation for exploring alternative VMs is to attract developers familiar with mainstream languages. RISC-V, with its LLVM backend, theoretically enables this. However, this experiment underscores a critical point: writing the *logic* of a smart contract in a language like Rust is only part of the challenge. Developers must still understand and interact with the blockchain's unique context — storage layout, transaction semantics, account models, gas economics, and security considerations. Abstraction libraries (like the conceptual `riscv-evm-utils`) are necessary but represent a new layer of specific APIs developers must learn. Therefore, while the language barrier might be lowered, the *blockchain domain knowledge* barrier remains substantial. It is not "all roses"; significant learning is still required.
+One motivation for exploring alternative VMs is to attract developers familiar with mainstream languages. RISC-V, with its LLVM backend, theoretically enables this. However, this experiment underscores a critical point: writing the *logic* of a smart contract in a language like Rust is only part of the challenge. Developers must still understand and interact with the blockchain's unique context: storage layout, transaction semantics, account models, gas economics, and security considerations. Abstraction libraries (like the conceptual `riscv-evm-utils`) are necessary but represent a new layer of specific APIs developers must learn. Therefore, while the language barrier might be lowered, the *blockchain domain knowledge* barrier remains substantial. It is not "all roses"; significant learning is still required.
 
 ## Architectural Implications and Future Directions
 
@@ -473,7 +490,7 @@ My main conclusion is multifaceted: while RISC-V offers a pathway to potentially
 **Future work.** Significant work is required to mature this exploration:
 
 1. **Implement gas metering.** Accurately implement EVM gas calculation for RISC-V instruction sequences.
-2. **Implement EVM optimizations.** Incorporate features like EIP-2929 (storage warming).
+2. **Implement EVM optimizations.** Incorporate features like EIP-2929 (storage warming) [14].
 3. **Comprehensive benchmarking.** Conduct rigorous benchmarks against optimized EVM implementations (e.g. geth, REVM) using standard test suites.
 4. **Optimization.** Explore JIT compilation techniques or optimized interpretation strategies for the RISC-V execution core.
 5. **Bug fixing and stabilization.** Develop a robust, well-tested implementation.
@@ -482,17 +499,22 @@ My main conclusion is multifaceted: while RISC-V offers a pathway to potentially
 
 This research contributes early insights into the complex interplay between ISA design and blockchain execution environments, highlighting both the opportunities and the profound challenges in evolving platforms like Ethereum.
 
+**Code availability.** The draft implementation discussed throughout this report is at
+<https://github.com/developeruche/riscv-evm-experiment/tree/main/crates/research-draft>.
+
 # References
 
-- [Ethereum Yellow Paper: Formal EVM Specification](https://ethereum.github.io/yellowpaper/paper.pdf)
-- [MoonPay: What is the Ethereum Virtual Machine (EVM)?](https://www.moonpay.com/learn/blockchain/what-is-the-ethereum-virtual-machine-evm)
-- [Wilcke: Optimising the Ethereum Virtual Machine](https://medium.com/@jeff.ethereum/optimising-the-ethereum-virtual-machine-58457e61ca15)
-- [RISC-V International: Official Website](https://riscv.org/)
-- [RISC-V Instruction Set Manual, Volume I: User-Level ISA](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-118.pdf)
-- [RISC-V Instruction Set Manual, Volume II: Privileged Architecture](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-129.pdf)
-- [REVM: Rust Implementation of the Ethereum Virtual Machine](https://github.com/bluealloy/revm)
-- [Polkadot Wiki: WebAssembly (Wasm) Documentation](https://wiki.polkadot.network/learn/learn-wasm/)
-- [EOSIO Developer Portal: EOS VM Documentation](https://eos.io/for-developers/build/eos-vm/)
-- [Solana Developer Portal: Comprehensive Resources](https://solana.com/developers)
-- [evmjit: The Ethereum EVM JIT Library](https://github.com/ethereum/evmjit)
-- [Ethereum Foundation Blog: Go Ethereum's JIT-EVM](https://blog.ethereum.org/2016/06/02/go-ethereums-jit-evm)
+1. G. Wood. *Ethereum: A Secure Decentralised Generalised Transaction Ledger.* Ethereum Project Yellow Paper. <https://ethereum.github.io/yellowpaper/paper.pdf>
+2. Ethereum Foundation. *Ethereum Execution Layer Specification: specification for the execution layer.* <https://github.com/ethereum/execution-specs>
+3. J. Wilcke. *Optimising the Ethereum Virtual Machine.* May 2016. <https://medium.com/@jeff.ethereum/optimising-the-ethereum-virtual-machine-58457e61ca15>
+4. A. Waterman, Y. Lee, D. A. Patterson, and K. Asanović. *The RISC-V Instruction Set Manual, Volume I: User-Level ISA, Version 2.1.* Technical Report UCB/EECS-2016-118, EECS Department, University of California, Berkeley, May 2016.
+5. A. Waterman, Y. Lee, R. Avizienis, D. A. Patterson, and K. Asanović. *The RISC-V Instruction Set Manual, Volume II: Privileged Architecture, Version 1.9.* Technical Report UCB/EECS-2016-129, EECS Department, University of California, Berkeley, July 2016.
+6. A. Haas, A. Rossberg, D. L. Schuff, B. L. Titzer, M. Holman, D. Gohman, L. Wagner, A. Zakai, and J. F. Bastien. *Bringing the Web up to Speed with WebAssembly.* In Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI), 2017. doi:10.1145/3062341.3062363
+7. G. Wood. *Polkadot: Vision for a Heterogeneous Multi-Chain Framework.* Draft 1. <https://github.com/polkadot-io/polkadotpaper>
+8. EOSIO. *eos-vm: a low-latency, high performance and extensible WebAssembly backend library.* <https://github.com/EOSIO/eos-vm>
+9. A. Yakovenko. *Solana: A New Architecture for a High Performance Blockchain, v0.8.13.* <https://solana.com/solana-whitepaper.pdf>
+10. Ethereum. *evmjit: the Ethereum EVM JIT.* <https://github.com/ethereum/evmjit>
+11. J. Wilcke. *Go Ethereum's JIT-EVM.* Ethereum Foundation Blog, June 2016. <https://blog.ethereum.org/2016/06/02/go-ethereums-jit-evm>
+12. 0xDanRobins. *RISC-V for L2 State Transition Computation by Goshen.* Ethereum Research, March 2023. <https://ethresear.ch/t/15054>
+13. bluealloy. *REVM: Rust implementation of the Ethereum Virtual Machine.* <https://github.com/bluealloy/revm>
+14. V. Buterin and M. Swende. *EIP-2929: Gas cost increases for state access opcodes.* Ethereum Improvement Proposals, September 2020. <https://eips.ethereum.org/EIPS/eip-2929>
