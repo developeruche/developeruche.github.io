@@ -73,6 +73,30 @@ export const BLOG_CATEGORIES = [
   { key: 'blockchain', display: 'Blockchain & Protocol', match: ['blockchain', 'protocol', 'infrastructure', 'networking'] },
 ];
 
+// The three notes sections. `key` is the URL segment (/notes/<key>/) and the
+// value of a note's `category` field in data/notes.json. The artwork already
+// contains the display name, so pages render it as .sr-only text.
+export const NOTE_SECTIONS = [
+  {
+    key: 'blockchain',
+    display: 'Blockchain',
+    image: '/assets/notes/blockchain.png',
+    blurb: 'Execution-layer internals, consensus, and the protocol machinery underneath Ethereum.',
+  },
+  {
+    key: 'cryptography-zkp',
+    display: 'Cryptography & ZKP',
+    image: '/assets/notes/cryptography-zkp.png',
+    blurb: 'Proof systems, commitment schemes, and the algebra they are built on.',
+  },
+  {
+    key: 'artificial-intelligence',
+    display: 'Artificial Intelligence',
+    image: '/assets/notes/artificial-intelligence.png',
+    blurb: 'Inference engines, quantization, and kernel-level performance work.',
+  },
+];
+
 export const PROJECT_CATEGORIES = [
   { key: 'rust', display: 'Rust', match: ['rust'] },
   { key: 'zero-knowledge', display: 'Zero-Knowledge', match: ['zero-knowledge', 'zkvm', 'groth16'] },
@@ -274,12 +298,14 @@ export function listItem(opts) {
     ]),
   ]);
   const thumb = el('div', { class: 'list-item-thumb' }, [imageSlot(opts.thumbnail, opts.title)]);
-  return el('a', {
-    class: 'list-item',
-    href: opts.href,
-    target: '_blank',
-    rel: 'noopener noreferrer',
-  }, [content, thumb]);
+  // Root-relative hrefs are our own pages (notes), so they open in place;
+  // only outbound rows (blog posts pointing at their original host) get a tab.
+  const attrs = { class: 'list-item', href: opts.href };
+  if (!opts.href || !opts.href.startsWith('/')) {
+    attrs.target = '_blank';
+    attrs.rel = 'noopener noreferrer';
+  }
+  return el('a', attrs, [content, thumb]);
 }
 
 /* ── Scroll reveal (IntersectionObserver, reveal-once) ─────────────────── */

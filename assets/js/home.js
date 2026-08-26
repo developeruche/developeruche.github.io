@@ -23,6 +23,10 @@ async function renderHighlights(host, path, opts = {}) {
 const pubCard = (p) => card({ title: p.title, tags: p.tags, body: p.abstract, links: p.links, featured: true, noMedia: true });
 const blogCard = (b) => card({ title: b.title, tags: b.tags, href: b.link, thumbnail: b.thumbnail });
 const projCard = (p) => card({ title: p.name, tags: p.tags, body: p.description, links: p.links, noMedia: true });
+const noteCard = (n) => card({
+  title: n.title, tags: n.tags, body: n.excerpt, featured: true, noMedia: true,
+  links: n.links && n.links.length ? n.links : (n.link ? [{ label: 'READ NOTE', url: n.link }] : null),
+});
 
 // Companies strip
 async function renderCompanies(host) {
@@ -48,6 +52,7 @@ renderHighlights(document.getElementById('pub-grid'), 'data/publications.json', 
 renderHighlights(document.getElementById('blog-grid'), 'data/blog.json', { cardFn: blogCard, count: 6 });
 renderHighlights(document.getElementById('os-grid'), 'data/os-n-projects.json', { filter: (p) => p.type === 'contribution', cardFn: projCard, count: 6 });
 renderHighlights(document.getElementById('proj-grid'), 'data/os-n-projects.json', { filter: (p) => p.type === 'personal', cardFn: projCard, count: 6 });
+renderHighlights(document.getElementById('notes-grid'), 'data/notes.json', { cardFn: noteCard, count: 4 });
 renderCompanies(document.getElementById('companies-row'));
 
 observeReveals();

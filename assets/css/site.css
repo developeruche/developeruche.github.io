@@ -598,3 +598,69 @@ body::before {
   .slide-up, .fade-in { opacity: 1; transform: none; }
   .skeleton-shimmer { display: none; }
 }
+
+/* ── NOTES ─────────────────────────────────────────────────────────────
+   Category cards on /notes. The generated artwork already carries the
+   category name in its own lettering, so the card must NOT repeat it as a
+   visible heading — the <h2> is .sr-only and the art does the talking. */
+.note-cats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+.note-cat {
+  display: block;
+  border: var(--border-1) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+  transition: border-color var(--motion-medium), box-shadow var(--motion-medium), transform var(--motion-medium);
+}
+.note-cat:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+.note-cat img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-bottom: var(--border-1) solid var(--color-border);
+  background: var(--color-bg);
+}
+.note-cat-body {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  padding: var(--space-15) var(--space-20);
+}
+.note-cat-blurb {
+  flex: 1;
+  min-width: 14ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  text-transform: none;
+  line-height: var(--leading-base);
+}
+.note-cat-meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-8);
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  letter-spacing: 1px;
+  color: var(--color-accent);
+}
+.note-cat-meta span { transition: transform var(--motion-fast); }
+.note-cat:hover .note-cat-meta span { transform: translateX(4px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .note-cat, .note-cat-meta span { transition: none; }
+  .note-cat:hover { transform: none; }
+}
