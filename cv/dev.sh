@@ -24,7 +24,7 @@ trap cleanup INT TERM
 if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
   echo "• port $PORT already serving — reusing it"
 else
-  ( cd "$ROOT" && python3 -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1 ) &
+  ( cd "$ROOT" && python3 serve.py "$PORT" >/dev/null 2>&1 ) &
   SERVER_PID=$!
   echo "• static server started on :$PORT"
 fi

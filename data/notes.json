@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Cryptography and Zero Knowledge Proof Research Repository",
+    "slug": "cryptography-n-zk-research",
+    "category": "cryptography-zkp",
+    "excerpt": "A living research repository dedicated to implementing academic research papers, defining cryptographic primitives from scratch in Rust, and analyzing theoretical exploits in proof systems.",
+    "tags": [
+      "Cryptography",
+      "Zero-Knowledge",
+      "Rust",
+      "Research"
+    ],
+    "links": [
+      {
+        "label": "RESEARCH NOTES",
+        "url": "https://developeruche.gitbook.io/computational-proof-systems"
+      },
+      {
+        "label": "SOURCE CODE",
+        "url": "https://github.com/developeruche/cryptography-n-zk-research"
+      }
+    ],
+    "highlight": true,
+    "thumbnail": null
+  }
+]

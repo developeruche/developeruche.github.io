@@ -12,8 +12,13 @@ Pick any one of these from the project root. Then open the printed URL
 ### Python 3
 
 ```bash
-python3 -m http.server 8000
+python3 serve.py 8000
 ```
+
+Use `serve.py`, not `python3 -m http.server`. Site links are **extensionless**
+(`/projects`, not `/projects.html`), which is how GitHub Pages serves them;
+the stock module serves files literally and returns 404 for those URLs.
+`serve.py` applies the same resolution order Pages does and disables caching.
 
 ### Node (http-server)
 
@@ -32,15 +37,21 @@ Install the **Live Server** extension, then right-click `index.html` →
 
 | URL | File | What it shows |
 | --- | --- | --- |
-| `/` or `/index.html` | `index.html` | Home: hero, companies strip, 4 highlight sections |
-| `/projects.html` | `projects.html` | Open-source + personal projects, filterable |
-| `/blog.html` | `blog.html` | All blog posts (cards open the external source) |
-| `/publications.html` | `publications.html` | Research papers + publications |
-| `/blog-post.html` | `blog-post.html` | Dummy post detail template (not yet linked) |
+| `/` | `index.html` | Home: hero, companies strip, 4 highlight sections |
+| `/projects` | `projects.html` | Open-source + personal projects, filterable |
+| `/blog` | `blog.html` | All blog posts (cards open the external source) |
+| `/publications` | `publications.html` | Research papers + publications |
+| `/notes` | `notes.html` | Study-notes index: three category cards |
+| `/notes/<category>/` | `notes/<category>/index.html` | Notes in one category, filterable |
+| `/blog-post` | `blog-post.html` | Dummy post detail template (not yet linked) |
 | `/cv` | `cv/index.html` | Downloads the CV PDF (auto-starts on load) |
 | `/publications/<slug>/` | `publications/<slug>/index.html` | Paper detail page: metadata + in-page PDF reader |
 | `/papers/preview.html` | `papers/preview.html` | Live paper preview — dev only, `noindex` |
 | `/cv/preview.html` | `cv/preview.html` | Live LaTeX preview — dev only, `noindex` |
+
+All internal links are **extensionless** (`/projects`, not `/projects.html`),
+which is how GitHub Pages serves them. `serve.py` resolves them the same way
+locally; `python3 -m http.server` does not.
 
 Filtered views are shareable via query string, e.g.
 `/projects.html?tags=rust,evm`.
@@ -51,6 +62,8 @@ All content lists are **data-driven** — adding or editing entries needs **no
 code change**. Edit the JSON in `data/` and reload:
 
 - `data/publications.json`
+- `data/notes.json` — study notes; `category` must be one of
+  `blockchain`, `cryptography-zkp`, `artificial-intelligence`
 - `data/blog.json`
 - `data/os-n-projects.json`
 - `data/companies.json` — hero "companies I've worked with" strip
