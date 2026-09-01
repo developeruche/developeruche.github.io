@@ -1,5 +1,21 @@
 [
   {
+    "title": "Intelligence from First Principles",
+    "slug": "intelligence-from-first-principles",
+    "category": "artificial-intelligence",
+    "date": "2026-08-21",
+    "excerpt": "A dense reference: the conditions under which intelligence is defined, the single primitive loop by which it is acquired, and seven ways to measure a unit of it. Covers compression and requisite variety, credit assignment, bounded capacity as the source of abstraction, and where current AI sits in the frame.",
+    "tags": [
+      "Intelligence",
+      "Information Theory",
+      "Learning",
+      "Compression"
+    ],
+    "link": "/notes/artificial-intelligence/intelligence-from-first-principles/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Cryptography and Zero Knowledge Proof Research Repository",
     "slug": "cryptography-n-zk-research",
     "category": "cryptography-zkp",
