@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linear Regression — Developer Uche</title>
+  <meta name="description" content="Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs)." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/artificial-intelligence/linear-regression/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Linear Regression — Developer Uche" />
+  <meta property="og:description" content="Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs)." />
+  <meta property="og:url" content="https://developeruche.com/notes/artificial-intelligence/linear-regression/" />
+  <meta property="og:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="article:published_time" content="2026-09-01" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Linear Regression — Developer Uche" />
+  <meta name="twitter:description" content="Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs)." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Linear Regression",
+  "description": "Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs).",
+  "url": "https://developeruche.com/notes/artificial-intelligence/linear-regression/",
+  "datePublished": "2026-09-01",
+  "inLanguage": "en",
+  "keywords": "Machine Learning, Regression, Gradient Descent, Loss Functions",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Artificial Intelligence Notes",
+    "url": "https://developeruche.com/notes/artificial-intelligence/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/artificial-intelligence/">← Back to Artificial Intelligence notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · ARTIFICIAL INTELLIGENCE</span>
+        <h1 class="post-title">Linear Regression</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-09-01">2026-09-01</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Machine Learning</span>
+          <span>Regression</span>
+          <span>Gradient Descent</span>
+          <span>Loss Functions</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<h2>1. What It Is</h2>
+        <p>Linear regression is a statistical technique for finding the relationship between variables.</p>
+        <p>In a machine learning context, it finds the relationship between a <strong>feature</strong> (input) and a <strong>label</strong> (the thing being predicted). The model assumes this relationship can be described by a straight line.</p>
+        <hr />
+        <h2>2. The Linear Regression Equation</h2>
+        <h3>From algebra to machine learning</h3>
+        <p>In algebra, a line is written as:</p>
+        <p>$$y = mx + b$$</p>
+        <p>Machine learning expresses the same idea with different notation:</p>
+        <p>$$y' = b + w_1x_1$$</p>
+        <h3>What each term means</h3>
+        <table><thead><tr><th>Term</th><th>Name</th><th>Algebraic equivalent</th><th>Notes</th></tr></thead><tbody><tr><td>$y'$</td><td>Predicted output</td><td>$y$</td><td>The model's prediction, not the true value</td></tr><tr><td>$b$</td><td>Bias</td><td>y-intercept</td><td>A <strong>parameter</strong> learned during training</td></tr><tr><td>$w_1$</td><td>Weight</td><td>slope $m$</td><td>A <strong>parameter</strong> learned during training</td></tr><tr><td>$x_1$</td><td>Feature</td><td>$x$</td><td>The input; supplied by the data, not learned</td></tr></tbody></table>
+        <p>The key distinction: $b$ and $w_1$ are what the model <em>figures out</em>. $x_1$ is what you <em>give</em> it.</p>
+        <h3>Models with multiple features</h3>
+        <p>Real problems rarely depend on a single input. A model with five features looks like:</p>
+        <p>$$y' = b + w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4 + w_5x_5$$</p>
+        <p>Each feature gets its own weight. There is still only one bias term. Generalized to $n$ features:</p>
+        <p>$$y' = b + \sum_{i=1}^{n} w_ix_i$$</p>
+        <hr />
+        <h2>3. Loss</h2>
+        <p><strong>Loss</strong> is a numerical metric describing how wrong a model's predictions are. It is measured as the distance between the model's predictions and the actual labels.</p>
+        <p>Lower loss means a better model. Loss is what training tries to minimize.</p>
+        <h3>Types of loss</h3>
+        <table><thead><tr><th>#</th><th>Loss type</th><th>Formula</th><th>What it does</th></tr></thead><tbody><tr><td>1</td><td><strong>L1 loss</strong></td><td>$\sum \lvert \text{actual} - \text{predicted} \rvert$</td><td>Sum of absolute differences</td></tr><tr><td>2</td><td><strong>Mean absolute error (MAE)</strong></td><td>$\frac{1}{n} \sum \lvert \text{actual} - \text{predicted} \rvert$</td><td>L1 loss averaged over $n$ examples</td></tr><tr><td>3</td><td><strong>L2 loss</strong></td><td>$\sum (\text{actual} - \text{predicted})^2$</td><td>Sum of squared differences</td></tr><tr><td>4</td><td><strong>Mean squared error (MSE)</strong></td><td>$\frac{1}{n} \sum (\text{actual} - \text{predicted})^2$</td><td>L2 loss averaged over $n$ examples</td></tr><tr><td>5</td><td><strong>Root mean squared error (RMSE)</strong></td><td>$\sqrt{\frac{1}{n} \sum (\text{actual} - \text{predicted})^2}$</td><td>Square root of MSE</td></tr></tbody></table>
+        <h3>How they relate</h3>
+        <ul><li>MAE is just <strong>L1 divided by $n$</strong>; MSE is just <strong>L2 divided by $n$</strong>. Averaging makes the number comparable across datasets of different sizes.</li><li>RMSE is the square root of MSE, which returns the value to the <strong>same units as the label</strong>. This makes it easier to interpret than MSE.</li></ul>
+        <h3>Choosing between L1 and L2</h3>
+        <p>Squaring penalizes large errors much more heavily than small ones.</p>
+        <ul><li><strong>L2 / MSE</strong> is more sensitive to outliers. A single badly-wrong prediction dominates the loss, so the model works hard to fix it.</li><li><strong>L1 / MAE</strong> treats all errors proportionally, so it is more robust when the dataset contains outliers you don't want the model chasing.</li></ul>
+        <hr />
+        <h2>4. Gradient Descent</h2>
+        <p>Gradient descent is a mathematical technique that iteratively finds the weights and bias producing the model with the lowest loss.</p>
+        <h3>The algorithm</h3>
+        <ol><li>Calculate the loss using the current weights and bias.</li><li>Determine which direction to move the weights and bias to reduce the loss.</li><li>Move the weights and bias a small amount in that direction.</li><li>Return to step 1 and repeat until the model can't reduce the loss any further.</li></ol>
+        <h3>Convergence</h3>
+        <p>A model has <strong>converged</strong> when additional iterations stop meaningfully reducing the loss. At that point the model has settled at (or very near) the minimum of the loss curve.</p>
+        <hr />
+        <h2>5. Hyperparameters</h2>
+        <blockquote>Hyperparameters are variables that control different aspects of training.</blockquote>
+        <p>Note the contrast with parameters:</p>
+        <ul><li><strong>Parameters</strong> ($w$ and $b$) are calculated <em>by</em> the model during training.</li><li><strong>Hyperparameters</strong> are set <em>by you</em> before training begins.</li></ul>
+        <p>The three main hyperparameters:</p>
+        <h3>Learning rate</h3>
+        <p>A floating-point number that influences how quickly a model converges. It controls the size of the step taken in step 3 of gradient descent.</p>
+        <ul><li><strong>Too low</strong> — the model takes too long to converge.</li><li><strong>Too high</strong> — the model never converges. It bounces around the weight and bias values that minimize the loss, overshooting them repeatedly.</li><li><strong>Goal</strong> — pick a value that is neither too high nor too low, so the model converges quickly.</li></ul>
+        <h3>Batch size</h3>
+        <p>The number of examples the model processes before updating its weights and bias.</p>
+        <p>When a dataset is very large, updating the weights and bias after every single entry is impractical, so examples are grouped into <strong>batches</strong> instead.</p>
+        <h3>Epochs</h3>
+        <p>One epoch means the model has processed <strong>every example in the training set once</strong>.</p>
+        <p>Training typically runs for many epochs, since a single pass through the data is rarely enough to converge.</p>
+        <hr />
+        <h2>6. Summary</h2>
+        <table><thead><tr><th>Concept</th><th>One-line definition</th></tr></thead><tbody><tr><td>Linear regression</td><td>Fits a straight line describing the relationship between features and a label</td></tr><tr><td>Bias ($b$)</td><td>Learned y-intercept</td></tr><tr><td>Weight ($w$)</td><td>Learned slope, one per feature</td></tr><tr><td>Loss</td><td>How wrong the predictions are</td></tr><tr><td>Gradient descent</td><td>Iterative method for finding the $w$ and $b$ with the lowest loss</td></tr><tr><td>Learning rate</td><td>How big each gradient descent step is</td></tr><tr><td>Batch size</td><td>How many examples before each update</td></tr><tr><td>Epoch</td><td>One full pass over the training set</td></tr></tbody></table>
+      </div>
+
+      <a class="back-link" href="/notes/artificial-intelligence/" style="margin-top: var(--space-lg);">← Back to Artificial Intelligence notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,9 +1,25 @@
 [
   {
+    "title": "Linear Regression",
+    "slug": "linear-regression",
+    "category": "artificial-intelligence",
+    "date": "2026-09-01",
+    "excerpt": "Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs).",
+    "tags": [
+      "Machine Learning",
+      "Regression",
+      "Gradient Descent",
+      "Loss Functions"
+    ],
+    "link": "/notes/artificial-intelligence/linear-regression/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Intelligence from First Principles",
     "slug": "intelligence-from-first-principles",
     "category": "artificial-intelligence",
-    "date": "2026-08-21",
+    "date": "2026-09-01",
     "excerpt": "A dense reference: the conditions under which intelligence is defined, the single primitive loop by which it is acquired, and seven ways to measure a unit of it. Covers compression and requisite variety, credit assignment, bounded capacity as the source of abstraction, and where current AI sits in the frame.",
     "tags": [
       "Intelligence",
