@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intelligence from First Principles — Developer Uche</title>
+  <meta name="description" content="A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/artificial-intelligence/intelligence-from-first-principles/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Intelligence from First Principles — Developer Uche" />
+  <meta property="og:description" content="A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured." />
+  <meta property="og:url" content="https://developeruche.com/notes/artificial-intelligence/intelligence-from-first-principles/" />
+  <meta property="og:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="article:published_time" content="2026-08-21" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Intelligence from First Principles — Developer Uche" />
+  <meta name="twitter:description" content="A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Intelligence from First Principles",
+  "description": "A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured.",
+  "url": "https://developeruche.com/notes/artificial-intelligence/intelligence-from-first-principles/",
+  "datePublished": "2026-08-21",
+  "inLanguage": "en",
+  "keywords": "Intelligence, Information Theory, Learning, Compression",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Artificial Intelligence Notes",
+    "url": "https://developeruche.com/notes/artificial-intelligence/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/artificial-intelligence/">← Back to Artificial Intelligence notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · ARTIFICIAL INTELLIGENCE</span>
+        <h1 class="post-title">Intelligence from First Principles</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-08-21">2026-08-21</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Intelligence</span>
+          <span>Information Theory</span>
+          <span>Learning</span>
+          <span>Compression</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p><em>A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured.</em></p>
+        <hr />
+        <h3>0. Orientation</h3>
+        <p>Two theses carry the whole document.</p>
+        <p><strong>Thesis A — what it is.</strong> Intelligence is not a stock, it is a <em>rate</em>. Specifically: the conversion rate from (priors + experience + compute) into competence on situations not previously encountered. Skill is the stock; intelligence is the derivative.</p>
+        <p><strong>Thesis B — how it is gained.</strong> There is one primitive operation, not many. It runs at every timescale and on every substrate, and the differences between substrates are differences in three quantities only: <strong>credit-assignment fidelity, feedback bandwidth, and prior quality.</strong></p>
+        <p>The primitive:</p>
+        <blockquote><strong>Commit to a prediction → collide with reality → extract the discrepancy → assign blame internally → retain the correction in reusable form.</strong></blockquote>
+        <p>Everything called "learning," "evolution," "science," "expertise," or "training" is this loop with different values for the three quantities above.</p>
+        <h4>Notation</h4>
+        <table><thead><tr><th>Symbol</th><th>Meaning</th></tr></thead><tbody><tr><td>$\mu$</td><td>environment (a distribution over observation sequences given actions)</td></tr><tr><td>$\pi$</td><td>policy / agent</td></tr><tr><td>$o_t, a_t, s_t$</td><td>observation, action, latent state at time $t$</td></tr><tr><td>$z_t$</td><td>internal representation</td></tr><tr><td>$\theta$</td><td>system parameters (weights, synapses, genome, institutional rules)</td></tr><tr><td>$M_t$</td><td>the system's model at time $t$</td></tr><tr><td>$K(\cdot)$</td><td>Kolmogorov complexity — length of the shortest program producing the argument</td></tr><tr><td>$H(\cdot), I(\cdot;\cdot)$</td><td>Shannon entropy, mutual information</td></tr><tr><td>$\delta_t$</td><td>prediction error / discrepancy</td></tr><tr><td>$\mathcal{D}$</td><td>data / experience</td></tr></tbody></table>
+        <hr />
+        <h2>Part I — Conditions: when the concept is even defined</h2>
+        <h3>1.1 The three constraints</h3>
+        <p>Intelligence is not a property a system has in isolation. It is a <strong>relation between a system and a world</strong>, and it is only meaningful when three conditions hold <em>simultaneously</em>:</p>
+        <ol><li><strong>Preference.</strong> Some outcomes count as better than others. Formally there is a $U: \mathcal{S} \to \mathbb{R}$, or a reward, or a fitness, or a loss. Without direction, "doing well" has no referent.</li><li><strong>Uncertainty.</strong> The environment is neither fully known nor fully controlled. $P(s_{t+1} \mid s_t, a_t)$ is not known to the system, or $s_t$ is not directly observable, or both.</li><li><strong>Bounded resources.</strong> Finite time, energy, memory, data, compute.</li></ol>
+        <h3>1.2 Why each is load-bearing — the collapse arguments</h3>
+        <p>Each condition earns its place by what happens when you remove it.</p>
+        <p><strong>Remove preference</strong> → nothing to measure. Behaviour can be described but not scored. "Intelligent" becomes a type error.</p>
+        <p><strong>Remove uncertainty</strong> → a lookup table suffices. If $P(s_{t+1}|s_t,a_t)$ is known and deterministic, the optimal policy is precomputable and storable. A thermostat in a room with fixed dynamics needs no intelligence, only a rule. Intelligence is what you deploy <em>because</em> you cannot enumerate.</p>
+        <p><strong>Remove bounded resources</strong> → brute force wins everything, and brute force is not intelligence. This is the condition people skip and it is the most important one.</p>
+        <blockquote><strong>Intelligence is fundamentally a scarcity phenomenon.</strong></blockquote>
+        <p>The evidence for this is that every <em>ideal</em> formulation of intelligence is uncomputable:</p>
+        <ul><li><strong>Solomonoff induction</strong>, the optimal predictor, assigns to a sequence $x$ the probability $M(x) = \sum_{p\,:\,U(p)=x*} 2^{-|p|}$ — a sum over all programs that output $x$ as a prefix. It has a beautiful convergence guarantee: total expected squared prediction error against the true environment $\mu$ is bounded by $\approx K(\mu)\ln 2$ — a constant that does <strong>not grow with sequence length</strong>. It is also uncomputable, because $K$ is uncomputable.</li><li><strong>AIXI</strong> = Solomonoff induction + expectimax planning. A complete formal specification of an optimally intelligent agent. Also uncomputable.</li></ul>
+        <p>These are not footnotes. They tell you that <strong>everything interesting about intelligence lives in the approximation</strong> — in what you do when you cannot afford the correct answer. An omniscient oracle is not intelligent. It is merely right.</p>
+        <h3>1.3 The two coupled capacities</h3>
+        <p>Given the three constraints, intelligence decomposes into exactly two capacities, and they are not independent.</p>
+        <h4>Modeling ≡ compression</h4>
+        <p>To act well in an environment you do not control, you need internal structure that mirrors the environment's structure. The clean operationalisation is <strong>compression</strong>: if you can predict a stream, you have found regularity in it; finding regularity means you can describe it more briefly than listing it.</p>
+        <p>The <strong>Minimum Description Length</strong> principle makes this an objective:</p>
+        <p>$$H^* = \arg\min_{H}\ \big[\,L(H) + L(\mathcal{D}\mid H)\,\big]$$</p>
+        <p>Model cost plus residual cost. Note what this buys you: <strong>Occam's razor stops being an aesthetic preference and becomes a theorem.</strong> Under Solomonoff's prior $2^{-K(h)}$, preferring shorter hypotheses is not taste — it is the thing that makes induction work at all.</p>
+        <p>The identity that matters operationally:</p>
+        <p>$$\underbrace{\mathbb{E}[-\log_2 p_\theta(x)]}_{\text{cross-entropy loss, bits}} = \underbrace{H(X)}_{\text{irreducible}} + \underbrace{D_{KL}(p \Vert p_\theta)}_{\text{your ignorance}}$$</p>
+        <p>Training a next-token model <em>is</em> running a compressor. The loss, converted to bits, is literally the codelength you would pay to transmit the corpus using the model as the code. This is not an analogy — arithmetic coding realises it exactly.</p>
+        <h4>Control ≡ requisite variety</h4>
+        <p>Having a model is useless unless it steers action. <strong>Ashby's Law of Requisite Variety</strong> puts a hard floor here:</p>
+        <p>$$H(\text{outcome}) \;\ge\; H(\text{disturbance}) - H(\text{regulator})$$</p>
+        <p>A regulator must be able to produce at least as much variety of response as the disturbance it must absorb. <em>Only variety can destroy variety.</em> You cannot control what you cannot match in expressiveness — and, downstream, you cannot learn a distinction you cannot represent.</p>
+        <h4>The halves are welded together</h4>
+        <p><strong>Conant &amp; Ashby (1970): every good regulator of a system must be a model of that system.</strong></p>
+        <p>Control forces modeling. You do not get to pick one. Any system that regulates well is, provably, isomorphic to a model of what it regulates — whether or not anyone designed it that way, and whether or not the model is legible.</p>
+        <h3>1.4 The critical distinction: skill is not intelligence</h3>
+        <p>This is where most confusion in the field originates.</p>
+        <p>A chess engine has superhuman skill and essentially zero generality. Skill is the <strong>output</strong> of an intelligent process, not the process.</p>
+        <p>Chollet's correction is the sharpest available: intelligence is a <strong>conversion rate</strong> — how efficiently a system turns priors plus experience into new skill on tasks it has not seen. A system needing ten million games to play well is doing something categorically different from one needing ten. Both may end at identical skill. Only one demonstrated intelligence.</p>
+        <p>Structurally, his measure is:</p>
+        <p>$$I \;\propto\; \underset{\text{tasks}}{\text{avg}} \left[ \frac{\text{generalization difficulty of the solution found}}{\text{priors} \;+\; \text{experience consumed}} \right]$$</p>
+        <p>with difficulty measured in algorithmic-complexity terms. The shape is what matters: <strong>numerator = how far you generalized; denominator = what you were given and what you burned.</strong> Any measure lacking a denominator is measuring skill, not intelligence.</p>
+        <h3>1.5 No Free Lunch: there is no intelligence <em>in general</em></h3>
+        <p>The NFL theorems state that averaged over <strong>all</strong> possible environments, every algorithm performs identically. Therefore:</p>
+        <blockquote><strong>Intelligence is always relative to a distribution over environments. Priors are not a limitation to be engineered away — they are the precondition for generalizing at all.</strong></blockquote>
+        <p>Human intelligence is fitted to a universe containing locality, causality, persistent objects, other agents, and approximate stationarity. Strip those regularities and human cognition has nothing to grip. The same is true of every architecture: convolution assumes translation-invariance and locality; attention assumes relevance is content-addressable rather than positional.</p>
+        <p>The practical consequence, which is easy to state and hard to internalise:</p>
+        <blockquote><strong>You cannot separate "how much a system learns" from "what it was ready to learn." Most of the difference between a good and a bad learner is decided before any data arrives.</strong></blockquote>
+        <h3>1.6 What intelligence is not</h3>
+        <p>Each of these gets conflated with it, and each conflation causes specific errors:</p>
+        <table><thead><tr><th>Not</th><th>Why</th><th>Error it causes</th></tr></thead><tbody><tr><td><strong>Consciousness</strong></td><td>Subjective experience is orthogonal to capability</td><td>Treating capability claims as claims about moral status, and vice versa</td></tr><tr><td><strong>Goals or values</strong></td><td>Capability and objective are orthogonal axes; a system can be enormously capable and pointed anywhere</td><td>Assuming capability implies benign direction</td></tr><tr><td><strong>Knowledge</strong></td><td>Knowledge is the stored residue; intelligence is what acquires and applies it</td><td>Confusing retrieval benchmarks with reasoning benchmarks</td></tr><tr><td><strong>Optimality</strong></td><td>Optimality is easy to define and usually impossible to compute</td><td>Judging systems against an uncomputable ideal instead of against a resource budget</td></tr><tr><td><strong>Computation</strong></td><td>Computation transforms representations by rules; intelligence chooses <em>which</em> representations, rules, and actions</td><td>"More FLOPs = more intelligent"</td></tr></tbody></table>
+        <h3>1.7 The one-line compression</h3>
+        <blockquote><strong>Intelligence is the efficient conversion of limited experience into effective action in environments not previously encountered, under resource constraints, by a system that models the world it must act in.</strong></blockquote>
+        <p>Every term is load-bearing:</p>
+        <ul><li>drop <em>efficient</em> → brute force</li><li>drop <em>not previously encountered</em> → memorisation</li><li>drop <em>resource constraints</em> → an uncomputable ideal</li><li>drop <em>models</em> → reflex</li></ul>
+        <hr />
+        <h2>Part II — Mechanism: the single primitive operation</h2>
+        <h3>2.0 The constraint that forces the shape</h3>
+        <p>Start information-theoretically. Intelligence is internal structure mirroring external structure, so "how does a system gain intelligence" reduces to <strong>"how does structure about the world get into the system."</strong></p>
+        <p>There are exactly two sources:</p>
+        <ol><li><strong>Inherited priors</strong> — structure present at initialisation (genome, architecture, pretrained weights, institutional knowledge).</li><li><strong>Contact with the world</strong> — and contact transmits information <em>only when the observation could have come out differently than expected.</em></li></ol>
+        <p>That second clause is the entire mechanism. If prediction and observation match perfectly, zero bits crossed the boundary. Nothing was learned because nothing was surprising.</p>
+        <blockquote><strong>Surprise is the currency of learning. Error is its unit.</strong></blockquote>
+        <h4>The negative result</h4>
+        <p>Let $W$ be the world and $S_t$ the system's internal state. If $S_{t+1} = f(S_t, \text{internal noise})$ with no new observation, the <strong>data processing inequality</strong> gives:</p>
+        <p>$$I(W; S_{t+1}) \;\le\; I(W; S_t)$$</p>
+        <p><strong>No amount of internal computation creates new information about the world.</strong> A system can think for a thousand years in a sealed room and discover nothing about what is outside it. Deduction, search, and self-play only unfold consequences already latent in priors plus held data.</p>
+        <h4>The essential caveat: amortization</h4>
+        <p>The unfolding is <em>not</em> worthless, and this is exactly where reasoning fits.</p>
+        <p>Under bounded resources, converting expensive-to-compute knowledge into cheap-to-retrieve knowledge is a <strong>genuine capability gain</strong>, even though it adds zero bits about the world. AlphaZero's self-play adds no information about chess beyond the rules; it <em>amortizes</em> the consequences of those rules into a fast policy. Mathematics adds no empirical bits and is obviously not useless.</p>
+        <p>The clean split:</p>
+        <table><thead><tr><th></th><th>increases</th><th>measured by</th></tr></thead><tbody><tr><td><strong>Contact with reality</strong></td><td>what the system <em>could</em> know</td><td>mutual information $I(W;S)$</td></tr><tr><td><strong>Internal computation</strong></td><td>what the system can <em>afford</em> to know</td><td>compute needed per query</td></tr></tbody></table>
+        <p>Equivalently: contact reduces <strong>empirical uncertainty</strong>, computation reduces <strong>logical uncertainty</strong>. Both are required; neither substitutes for the other. Test-time reasoning, chain-of-thought, and search are all trades of inference compute for the same bits — moving them from expensive to cheap, not creating them.</p>
+        <hr />
+        <h3>2.1 Stage 0 — Priors</h3>
+        <p>Before the first observation, the system must already contain assumptions about what kinds of structure the world has. NFL guarantees this: without bias, generalization is impossible.</p>
+        <p><strong>Priors appear as architecture, not content.</strong> They are a <em>shape</em> into which knowledge can be poured, and they determine which regularities the system can perceive at all.</p>
+        <table><thead><tr><th>Substrate</th><th>Prior mechanism</th></tr></thead><tbody><tr><td>Genome</td><td>body plan, reflexes, cortical wiring rules, critical periods</td></tr><tr><td>CNN</td><td>translation invariance, locality, hierarchy</td></tr><tr><td>Transformer</td><td>content-addressable relevance, permutation-equivariance modulo position encoding</td></tr><tr><td>Institution</td><td>charter, procedure, precedent</td></tr></tbody></table>
+        <p>Two systems given identical data extract wildly different amounts depending on prior fit.</p>
+        <h3>2.2 Stage 1 — Commitment</h3>
+        <p>The system must produce an expectation <strong>before</strong> observing. Easy to overlook, entirely load-bearing: without a commitment there is nothing to be wrong about, and therefore no error signal.</p>
+        <p>This is Popper's falsifiability criterion arrived at from mechanics rather than philosophy. A theory that predicts everything transmits nothing when reality arrives. An organism that does not anticipate can only react. A model with no forward pass has no loss.</p>
+        <h4>Sharper commitment ⇒ more bits per observation</h4>
+        <p>The information gained from observing outcome $o$ is $-\log_2 p(o)$. If your predictive distribution is near-uniform over $k$ outcomes, you gain at most $\log_2 k$ bits and your <em>update</em> is diffuse. If you commit to a sharp distribution and are wrong, the surprise — and therefore the correction — is large.</p>
+        <p>$$\text{expected information from an observation} = H[p(o)] \quad\text{(your predictive entropy)}$$</p>
+        <p>which is why <strong>confidence is what makes experience expensive and therefore instructive</strong>, and also why calibration matters: a sharp <em>and wrong</em> model learns fast; a sharp and <em>overconfident</em> model can be destabilised by outliers. This tension resurfaces in Stage 4.</p>
+        <h3>2.3 Stage 2 — Discrepancy</h3>
+        <p>Reality returns an outcome. The difference between predicted and actual is the raw learning signal.</p>
+        <p>$$\delta_t = o_t - \hat{o}_t \qquad\text{or}\qquad \delta_t = \nabla_\theta \mathcal{L}(o_t, \hat{o}_t) \qquad\text{or}\qquad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$$</p>
+        <p>The form varies by substrate — prediction error in cortex, loss gradient in a network, differential survival in evolution, profit and loss in a market, experimental disconfirmation in science — but the role is identical.</p>
+        <h4>Signal quality has three axes, and they dominate learning speed</h4>
+        <table><thead><tr><th>Axis</th><th>Question</th><th>Cheap end</th><th>Expensive end</th></tr></thead><tbody><tr><td><strong>Density</strong></td><td>How often does feedback arrive?</td><td>every token</td><td>once per lifetime</td></tr><tr><td><strong>Latency</strong></td><td>How long after the causal action?</td><td>immediate</td><td>generations</td></tr><tr><td><strong>Informativeness</strong></td><td>Does it say only <em>wrong</em>, or <em>wrong, in which direction, by how much</em>?</td><td>full gradient</td><td>scalar bit</td></tr></tbody></table>
+        <p>A scalar "you lost" at the end of a 100-move game is nearly worthless per unit of experience. A dense, directional, immediate signal is worth orders of magnitude more.</p>
+        <p>This is the concrete reason gradient methods dominate evolutionary ones in practice. For a $d$-dimensional parameter vector, a black-box/ES gradient estimate has variance that scales with $d$, so it needs $O(d)$ more samples than backpropagation to achieve comparable gradient accuracy. At $d = 10^{10}$ that is not a constant factor you engineer around.</p>
+        <h3>2.4 Stage 3 — Credit assignment</h3>
+        <p><strong>This is the hard problem. Everything else in the cycle is bookkeeping.</strong></p>
+        <p>The system knows it was wrong. It does not know <em>which of its internal components</em> was responsible. With millions of parameters and a long chain of intervening actions, "the outcome was bad" is nearly uninformative until decomposed.</p>
+        <h4>Structural: which internal element caused the error?</h4>
+        <p>$$\frac{\partial \mathcal{L}}{\partial \theta_i} \quad\text{for every } i$$</p>
+        <ul><li><strong>Backpropagation</strong> solves this <em>exactly</em>, at the cost of requiring differentiability and paying a chain-rule pass. It returns a full $d$-dimensional direction.</li><li><strong>Evolution</strong> solves it terribly: the whole organism is the unit of selection, so a death carries roughly one bit and cannot say which gene was at fault. Order-of-magnitude: an asexual population absorbs ~1 bit per generation; recombination raises this to roughly $O(\sqrt{d})$ bits per generation, which is a large improvement and still nowhere near $d$. Evolution compensates with astronomical sample counts and four billion years.</li></ul>
+        <h4>Temporal: which of my earlier actions caused the later outcome?</h4>
+        <ul><li><strong>Temporal-difference learning</strong> bootstraps: instead of waiting for the final result, predict your own next prediction and correct locally.</li></ul>
+        <p>$$V(s_t) \leftarrow V(s_t) + \alpha\big[\underbrace{r_t + \gamma V(s_{t+1}) - V(s_t)}_{\delta_t}\big]$$</p>
+        <ul><li><strong>Eligibility traces</strong> mark recently active elements as blame-eligible: $e_t = \gamma\lambda e_{t-1} + \nabla_\theta V(s_t)$.</li><li><strong>Biology</strong> broadcasts a neuromodulatory reward-prediction-error signal (dopamine) for roughly the same purpose.</li><li><strong>Science</strong> implements structural credit assignment <em>socially</em>: the controlled experiment isolates a variable. Randomised trials exist precisely because correlational data makes blame ambiguous.</li></ul>
+        <h4>The general principle</h4>
+        <blockquote><strong>The efficiency of credit assignment sets the exchange rate between experience and intelligence.</strong></blockquote>
+        <p>Perfect credit assignment → learn from a handful of examples. No credit assignment → search blindly and pay exponentially.</p>
+        <h3>2.5 Stage 4 — Update under constraint</h3>
+        <p>Two constraints bind, and both are <em>essential rather than unfortunate</em>.</p>
+        <h4>Conservatism — the stability–plasticity dilemma</h4>
+        <p>The update must not destroy working structure. Push too hard on one example → catastrophic forgetting. Push too little → never move. Every learning system needs an answer: learning rates, momentum, replay buffers, regularisation, sleep-based consolidation, elastic weight penalties, institutional conservatism.</p>
+        <h4>Bounded capacity — where generalization actually comes from</h4>
+        <p>This is the more interesting constraint and the least intuitive point in the document.</p>
+        <p>If a system had unlimited capacity, the optimal response to every error would be to <strong>memorise the specific case</strong>. Zero training error, nothing transferable.</p>
+        <p>Under a capacity limit, the only way to accommodate many observations is to discover what they <em>share</em>. Shared structure is compression, and compression is understanding. Therefore:</p>
+        <blockquote><strong>Limited capacity is not a defect in a learner. It is the mechanism that manufactures abstraction.</strong></blockquote>
+        <p>Regularization, dropout, weight decay, bottleneck layers, small training budgets, and the finite genome all do the same job from different angles: they make memorisation unaffordable and thereby make understanding the cheapest available option.</p>
+        <p><em>(Caveat worth flagging honestly: the modern overparameterised regime complicates the naive version of this — networks with capacity to memorise often generalize anyway. The resolution is that the effective capacity is set by the optimiser's implicit bias, not the parameter count. The principle survives; "capacity" just has to be read as effective, not nominal.)</em></p>
+        <h3>2.6 Stage 5 — Consolidation</h3>
+        <p>The final stage, and the one separating <em>learning things</em> from <em>becoming more intelligent</em>.</p>
+        <p>Accumulated corrections get compiled into reusable units — chunks, skills, concepts, abstractions, subroutines, named entities. What was a hard-won multi-step computation becomes a single retrievable primitive.</p>
+        <table><thead><tr><th>Substrate</th><th>Consolidation mechanism</th></tr></thead><tbody><tr><td>Brain</td><td>hippocampal → cortical transfer during sleep; episodic specifics distilled into semantic structure</td></tr><tr><td>Network</td><td>weight updates; distillation of a search procedure into a policy</td></tr><tr><td>Culture</td><td>result → paper → textbook chapter → tool → infrastructure nobody thinks about</td></tr><tr><td>Genome</td><td>developmental programs</td></tr></tbody></table>
+        <p>The consolidated unit has a property the raw experiences lacked: <strong>it is composable.</strong> That is what makes the whole thing compound.</p>
+        <h3>2.7 Why the loop compounds — the abstraction ladder</h3>
+        <p>Run the cycle once, get a slightly better model. Run it <em>with consolidation</em> and something qualitatively different happens: the next round of prediction and search operates over the <strong>new primitives</strong> rather than raw states. The search space does not shrink linearly — it collapses combinatorially.</p>
+        <p>Chase &amp; Simon's chunking result is the cleanest empirical demonstration: chess masters reconstruct <em>real</em> board positions far better than novices, and <strong>random</strong> positions no better at all. The advantage is entirely in the learned vocabulary, not the machinery. A master does not search more positions per second; each unit they search over is worth thousands of raw board states.</p>
+        <p>Three consequences:</p>
+        <p><strong>1. Intelligence gain is path-dependent.</strong> Which abstractions you form determines what you can efficiently learn next. Two systems with identical capacity and identical <em>total</em> experience can end up far apart based purely on the <strong>order</strong> in which experience arrived. This is why curriculum matters, why scaffolding works, and why some fields advance for decades while others stall — a bad early abstraction forecloses a region of the space.</p>
+        <p><strong>2. Returns are superlinear until they are not.</strong> Each abstraction layer makes the next cheaper to acquire. This is the engine behind both individual expertise and civilisational acceleration. It saturates when (a) the environment stops offering new structure at the level you are searching, or (b) your priors cannot represent the next regularity up.</p>
+        <p><strong>3. Abstraction is lossy and can be wrong.</strong> A consolidated chunk discards detail deemed irrelevant. If that judgement was wrong, the error is baked into the <strong>vocabulary itself</strong> and is far harder to correct than a surface mistake — you must unlearn the <em>language you think in</em>, not just a belief. Paradigm shifts are expensive for exactly this reason, and so is technical debt in a codebase: a bad early type is a bad early abstraction.</p>
+        <h3>2.8 The active loop — choosing your own data</h3>
+        <p>Everything above treats the system as a passive recipient. Real intelligence gain requires closing one more loop:</p>
+        <blockquote><strong>The system's actions determine its future data distribution.</strong></blockquote>
+        <p>The question stops being "how do I learn from what arrives" and becomes "what should I expose myself to, given what I currently do not know?"</p>
+        <p>The optimal policy is roughly: <strong>act to maximise expected information gain.</strong></p>
+        <p>$$\text{EIG}(e) \;=\; H[p(h)] \;-\; \mathbb{E}_{o \sim p(o \mid e)}\big[H[p(h \mid o, e)]\big] \;=\; I(H; O \mid e)$$</p>
+        <p>Seek states where uncertainty is highest <strong>and</strong> where the outcome most sharply discriminates between live hypotheses. Both terms matter — high-entropy outcomes that fail to separate hypotheses are noise, not information.</p>
+        <p>This shows up as curiosity in animals, exploration bonuses in RL, experimental design in science, A/B tests in industry. A well-chosen observation can be worth orders of magnitude more than a randomly sampled one, because it targets the region where your model is most wrong.</p>
+        <p>Two failure modes bracket it:</p>
+        <ul><li><strong>Pure exploitation</strong> → the system only visits states it already predicts well → surprise goes to zero → learning stops. <strong>Competence becomes a trap.</strong></li><li><strong>Pure exploration</strong> → never converges on anything usable.</li></ul>
+        <p>Every intelligent system needs a schedule between them. Biology's answer is developmental: play in youth, when the cost of error is subsidised by caregivers; exploitation later.</p>
+        <p>The deep point: <strong>an active system sits inside its own feedback loop.</strong> Current model → actions → next data → next model. This is why intelligence gain is unstable in <em>both</em> directions. Good abstractions steer you toward informative experience; bad ones steer you into regions that confirm them.</p>
+        <hr />
+        <h2>Part III — Preconditions and failure modes</h2>
+        <h3>3.1 What must be true of the system</h3>
+        <table><thead><tr><th>Requirement</th><th>Why</th><th>Failure signature</th></tr></thead><tbody><tr><td><strong>Requisite variety</strong></td><td>You cannot learn a distinction you cannot represent (Ashby)</td><td>Persistent irreducible error; the model plateaus above the noise floor</td></tr><tr><td><strong>A generator of candidate structures</strong></td><td>Mutation, gradient direction, hypothesis proposal — something must propose</td><td>No movement despite abundant feedback</td></tr><tr><td><strong>Retention across cycles</strong></td><td>Without memory every correction is discarded</td><td>Relearns the same thing forever</td></tr><tr><td><strong>Capacity pressure</strong></td><td>Forces compression rather than storage</td><td>Memorises; perfect on seen data, useless on new</td></tr></tbody></table>
+        <h3>3.2 What must be true of the environment</h3>
+        <p>These are usually invisible because our universe supplies them for free. They are not free.</p>
+        <table><thead><tr><th>Requirement</th><th>Statement</th><th>What breaks without it</th></tr></thead><tbody><tr><td><strong>Structure</strong></td><td>Learnable regularity must exist</td><td>In pure noise the correct model is "it's noise." No intelligence is achievable <em>or needed</em></td></tr><tr><td><strong>Approximate stationarity</strong></td><td>Regularities persist longer than it takes to learn them</td><td>Learned structure is stale on arrival; the loop never closes</td></tr><tr><td><strong>Decomposability</strong></td><td>The world is roughly modular — near-independent parts learnable separately and composable</td><td>If every variable interacts with every other at full strength, no local model is ever valid, and the world is unlearnable by <strong>any</strong> bounded system</td></tr><tr><td><strong>Graded feedback</strong></td><td>Errors discriminable in degree, not just pass/fail</td><td>All-or-nothing feedback destroys the gradient information that makes credit assignment tractable</td></tr></tbody></table>
+        <p>Decomposability deserves emphasis: <strong>our universe's locality, hierarchy, and near-independence are arguably the deepest precondition for intelligence existing at all.</strong> They are what make bounded models of an unbounded world possible.</p>
+        <h3>3.3 Failure table — each mode maps to a stage</h3>
+        <p>Use this as a diagnostic checklist. When a learning system is not improving, one of these is true.</p>
+        <table><thead><tr><th>Broken stage</th><th>Failure</th><th>Signature</th><th>Fix direction</th></tr></thead><tbody><tr><td>Commitment</td><td>Unfalsifiable predictions</td><td>Confident, never wrong, never improving</td><td>Force sharp, scored, pre-registered predictions</td></tr><tr><td>Discrepancy</td><td>Feedback absent, delayed, or noise-dominated</td><td>Effort without progress</td><td>Shorten the loop; add intermediate signal</td></tr><tr><td>Credit assignment</td><td>Blame misattributed</td><td>Learns superstitions; fixes the wrong thing</td><td>Isolate variables; ablate; add differentiability or traces</td></tr><tr><td>Update — too aggressive</td><td>Catastrophic forgetting</td><td>Chases the last example</td><td>Lower LR; replay; regularise</td></tr><tr><td>Update — too conservative</td><td>Rigidity</td><td>Correct in a world that has moved</td><td>Detect distribution shift; raise plasticity</td></tr><tr><td>Capacity — unbounded</td><td>Memorisation</td><td>Perfect on train, useless on test</td><td>Constrain effective capacity</td></tr><tr><td>Consolidation</td><td>Wrong abstraction locked in</td><td>Fluent reasoning in a bad vocabulary</td><td>Expensive: re-derive from raw data</td></tr><tr><td>Exploration</td><td>Competence trap</td><td>Reward flat at a local optimum; no surprise left</td><td>Inject EIG-driven exploration</td></tr><tr><td><strong>Objective</strong></td><td>Optimising a proxy</td><td><strong>Goodhart</strong> — metric rises, purpose does not</td><td>Nothing internal to the loop can fix this</td></tr></tbody></table>
+        <p>That last row deserves its own note.</p>
+        <h3>3.4 The loop has no opinion about what it is pointed at</h3>
+        <p>A perfectly functioning learning loop aimed at a slightly wrong target produces a <strong>highly capable system confidently going somewhere you did not want.</strong> Capability and objective are orthogonal (§1.6), which means no amount of improvement to Stages 0–5 corrects an objective error — improvement makes it worse, faster.</p>
+        <p>Formally, if $\tilde{U}$ is the proxy and $U$ the true objective, optimisation pressure exploits exactly the region where $\tilde U$ and $U$ diverge, and the divergence grows with optimisation strength. This is why alignment is not a subproblem of capability; it is a property of the <em>specification</em>, which sits outside the loop entirely.</p>
+        <hr />
+        <h2>Part IV — The unit, and how to measure it</h2>
+        <h3>4.1 Defining the unit</h3>
+        <blockquote><strong>A unit of intelligence gained is: a retained, reusable structural change, produced by resolving a discrepancy between prediction and reality, that improves expected performance across a class of situations strictly broader than the one that produced it.</strong></blockquote>
+        <p>Each clause excludes something real:</p>
+        <table><thead><tr><th>Clause</th><th>Excludes</th></tr></thead><tbody><tr><td><em>Retained</em></td><td>A transient correction — that is a reaction, not learning</td></tr><tr><td><em>Reusable</em></td><td>A fix applicable to one case only — that is a patch, not a concept</td></tr><tr><td><em>Produced by resolving a discrepancy</em></td><td>Structure that did not come from contact with reality — decoration, however elegant</td></tr><tr><td><strong><em>Broader than the case that produced it</strong></em></td><td><strong>Memorisation. This clause is the entire distinction between storing a fact and understanding.</strong></td></tr></tbody></table>
+        <p>The surplus — what the correction buys on cases never seen — is the thing being measured.</p>
+        <h4>The measurable form</h4>
+        <p>$$\text{unit} \;=\; \frac{\Delta\,\mathbb{E}_{\tau \sim \mathcal{T}}[\,\text{performance}\,]}{\text{experience consumed} \;\times\; \text{compute consumed}}$$</p>
+        <p>where $\mathcal{T}$ is a task distribution <strong>strictly containing</strong> the situations that generated the correction. This is Chollet's conversion rate, now expressed mechanistically rather than definitionally.</p>
+        <p><strong>The denominator is what makes it a measure of intelligence rather than of skill.</strong> Any benchmark reporting only a numerator is a skill benchmark.</p>
+        <h3>4.2 Six operationalizations</h3>
+        <p>No single number captures it. These are six real measures, each valid in a different regime, each blind in a different way.</p>
+        <hr />
+        <h4>(1) Description length — <em>how much structure did you find?</em></h4>
+        <p><strong>Measure:</strong> bits saved relative to a baseline code.</p>
+        <p>$$\text{bits saved} = \big(\mathcal{L}_{\text{baseline}} - \mathcal{L}_{\text{model}}\big) \times N \quad \text{[in bits]}$$</p>
+        <p>Normalised across tokenizers as <strong>bits per byte</strong>:</p>
+        <p>$$\text{bpb} = \frac{\mathcal{L}_{\text{nats/token}}}{\ln 2} \cdot \frac{N_{\text{tokens}}}{N_{\text{bytes}}}$$</p>
+        <p><strong>Valid when:</strong> you have a probabilistic model and a held-out stream. <strong>Blind to:</strong> whether the structure is <em>usable for control</em>. A perfect compressor of a stream you cannot act on has found structure but gained no leverage. <strong>Honest version:</strong> charge yourself for the model too — MDL total cost $= L(H) + L(\mathcal{D}\mid H)$. Otherwise a 400B-parameter model "compressing" 1GB is cheating. This is the discipline the Hutter Prize enforces.</p>
+        <hr />
+        <h4>(2) Sample efficiency — <em>how much experience did it cost?</em></h4>
+        <p>Fit the learning curve. Empirically error falls as a power law in dataset size:</p>
+        <p>$$\varepsilon(N) \;=\; \varepsilon_\infty + c\,N^{-\alpha}$$</p>
+        <ul><li>$\varepsilon_\infty$ — the <strong>irreducible floor</strong>: aleatoric noise plus representational limits. Not your fault, and not improvable by more data.</li><li>$\alpha$ — <strong>the exponent is the intelligence-relevant quantity.</strong> It is the conversion rate from data into competence, and it is set by prior fit and credit-assignment quality.</li><li>$c$ — offset; how much you knew at $N=1$.</li></ul>
+        <p>Two systems with equal final accuracy and different $\alpha$ are not equally intelligent. The one with higher $\alpha$ found better structure per sample.</p>
+        <p><strong>Valid when:</strong> you can vary $N$ and measure held-out error. <strong>Blind to:</strong> transfer. A high $\alpha$ within one distribution says nothing about a new one.</p>
+        <hr />
+        <h4>(3) Scaling-law exponents — <em>the conversion rate, industrialised</em></h4>
+        <p>$$L(N_{\text{params}}, D_{\text{tokens}}) \;=\; \underbrace{E}_{\text{entropy floor}} \;+\; \frac{A}{N^{\alpha}} \;+\; \frac{B}{D^{\beta}}$$</p>
+        <p>With Chinchilla-regime fits roughly $\alpha \approx 0.34$, $\beta \approx 0.28$, $E \approx 1.7$ nats.</p>
+        <p>This is the same object as (2), measured at industrial scale, and it is worth seeing clearly: <strong>$E$ is the entropy of the data — the point where the world stops being predictable and no amount of anything helps. $\alpha$ and $\beta$ are conversion rates. Architecture research is, in this frame, entirely an attempt to move $\alpha$, $\beta$, and the constants — not to move $E$.</strong></p>
+        <p><strong>Valid when:</strong> you can afford a scaling study. <strong>Blind to:</strong> everything about generalization outside the training distribution, which is where §1.4's whole argument lives.</p>
+        <hr />
+        <h4>(4) Generalization difficulty — <em>how far did you reach?</em></h4>
+        <p>The measure that most directly implements §4.1. Numerator is the <strong>algorithmic distance</strong> between what you were given and what you produced:</p>
+        <p>$$\text{GD} \;\approx\; \frac{K(\text{solution} \mid \text{priors} + \text{experience})}{K(\text{solution})}$$</p>
+        <p>How much of the solution was <em>not</em> already implied by what you had. ARC-AGI is the concrete instantiation: tasks constructed so that the priors are explicitly enumerated (objectness, counting, symmetry, basic topology) and the experience is 2–4 examples, so the denominator is pinned and the numerator is what varies.</p>
+        <p><strong>Valid when:</strong> you can bound priors and experience. This is <em>hard</em> and is precisely why benchmark contamination is fatal — contamination silently moves the item from the numerator to the denominator. <strong>Blind to:</strong> nothing in principle; limited in practice by $K$ being uncomputable, so all instantiations use proxies.</p>
+        <hr />
+        <h4>(5) Regret — <em>the decision-theoretic measure</em></h4>
+        <p>$$R(T) = \sum_{t=1}^{T} \big[\,r^*_t - r_t\,\big]$$</p>
+        <p>Total shortfall against the best achievable policy in hindsight. The <strong>rate</strong> is what matters: $R(T) = O(\sqrt{T})$ means the per-step gap vanishes; $R(T) = O(T)$ means you never learned.</p>
+        <p>This is the only measure on the list that scores <strong>exploration</strong> correctly, because it charges you for the information-gathering actions you take. Measures (1)–(4) treat data as exogenous. Regret does not.</p>
+        <p><strong>Valid when:</strong> the setting is sequential decision-making with a definable optimum. <strong>Blind to:</strong> open-ended settings where $r^*$ is undefined.</p>
+        <hr />
+        <h4>(6) Empowerment — <em>the control-theoretic measure, objective-free</em></h4>
+        <p>$$\mathfrak{E}(s) \;=\; \max_{p(a^k)} \; I\big(A^k_t \,;\, S_{t+k} \mid s_t = s\big)$$</p>
+        <p>The channel capacity from your action sequence to your future state: <strong>how many bits of your future you can write.</strong> Measured in bits.</p>
+        <p>The remarkable property is that it needs <strong>no reward function</strong>. It measures §1.3's control half directly and is the closest thing available to an objective-free capability metric. In a 4-state line world, an agent that can reach 3 distinct states in 2 steps has $\log_2 3 \approx 1.58$ bits of empowerment; an agent in an absorbing state has exactly 0, regardless of how good its world model is.</p>
+        <p><strong>Valid when:</strong> you have a transition model and a modest state/action space. <strong>Blind to:</strong> whether the reachable states are <em>worth</em> reaching. Empowerment is capability with the preference condition (§1.1) deliberately removed — which is exactly why it is a clean instrument, and exactly why it is not sufficient on its own.</p>
+        <hr />
+        <h4>(7) Amortization gain — <em>the reasoning-specific measure</em></h4>
+        <p>Because §2.0 established that computation adds no bits but does add affordability, it needs its own metric:</p>
+        <p>$$\mathfrak{A} \;=\; \log_2 \frac{\text{compute to answer before consolidation}}{\text{compute to answer after}}$$</p>
+        <p>This is what self-play, distillation, chunking, and building a tool all produce. A search that took $10^9$ node expansions and now takes $10^3$ has yielded $\approx 20$ bits of amortization. <strong>It is the only measure here that correctly scores a system that learned nothing new about the world and nonetheless got substantially more capable.</strong></p>
+        <hr />
+        <h3>4.3 The measures at a glance</h3>
+        <table><thead><tr><th>#</th><th>Measure</th><th>Units</th><th>Scores</th><th>Misses</th></tr></thead><tbody><tr><td>1</td><td>Description length</td><td>bits</td><td>modeling</td><td>control, usability</td></tr><tr><td>2</td><td>Sample-efficiency exponent $\alpha$</td><td>dimensionless</td><td>conversion rate, in-distribution</td><td>transfer</td></tr><tr><td>3</td><td>Scaling exponents</td><td>dimensionless</td><td>conversion rate at scale</td><td>OOD generalization</td></tr><tr><td>4</td><td>Generalization difficulty</td><td>dimensionless</td><td>the actual definition</td><td>uncomputable; proxy-dependent</td></tr><tr><td>5</td><td>Regret rate</td><td>reward·time</td><td>decision quality <strong>and exploration</strong></td><td>needs a definable optimum</td></tr><tr><td>6</td><td>Empowerment</td><td>bits</td><td>control, objective-free</td><td>value of reachable states</td></tr><tr><td>7</td><td>Amortization gain</td><td>bits</td><td>reasoning / consolidation</td><td>anything requiring new data</td></tr></tbody></table>
+        <p><strong>Use them in combination.</strong> A system that improves on (1) but not (6) has become a better observer without becoming a better actor. One that improves on (7) but not (1) has become faster without becoming wiser. One that improves on skill but not on (2) or (4) has not become more intelligent at all — it has been given more training data, which is a different achievement.</p>
+        <hr />
+        <h3>4.4 A minimal measurement toolkit</h3>
+        <p>All of this runs as written; outputs shown are actual.</p>
+        <pre><code>"""Minimal instruments for the measures in §4.2. numpy only."""
+import numpy as np
+from itertools import product
+
+
+# ── (1) Description length ────────────────────────────────────────────────
+def bits_saved(nats_model, nats_baseline, n_tokens):
+    """Bits saved vs a baseline code. Baseline for a uniform unigram
+    over V tokens is log(V) nats."""
+    return (nats_baseline - nats_model) / np.log(2) * n_tokens
+
+
+def bits_per_byte(nats_per_token, n_tokens, n_bytes):
+    """Tokenizer-invariant compression rate. The honest cross-model metric."""
+    return (nats_per_token / np.log(2)) * (n_tokens / n_bytes)
+
+
+# ── (2) Sample efficiency ─────────────────────────────────────────────────
+def fit_power_law(n, err, floor=0.0):
+    """Fit err = floor + c * n**(-alpha). Returns (c, alpha).
+    alpha is the conversion rate from data into competence."""
+    n, err = np.asarray(n, float), np.asarray(err, float) - floor
+    m = err &gt; 0
+    A = np.vstack([np.ones(m.sum()), np.log(n[m])]).T
+    coef, *_ = np.linalg.lstsq(A, np.log(err[m]), rcond=None)
+    return np.exp(coef[0]), -coef[1]
+
+
+def samples_for_error(c, alpha, target, floor=0.0):
+    """Data required to hit a target error. Diverges as target -&gt; floor,
+    which is the point: the floor is not purchasable."""
+    if target &lt;= floor:
+        return np.inf
+    return (c / (target - floor)) ** (1.0 / alpha)
+
+
+# ── (6) plus active learning: entropy and expected information gain ───────
+def entropy(p):
+    p = np.asarray(p, float); p = p[p &gt; 0]
+    return -np.sum(p * np.log2(p))
+
+
+def expected_information_gain(prior, likelihood):
+    """EIG of an experiment.  prior: (H,).  likelihood: (H, O), rows sum to 1.
+    Returns I(H; O) in bits -- §2.8's objective for choosing what to look at."""
+    prior = np.asarray(prior, float)
+    likelihood = np.asarray(likelihood, float)
+    marginal = prior @ likelihood
+    joint = prior[:, None] * likelihood
+    post = joint / np.clip(marginal, 1e-30, None)
+    exp_post_H = sum(marginal[o] * entropy(post[:, o])
+                     for o in range(likelihood.shape[1]))
+    return entropy(prior) - exp_post_H
+
+
+# ── (6) Empowerment ───────────────────────────────────────────────────────
+def empowerment(T, s0, horizon=2, iters=300):
+    """Channel capacity from action sequences to future state, in bits.
+    T: (S, A, S) transition probabilities. Blahut-Arimoto."""
+    S, A, _ = T.shape
+    seqs = list(product(range(A), repeat=horizon))
+    chan = np.zeros((len(seqs), S))
+    for i, seq in enumerate(seqs):
+        d = np.zeros(S); d[s0] = 1.0
+        for a in seq:
+            d = d @ T[:, a, :]
+        chan[i] = d
+
+    def kl_rows(p):
+        marg = p @ chan
+        with np.errstate(divide='ignore', invalid='ignore'):
+            return np.nansum(chan * (np.log2(np.clip(chan, 1e-30, None))
+                                     - np.log2(np.clip(marg, 1e-30, None))), axis=1)
+
+    p = np.ones(len(seqs)) / len(seqs)
+    for _ in range(iters):
+        p = p * np.exp2(kl_rows(p))
+        p /= p.sum()
+    return float(p @ kl_rows(p))
+
+
+# ── (7) Amortization ──────────────────────────────────────────────────────
+def amortization_gain(cost_before, cost_after):
+    """Bits of compute saved by consolidation. Adds zero world-knowledge."""
+    return np.log2(cost_before / cost_after)</code></pre>
+        <h4>Worked outputs</h4>
+        <pre><code># (1) A model at 2.1 nats/token vs a uniform-50k-vocab baseline, 1M tokens:
+bits_saved(2.1, np.log(50_000), 1e6)          # 1.258e7  bits  (~1.57 MB saved)
+bits_per_byte(2.1, 1e6, 4.3e6)                # 0.705    bits/byte
+
+# (2) Recover a known conversion rate from a learning curve:
+ns   = np.array([1e1, 1e2, 1e3, 1e4, 1e5])
+errs = 0.4 + 5.0 * ns ** -0.35                # floor 0.4, alpha 0.35
+fit_power_law(ns, errs, floor=0.4)            # (5.0, 0.35)   exact
+samples_for_error(5.0, 0.35, 0.5, floor=0.4)  # 71_483 samples
+samples_for_error(5.0, 0.35, 0.4, floor=0.4)  # inf  &lt;- the floor is not for sale
+
+# (2.8) Which experiment to run, given 3 live hypotheses:
+prior  = np.array([1/3, 1/3, 1/3])
+test_A = np.array([[.9, .1], [.9, .1], [.1, .9]])   # separates h3 from h1,h2
+test_B = np.array([[.5, .5], [.5, .5], [.5, .5]])   # separates nothing
+expected_information_gain(prior, test_A)      # 0.479 bits
+expected_information_gain(prior, test_B)      # 0.000 bits
+
+# (6) Empowerment in a 4-state line world, deterministic left/right:
+S, A = 4, 2
+T = np.zeros((S, A, S))
+for s in range(S):
+    T[s, 0, max(s-1, 0)]   = 1.0
+    T[s, 1, min(s+1, S-1)] = 1.0
+empowerment(T, s0=1, horizon=2)               # 1.585 bits = log2(3) reachable
+
+T_trapped = T.copy(); T_trapped[1] = 0; T_trapped[1, :, 1] = 1.0
+empowerment(T_trapped, s0=1, horizon=2)       # 0.000 bits
+
+# (7) A search compiled from 1e9 node expansions down to 1e3:
+amortization_gain(1e9, 1e3)                   # 19.93 bits</code></pre>
+        <p>Note what the trapped-agent case demonstrates: <strong>empowerment is zero regardless of how good the agent's world model is.</strong> Modeling without control scores nothing on measure (6) — the two halves of §1.3 really are separate, and a metric suite needs both.</p>
+        <h3>4.5 A measurement protocol</h3>
+        <p>When you want to claim a system got more intelligent rather than merely more skilled:</p>
+        <ol><li><strong>Pin the denominator.</strong> State the priors (architecture, pretraining corpus, hand-coded knowledge) and the experience (sample count, compute) <em>before</em> measuring. Unpinned denominators are how skill gets mistaken for intelligence.</li><li><strong>Define the broader class $\mathcal{T}$ explicitly</strong>, and verify it is not contaminated by the training set. Contamination silently converts numerator into denominator and inflates the result without bound.</li><li><strong>Measure at several points on the experience axis</strong>, not one. A single accuracy number cannot distinguish $\alpha = 0.5$ from $\alpha = 0.05$.</li><li><strong>Report a floor estimate.</strong> Without $\varepsilon_\infty$ you cannot tell "the model is bad" from "the task is noisy."</li><li><strong>Pair a modeling measure with a control measure</strong> — e.g. (1) or (2) alongside (5) or (6).</li><li><strong>Score the exploration separately</strong> if the system chose its own data. Otherwise you are crediting it with information it was handed.</li></ol>
+        <hr />
+        <h2>Part V — Substrate comparison</h2>
+        <p>The same loop, at radically different speeds and efficiencies. Read the last three columns: <strong>the differences are entirely credit-assignment fidelity, feedback bandwidth, and prior quality. Nothing else.</strong></p>
+        <table><thead><tr><th>Substrate</th><th>Timescale</th><th>Signal per event</th><th>Structural credit</th><th>Consolidation medium</th><th>Distinguishing property</th></tr></thead><tbody><tr><td><strong>Evolution</strong></td><td>generations</td><td>~1 bit (survive / not)</td><td>none — organism is the unit of selection</td><td>genome, developmental programs</td><td>Catastrophic sample inefficiency, compensated by 4×10⁹ years and enormous populations</td></tr><tr><td><strong>Nervous systems</strong></td><td>ms – years</td><td>dense, directional, local</td><td>decent, via neuromodulation + local plasticity</td><td>synaptic weights; sleep replay</td><td>~12 orders of magnitude more efficient per event than evolution</td></tr><tr><td><strong>Culture</strong></td><td>years – centuries</td><td>argument, experiment, disconfirmation</td><td>via controlled experiment and institutional ablation</td><td>language, writing, institutions</td><td><strong>Corrections survive the death of the individual who made them.</strong> This single property is why civilisation's capability diverged from the individual brain's</td></tr><tr><td><strong>Gradient-trained models</strong></td><td>ms</td><td>full $d$-dimensional gradient</td><td>near-exact (backprop)</td><td>weights</td><td>Fastest per step; sample-hungry relative to humans because priors are far weaker</td></tr></tbody></table>
+        <p>Two observations follow.</p>
+        <p><strong>On civilisation.</strong> Individual human brains are not meaningfully more capable than fifty thousand years ago; civilisational capability has risen by orders of magnitude. So the intelligence that shapes history is not in a single skull — it is a stack, each layer running the same loop:</p>
+        <p>$$\text{evolution} \to \text{brains} \to \text{language} \to \text{writing} \to \text{institutions} \to \text{science \& markets}$$</p>
+        <p>Language is lossy compression of experience into transmissible form — the moment one organism's learning stops dying with it. Science and markets are distributed error-correction: mechanisms for generating models and killing the wrong ones <em>without killing the modeler</em>. Hayek's argument about the price system is exactly this — a market is a distributed computation over information no single participant holds. Civilisation satisfies all three conditions of §1.1: it has preferences, faces an uncertain world, and is resource-bounded.</p>
+        <p><strong>On thermodynamics.</strong> Living systems maintain local order against entropy by importing free energy. Intelligence refines the trick: instead of merely dissipating, you <em>model</em>, and modeling lets you <strong>anticipate</strong> rather than react. Friston's free energy principle formalises this as minimising an upper bound on surprise:</p>
+        <p>$$F = \underbrace{D_{KL}\big(q(s) \,\Vert\, p(s \mid o)\big)}_{\ge 0} \;-\; \log p(o) \;\;\ge\;\; -\log p(o)$$</p>
+        <p>An intelligent system is one that keeps itself in the small set of states compatible with its own continued existence. The loop of §2 is how it does so.</p>
+        <hr />
+        <h2>Part VI — Where current AI sits in this frame</h2>
+        <p>Mapping the machinery you actually work with onto Part II, because the mapping is unusually clean and the gaps are the interesting part.</p>
+        <table><thead><tr><th>Stage</th><th>Pretraining</th><th>RLHF / RLVR</th><th>In-context learning</th><th>Test-time compute</th></tr></thead><tbody><tr><td><strong>0 Priors</strong></td><td>architecture: content-addressable relevance, depth, residual stream</td><td>inherits pretrained weights as prior</td><td>inherits weights as prior</td><td>inherits weights as prior</td></tr><tr><td><strong>1 Commitment</strong></td><td>next-token distribution — a maximally sharp, maximally dense commitment</td><td>full response</td><td>next-token, conditioned on context</td><td>intermediate tokens</td></tr><tr><td><strong>2 Discrepancy</strong></td><td>cross-entropy per token — <strong>the highest-bandwidth error signal in the table</strong></td><td>scalar preference or binary verifier — <strong>the lowest</strong></td><td>none (no weight update)</td><td>verifier or self-consistency</td></tr><tr><td><strong>3 Credit</strong></td><td>exact, backprop</td><td>exact structurally, poor temporally across a long response</td><td>n/a</td><td>n/a</td></tr><tr><td><strong>4 Update</strong></td><td>SGD under effective-capacity constraint</td><td>KL-penalised — explicit conservatism</td><td>activations only, discarded at end of context</td><td>none</td></tr><tr><td><strong>5 Consolidation</strong></td><td>into weights</td><td>into weights</td><td><strong>not consolidated</strong> — this is the gap</td><td>not consolidated unless distilled</td></tr></tbody></table>
+        <p>Six things fall out of this table:</p>
+        <ol><li><strong>Pretraining is a compression engine, precisely.</strong> §1.3's identity is not metaphorical here: cross-entropy in bits <em>is</em> the codelength. Measure (1) applies directly, and scaling laws (measure 3) are the conversion-rate measurement of that engine. This is also why loss curves are the honest instrument and downstream benchmarks are the noisy proxy.</li></ol>
+        <ol><li><strong>The bandwidth asymmetry between pretraining and RL post-training is enormous</strong> — every token gives a full-vocabulary distribution over what should have come next, versus one scalar for an entire trajectory. By §2.3 this predicts exactly what is observed: post-training changes behaviour with comparatively tiny data, but does not install much new structure. It is steering, not modeling.</li></ol>
+        <ol><li><strong>In-context learning is a second, faster loop running inside the first</strong> — the outer loop consolidates into weights over months; the inner loop adapts within a context window and then <strong>discards everything</strong>. It is Stages 0–4 with Stage 5 deleted. Most of the current agenda around memory, continual learning, and long-horizon agents is an attempt to reattach Stage 5 to the inner loop. §2.7 says why this matters more than it might appear: without consolidation there is no composability, and without composability the loop does not compound.</li></ol>
+        <ol><li><strong>Reasoning and test-time compute are §2.0's amortization run in reverse.</strong> Chain-of-thought spends inference compute to reach conclusions latent in the weights — it adds no bits about the world (measure 1 and 7 diverge here, which is the point). Distilling those traces back into weights runs the amortization forward and converts logical uncertainty into cheap retrieval. This also explains cleanly why self-play works in Go and not in open-ended domains: chess and Go have complete, cheap, exact verifiers, so the "collision with reality" in Stage 2 can be simulated. Where the verifier is expensive or absent, self-play has nothing to collide with.</li></ol>
+        <ol><li><strong>Sample-efficiency is the honest gap, and it is a priors gap.</strong> Human children reach linguistic competence on ~10⁷–10⁸ words; frontier models use ~10¹³. By §2.4 the credit assignment is <em>better</em> in the model than in the brain — backprop is exact where biology is approximate. So the deficit is not in Stage 3. It is Stage 0: weaker, less well-fitted priors (no embodiment, no grounded causal interaction, no evolved perceptual scaffolding). This localises the research question rather than restating the mystery.</li></ol>
+        <ol><li><strong>The active loop (§2.8) is barely present.</strong> Models are overwhelmingly passive recipients of a fixed corpus. They do not choose experiments to maximise EIG. Agentic systems that select their own tools, queries, and environments are the first meaningful step toward closing it — and by §2.8 that also means they inherit both instabilities: good abstractions steering toward informative data, and bad ones steering toward confirmation.</li></ol>
+        <hr />
+        <h2>Part VII — Compressions worth memorising</h2>
+        <p>The document, reduced:</p>
+        <ol><li>Intelligence requires <strong>preference, uncertainty, and scarcity</strong>. Remove any one and the concept collapses.</li><li>Every ideal formulation is <strong>uncomputable</strong>. Intelligence lives entirely in the approximation.</li><li><strong>Modeling ≡ compression. Control ≡ requisite variety.</strong> A good regulator is necessarily a model.</li><li><strong>Skill is the stock; intelligence is the rate.</strong> Any measure without a denominator is a skill measure.</li><li>NFL ⇒ <strong>no intelligence in general</strong> — only relative to an environment distribution. Priors are the precondition, not the defect.</li><li>Structure enters from exactly <strong>two sources</strong>: priors and contact with reality. Computation creates none, but converts expensive knowledge into cheap knowledge, which is a real gain.</li><li><strong>Surprise is the currency; error is the unit.</strong> A matched prediction transmits zero bits.</li><li><strong>Credit assignment is the hard problem.</strong> Its fidelity sets the exchange rate between experience and intelligence.</li><li><strong>Bounded capacity manufactures abstraction.</strong> Unlimited capacity would memorise.</li><li><strong>Consolidation makes corrections composable</strong>, and composability is what makes the loop compound rather than merely accumulate.</li><li>Compounding is <strong>path-dependent</strong> — the order of experience matters as much as its quantity — and <strong>saturating</strong>, and <strong>lossy at the vocabulary level</strong>, where errors are most expensive to fix.</li><li><strong>The loop has no opinion about its target.</strong> Improving it cannot correct an objective error; it accelerates one.</li></ol>
+        <h4>One line</h4>
+        <blockquote><strong>Intelligence is the rate at which a bounded system converts surprise into reusable structure that generalises past the case that produced it.</strong></blockquote>
+        <hr />
+        <h3>Source map</h3>
+        <p>Ordered by how much of the above each carries.</p>
+        <p><strong>Definition &amp; measure</strong></p>
+        <ul><li>Legg &amp; Hutter, <em>Universal Intelligence: A Definition of Machine Intelligence</em> (2007) — the formalisation, and the uncomputability</li><li>Chollet, <em>On the Measure of Intelligence</em> (2019) — the skill/intelligence correction; §1.4, §4.2(4)</li><li>Hutter, <em>Universal Artificial Intelligence</em> (2005) — AIXI</li></ul>
+        <p><strong>Modeling &amp; compression</strong></p>
+        <ul><li>Solomonoff (1964); Rissanen, MDL — §1.3</li><li>MacKay, <em>Information Theory, Inference and Learning Algorithms</em> — the information-theoretic bounds throughout, including evolution's bit rate</li><li>Li &amp; Vitányi, <em>An Introduction to Kolmogorov Complexity</em> — the reference for $K$</li></ul>
+        <p><strong>Control</strong></p>
+        <ul><li>Ashby, <em>An Introduction to Cybernetics</em> (1956) — requisite variety</li><li>Conant &amp; Ashby (1970), <em>Every good regulator of a system must be a model of that system</em></li><li>Klyubin, Polani &amp; Nehaniv (2005) — empowerment; §4.2(6)</li></ul>
+        <p><strong>Mechanism</strong></p>
+        <ul><li>Sutton &amp; Barto, <em>Reinforcement Learning</em> — the clearest treatment of temporal credit assignment; §2.4</li><li>Rumelhart, Hinton &amp; Williams (1986) — structural credit assignment</li><li>Campbell (1960), <em>Blind Variation and Selective Retention</em> — the substrate-independent statement of the whole cycle, decades before any of the modern machinery</li><li>Chase &amp; Simon (1973) — chunking; §2.7</li><li>Friston — free energy principle; Part V</li></ul>
+        <p><strong>Epistemics</strong></p>
+        <ul><li>Popper — falsifiability, arrived at in §2.2 from mechanics rather than philosophy</li><li>Hayek, <em>The Use of Knowledge in Society</em> (1945) — distributed computation; Part V</li><li>Wolpert &amp; Macready — No Free Lunch; §1.5</li></ul>
+        <p>These disagree productively with each other, which is more useful than any one being right.</p>
+      </div>
+
+      <a class="back-link" href="/notes/artificial-intelligence/" style="margin-top: var(--space-lg);">← Back to Artificial Intelligence notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
