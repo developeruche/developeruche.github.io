@@ -1,5 +1,21 @@
 [
   {
+    "title": "Evolutionary Algorithms",
+    "slug": "evolutionary-algorithms",
+    "category": "artificial-intelligence",
+    "date": "2026-09-01",
+    "excerpt": "Lesson note on genetic algorithms: encoding a real-valued function as a binary chromosome, the selection-crossover-mutation loop, and the parameter choices that decide whether it converges — population size, crossover and mutation frequency, parent selection, initialisation, and stopping criteria.",
+    "tags": [
+      "Machine Learning",
+      "Genetic Algorithms",
+      "Optimization",
+      "Evolutionary Computation"
+    ],
+    "link": "/notes/artificial-intelligence/evolutionary-algorithms/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Linear Regression",
     "slug": "linear-regression",
     "category": "artificial-intelligence",

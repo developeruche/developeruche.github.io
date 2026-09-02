@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evolutionary Algorithms — Developer Uche</title>
+  <meta name="description" content="Lesson note on genetic algorithms: encoding a real-valued function as a binary chromosome, the selection-crossover-mutation loop, and the parameter choices that decide whether it converges — population size, crossover and mutation frequency, parent selection, initialisation, and stopping criteria." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/artificial-intelligence/evolutionary-algorithms/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Evolutionary Algorithms — Developer Uche" />
+  <meta property="og:description" content="Lesson note on genetic algorithms: encoding a real-valued function as a binary chromosome, the selection-crossover-mutation loop, and the parameter choices that decide whether it converges — population size, crossover and mutation frequency, parent selection, initialisation, and stopping criteria." />
+  <meta property="og:url" content="https://developeruche.com/notes/artificial-intelligence/evolutionary-algorithms/" />
+  <meta property="og:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="article:published_time" content="2026-09-01" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Evolutionary Algorithms — Developer Uche" />
+  <meta name="twitter:description" content="Lesson note on genetic algorithms: encoding a real-valued function as a binary chromosome, the selection-crossover-mutation loop, and the parameter choices that decide whether it converges — population size, crossover and mutation frequency, parent selection, initialisation, and stopping criteria." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Evolutionary Algorithms",
+  "description": "Lesson note on genetic algorithms: encoding a real-valued function as a binary chromosome, the selection-crossover-mutation loop, and the parameter choices that decide whether it converges \u2014 population size, crossover and mutation frequency, parent selection, initialisation, and stopping criteria.",
+  "url": "https://developeruche.com/notes/artificial-intelligence/evolutionary-algorithms/",
+  "datePublished": "2026-09-01",
+  "inLanguage": "en",
+  "keywords": "Machine Learning, Genetic Algorithms, Optimization, Evolutionary Computation",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Artificial Intelligence Notes",
+    "url": "https://developeruche.com/notes/artificial-intelligence/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/artificial-intelligence/">← Back to Artificial Intelligence notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · ARTIFICIAL INTELLIGENCE</span>
+        <h1 class="post-title">Evolutionary Algorithms</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-09-01">2026-09-01</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Machine Learning</span>
+          <span>Genetic Algorithms</span>
+          <span>Optimization</span>
+          <span>Evolutionary Computation</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p><strong>Idea: adaptation is intelligence.</strong> Survival of the fittest, turned into an optimisation procedure.</p>
+        <p>The big question is how to use that idea for optimisation. Given a function</p>
+        <p>$$f(x) = x_1^2 + \log(x_2) + \frac{\sin(x_3)}{1 - x_4}$$</p>
+        <p>suppose we want to find the maximum value of $f(x)$ subject to some constraints. Optimisation only makes sense when there are constraints.</p>
+        <h2>Population and chromosomes</h2>
+        <blockquote>"Population means the gene pool of a species."</blockquote>
+        <blockquote>"The gene pool of a species is a collection of many chromosomes that over time have created the characteristics and attributes of that species."</blockquote>
+        <blockquote>"Chromosomes are information updated over time by evolution."</blockquote>
+        <blockquote>"It is important to note, evolution is a very slow algorithm. Evolution does not happen immediately."</blockquote>
+        <h2>How evolution happens</h2>
+        <p>Evolution happens by the selection of chromosomes, which happens during mating and reproduction, where a <strong>crossover</strong> happens.</p>
+        <p>Crossover simply means some traits (chromosomes) come from one parent and some other traits from the other parent, making the child a composition of traits from both parents.</p>
+        <p>That makes sense, but a fair question follows: if this is true, how do new items come into the population? The answer is <strong>mutation</strong>.</p>
+        <p>The mutation of genetic material brings about a gigantic possibility for evolution to create new things.</p>
+        <p><strong>Note.</strong> Mutation is a very risky business, so you must be careful with it.</p>
+        <p>After crossover and mutation, the child can be sent into the population, and after a while the parent.</p>
+        <h2>Applying the idea to a real-value optimisation problem</h2>
+        <p>How can this abstract idea be applied to a real-value optimisation problem?</p>
+        <p>For the function</p>
+        <p>$$f(x) = x_1^2 + \log(x_2) + \frac{\sin(x_3)}{1 - x_4}$$</p>
+        <p>each part of the function is mapped to a binary array:</p>
+        <table><thead><tr><th>Term</th><th>Binary encoding</th></tr></thead><tbody><tr><td>$x_1^2$</td><td><code>1 1 0 1 0</code></td></tr><tr><td>$\log(x_2)$</td><td><code>1 0 0 1 1</code></td></tr><tr><td>$\sin(x_3)$</td><td><code>0 0 1 0 1</code></td></tr><tr><td>$1 - x_4$</td><td><code>0 0 1 1 0</code></td></tr></tbody></table>
+        <p>Concatenating them gives the chromosome array:</p>
+        <p><code>[1 1 0 1 0 | 1 0 0 1 1 | 1 1 1 0 1 | 0 0 1 1 0]</code></p>
+        <p>Using this data structure we can create a population.</p>
+        <h2>Simple genetic algorithm</h2>
+        <ol><li>Initialise the population.</li><li>Calculate the fitness of the population.</li><li>While the stopping criterion is not satisfied:<ul><li>Select parents.</li><li>Perform crossover, producing offspring.</li><li>Apply mutation.</li><li>Calculate fitness.</li></ul></li></ol>
+        <h2>Driving forces</h2>
+        <p>Each family of methods is pulled forward by a different signal.</p>
+        <table><thead><tr><th>Approach</th><th>Driving force</th></tr></thead><tbody><tr><td>Neural networks</td><td>error</td></tr><tr><td>Reinforcement learning</td><td>reward and punishment</td></tr><tr><td>Evolutionary algorithms</td><td>fitness</td></tr></tbody></table>
+        <h2>Why use a GA</h2>
+        <ul><li>Easy to code.</li><li>They provide many solutions, which can help avoid local extrema.</li><li>They can be parallelised.</li></ul>
+        <h2>Shortcomings of GAs</h2>
+        <ul><li>They are extremely slow.</li><li>The fitness function may not be easily designed; it comes from the nature of the problem.</li></ul>
+        <h2>Population size</h2>
+        <p>How many chromosomes there are in one generation.</p>
+        <ol><li><strong>Too many</strong> — the GA becomes extremely sluggish.</li><li><strong>Too few</strong> — not many possibilities for mating, and only a part of the search space gets sampled.</li></ol>
+        <h2>Crossover frequency</h2>
+        <ol><li><strong>All the time</strong> — all offspring are made via a crossover.</li><li><strong>Never (0%)</strong> — copy the parents.</li></ol>
+        <h2>Mutation frequency</h2>
+        <ol><li><strong>Never (0%)</strong> — no change in copies or in offspring, so it takes extremely longer.</li><li><strong>Too often (50%)</strong> — huge variability, preventing convergence.</li><li><strong>Rarely (0.1%)</strong> — additional diversity, contributing to good solutions.</li></ol>
+        <h2>How to select parents</h2>
+        <blockquote>"This is very important because the first step of every generation is to select parents, apply crossover, and in some cases mutation."</blockquote>
+        <ol><li><strong>When fitness values are very different</strong> — rank selection: rank all chromosomes based on their fitness values.</li><li><strong>When fitness values are not very different</strong> — roulette wheel selection.</li></ol>
+        <h2>Other GA models</h2>
+        <ul><li>Island models.</li></ul>
+        <h2>How to initialise the population</h2>
+        <ol><li>Generally random.</li><li>Domain knowledge can be embedded to seed the population.</li><li>It has to be a uniform mixture of possible values.</li></ol>
+        <h2>When to stop the evolution</h2>
+        <ol><li>Maximum number of generations.</li><li>Minimum level of diversity.</li><li>Some level of fitness.</li><li>A certain number of generations during which no significant fitness change occurs.</li></ol>
+      </div>
+
+      <a class="back-link" href="/notes/artificial-intelligence/" style="margin-top: var(--space-lg);">← Back to Artificial Intelligence notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
