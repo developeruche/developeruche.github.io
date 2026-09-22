@@ -52,7 +52,14 @@ renderHighlights(document.getElementById('pub-grid'), 'data/publications.json', 
 renderHighlights(document.getElementById('blog-grid'), 'data/blog.json', { cardFn: blogCard, count: 6 });
 renderHighlights(document.getElementById('os-grid'), 'data/os-n-projects.json', { filter: (p) => p.type === 'contribution', cardFn: projCard, count: 6 });
 renderHighlights(document.getElementById('proj-grid'), 'data/os-n-projects.json', { filter: (p) => p.type === 'personal', cardFn: projCard, count: 6 });
-renderHighlights(document.getElementById('notes-grid'), 'data/notes.json', { cardFn: noteCard, count: 4 });
+// The home page surfaces notes from these categories only. AI notes are
+// published under /notes but deliberately kept off the landing page.
+const HOME_NOTE_CATEGORIES = new Set(['cryptography-zkp', 'blockchain']);
+renderHighlights(document.getElementById('notes-grid'), 'data/notes.json', {
+  filter: (n) => HOME_NOTE_CATEGORIES.has(n.category),
+  cardFn: noteCard,
+  count: 4,
+});
 renderCompanies(document.getElementById('companies-row'));
 
 observeReveals();
