@@ -1,5 +1,18 @@
 [
   {
+    "title": "Exploring Zcash: Encrypted Money from First Principles",
+    "tags": [
+      "zero knowledge",
+      "cryptography",
+      "blockchain",
+      "privacy"
+    ],
+    "link": "blog/zcash-deep-dive/",
+    "highlight": true,
+    "thumbnail": "assets/blogs/zcash-deep-dive-cover.webp",
+    "excerpt": "Building Zcash's shielded ledger from first principles, then walking a transparent and a shielded transaction end to end."
+  },
+  {
     "title": "Deconstructing the 1.5 GHz zkVM: How ZisK Redefined the Limits of Trace Generation",
     "tags": [
       "zero knowledge",

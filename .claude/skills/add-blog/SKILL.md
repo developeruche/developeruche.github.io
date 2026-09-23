@@ -29,6 +29,14 @@ the browser.
 - **Highlight** — `true` or `false` (whether it appears in home-page highlights).
 - **Markdown** — the full post body. If the user pasted it inline, save it to a
   temp file first (e.g. `/tmp/<something>.md`).
+- **Excerpt** *(optional)* — the one-line summary shown on the `/blog` listing
+  row and the home-page card. Omit it and one is derived from the opening prose;
+  pass `--excerpt` to write a better one. Existing entries run **71–115 chars**
+  and read as an editorial hook ("Swapping the EVM's execution core for RISC-V
+  while keeping backward compatibility intact."), not as the first sentence of
+  the post. A derived excerpt is a safe default, not a good one — prefer writing
+  it. **An entry with no excerpt renders a listing row with nothing but the
+  title and tags**, which is how this was missed once.
 
 If any are missing, ask for them before proceeding.
 
