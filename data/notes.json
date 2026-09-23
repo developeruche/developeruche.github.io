@@ -4,7 +4,7 @@
     "slug": "evolutionary-algorithms",
     "category": "artificial-intelligence",
     "date": "2026-09-01",
-    "excerpt": "Lesson note on genetic algorithms: encoding a real-valued function as a binary chromosome, the selection-crossover-mutation loop, and the parameter choices that decide whether it converges — population size, crossover and mutation frequency, parent selection, initialisation, and stopping criteria.",
+    "excerpt": "Genetic algorithms from first principles: encoding a function as a chromosome, the selection-crossover-mutation loop, and tuning it to converge.",
     "tags": [
       "Machine Learning",
       "Genetic Algorithms",
@@ -20,7 +20,7 @@
     "slug": "linear-regression",
     "category": "artificial-intelligence",
     "date": "2026-09-01",
-    "excerpt": "Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs).",
+    "excerpt": "The model equation, L1 vs L2 loss, gradient descent, and the three hyperparameters that decide whether training converges.",
     "tags": [
       "Machine Learning",
       "Regression",

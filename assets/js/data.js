@@ -80,19 +80,19 @@ export const NOTE_SECTIONS = [
   {
     key: 'blockchain',
     display: 'Blockchain',
-    image: '/assets/notes/blockchain.png',
+    image: '/assets/notes/blockchain.webp',
     blurb: 'Execution-layer internals, consensus, and the protocol machinery underneath Ethereum.',
   },
   {
     key: 'cryptography-zkp',
     display: 'Cryptography & ZKP',
-    image: '/assets/notes/cryptography-zkp.png',
+    image: '/assets/notes/cryptography-zkp.webp',
     blurb: 'Proof systems, commitment schemes, and the algebra they are built on.',
   },
   {
     key: 'artificial-intelligence',
     display: 'Artificial Intelligence',
-    image: '/assets/notes/artificial-intelligence.png',
+    image: '/assets/notes/artificial-intelligence.webp',
     blurb: 'Inference engines, quantization, and kernel-level performance work.',
   },
 ];

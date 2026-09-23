@@ -43,8 +43,10 @@ def render(slug):
     title = entry["title"]
     authors = ", ".join(entry.get("authors") or ["Developer Uche"])
     abstract = entry.get("abstract", "")
-    # Meta description: one trimmed sentence-ish blurb, not the whole abstract.
-    desc = abstract if len(abstract) <= 300 else abstract[:297].rsplit(" ", 1)[0] + "…"
+    # Meta description: Google truncates the snippet around 155-160 characters,
+    # so anything longer is wasted and reads as cut off. The full abstract still
+    # goes in the JSON-LD `abstract` field and on the page itself.
+    desc = abstract if len(abstract) <= 155 else abstract[:152].rsplit(" ", 1)[0] + "…"
     canonical = f"{SITE}/publications/{slug}/"
 
     tags_html = "\n".join(

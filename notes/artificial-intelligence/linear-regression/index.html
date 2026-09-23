@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Linear Regression — Developer Uche</title>
-  <meta name="description" content="Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs)." />
+  <meta name="description" content="Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/notes/artificial-intelligence/linear-regression/" />
@@ -13,7 +13,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
   <meta property="og:title" content="Linear Regression — Developer Uche" />
-  <meta property="og:description" content="Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs)." />
+  <meta property="og:description" content="Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs." />
   <meta property="og:url" content="https://developeruche.com/notes/artificial-intelligence/linear-regression/" />
   <meta property="og:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
   <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
@@ -24,14 +24,14 @@
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
   <meta name="twitter:title" content="Linear Regression — Developer Uche" />
-  <meta name="twitter:description" content="Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs)." />
+  <meta name="twitter:description" content="Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs." />
   <meta name="twitter:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "Linear Regression",
-  "description": "Lesson note on linear regression: the model equation and what the model learns versus what you supply, the five loss functions and when squaring helps or hurts, gradient descent and convergence, and the three hyperparameters (learning rate, batch size, epochs).",
+  "description": "Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs.",
   "url": "https://developeruche.com/notes/artificial-intelligence/linear-regression/",
   "datePublished": "2026-09-01",
   "inLanguage": "en",

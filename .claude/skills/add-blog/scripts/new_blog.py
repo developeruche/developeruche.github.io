@@ -135,12 +135,22 @@ def process_images(md: str, slug: str, root: str):
     return rewritten, mapping
 
 
-def upsert_blog_json(root: str, title, tags, highlight, thumbnail, link):
+def make_excerpt(md: str, limit: int = 115) -> str:
+    """One-line summary for the blog listing row. Shorter than the meta
+    description: the existing entries run 71-115 chars."""
+    text = make_description(md)
+    if len(text) > limit:
+        text = text[: limit - 1].rsplit(" ", 1)[0].rstrip(" ,;:—-") + "…"
+    return text
+
+
+def upsert_blog_json(root: str, title, tags, highlight, thumbnail, link, excerpt):
     path = os.path.join(root, "data", "blog.json")
     data = json.load(open(path, encoding="utf-8"))
+    # Key order matches the existing entries so the file stays uniform.
     entry = {
         "title": title, "tags": tags, "link": link,
-        "highlight": highlight, "thumbnail": thumbnail,
+        "highlight": highlight, "thumbnail": thumbnail, "excerpt": excerpt,
     }
     for i, it in enumerate(data):
         if it.get("title", "").strip().lower() == title.strip().lower():
@@ -165,6 +175,24 @@ def make_description(md: str) -> str:
     if len(text) > 155:
         text = text[:152].rsplit(" ", 1)[0] + "…"
     return text
+
+
+def build_breadcrumbs(title, canonical):
+    """BreadcrumbList for Home > Blog > post. Built with json.dumps rather than
+    string substitution so a quote or backslash in the title cannot produce
+    invalid JSON-LD."""
+    return json.dumps({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home",
+             "item": f"{SITE_URL}/"},
+            {"@type": "ListItem", "position": 2, "name": "Blog",
+             "item": f"{SITE_URL}/blog"},
+            {"@type": "ListItem", "position": 3, "name": title,
+             "item": canonical},
+        ],
+    }, indent=2, ensure_ascii=False)
 
 
 def build_jsonld(title, desc, tags, page, og_image, iso_date):
@@ -200,31 +228,61 @@ def build_jsonld(title, desc, tags, page, og_image, iso_date):
 
 
 def regenerate_sitemap(root: str):
-    """Rebuild sitemap.xml: root pages + every /blog/<slug>/ post.
-    Posts live at blog/<slug>/index.html (served as /blog/<slug>/)."""
-    exclude = {"blog-post.html"}  # dummy scaffold/reference
-    root_pages = sorted(
-        os.path.basename(p) for p in glob.glob(os.path.join(root, "*.html"))
-        if os.path.basename(p) not in exclude
-        and not re.match(r"^blog-[a-z0-9-]+\.html$", os.path.basename(p)))
-    blog_dirs = sorted(
-        os.path.relpath(os.path.dirname(p), root).replace(os.sep, "/") + "/"
-        for p in glob.glob(os.path.join(root, "blog", "*", "index.html")))
-    now = datetime.now(timezone.utc).date().isoformat()
+    """Rebuild sitemap.xml from every indexable page on disk.
+
+    Two rules keep this correct as the site grows:
+
+    1. Discover pages by walking for root *.html and */index.html at any depth,
+       not by hard-coding a list. An earlier version globbed only root pages and
+       blog/*/index.html, which silently dropped /cv, /notes/*, and the
+       publication detail pages every time a post was added.
+    2. Take each URL from the page's own rel="canonical". The site serves
+       extensionless URLs (/blog, not /blog.html); deriving the URL separately
+       is how the sitemap and the canonicals drifted apart. Pages marked
+       noindex (dev-only previews) are skipped.
+    """
+    skip_names = {"blog-post.html"}          # dummy scaffold/reference
+    candidates = []
+    for pat in ("*.html", "*/index.html", "*/*/index.html", "*/*/*/index.html"):
+        candidates += glob.glob(os.path.join(root, pat))
+
+    entries = []
+    for path in sorted(set(candidates)):
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if os.path.basename(rel) in skip_names:
+            continue
+        try:
+            html_src = open(path, encoding="utf-8", errors="replace").read()
+        except OSError:
+            continue
+        if re.search(r'name="robots"[^>]*content="[^"]*noindex', html_src):
+            continue
+        m = re.search(r'rel="canonical"\s+href="([^"]+)"', html_src)
+        if m:
+            loc = m.group(1)
+        else:
+            base = rel[: -len("/index.html")] + "/" if rel.endswith("/index.html") else rel
+            loc = SITE_URL + "/" + ("" if base == "index.html" else base)
+        lastmod = datetime.fromtimestamp(os.path.getmtime(path), timezone.utc).date().isoformat()
+
+        depth = loc.replace(SITE_URL, "").strip("/").count("/")
+        if loc.rstrip("/") == SITE_URL:
+            prio = "1.0"
+        elif depth == 0:
+            prio = "0.8"
+        elif depth == 1:
+            prio = "0.7"
+        else:
+            prio = "0.6"
+        entries.append((loc, lastmod, prio))
+
+    entries.sort(key=lambda e: (-float(e[2]), e[0]))
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-
-    def url(loc, prio):
+    for loc, lastmod, prio in entries:
         lines.extend(["  <url>", f"    <loc>{loc}</loc>",
-                      f"    <lastmod>{now}</lastmod>",
+                      f"    <lastmod>{lastmod}</lastmod>",
                       f"    <priority>{prio}</priority>", "  </url>"])
-
-    for p in root_pages:
-        loc = SITE_URL + "/" + ("" if p == "index.html" else p)
-        prio = "1.0" if p == "index.html" else ("0.8" if p in ("blog.html", "projects.html", "publications.html") else "0.6")
-        url(loc, prio)
-    for d in blog_dirs:
-        url(f"{SITE_URL}/{d}", "0.6")
     lines.append("</urlset>")
     with open(os.path.join(root, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
@@ -239,6 +297,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--title", required=True)
     ap.add_argument("--thumbnail", required=True)
+    ap.add_argument("--excerpt", default="",
+                    help="one-line summary for the blog listing row; "
+                         "derived from the body when omitted")
     ap.add_argument("--highlight", default="false")
     ap.add_argument("--tags", default="")
     ap.add_argument("--md", required=True)
@@ -278,7 +339,8 @@ def main():
     # 4. blog.json — link is the clean /blog/<slug>/ path (relative for the
     # root listing pages that consume it).
     link = f"blog/{slug}/"
-    upsert_blog_json(root, a.title, tags, highlight, thumb_rel, link)
+    excerpt = (a.excerpt or "").strip() or make_excerpt(md)
+    upsert_blog_json(root, a.title, tags, highlight, thumb_rel, link, excerpt)
 
     # 5. page shell from template (with full SEO head)
     tpl_path = os.path.join(os.path.dirname(__file__), "..", "templates", "post.html.template")
@@ -310,6 +372,7 @@ def main():
            .replace("{{HERO_ALT}}", hero_alt_attr)
            .replace("{{ARTICLE_TAGS}}", article_tags)
            .replace("{{JSONLD}}", jsonld)
+           .replace("{{BREADCRUMBS}}", build_breadcrumbs(a.title, canonical))
            .replace("{{DATE}}", iso_date)
            .replace("{{READ_TIME}}", str(read_time))
            .replace("{{TAGS_HTML}}", tags_html))
@@ -327,7 +390,7 @@ def main():
         "read_time": read_time, "tags": tags, "highlight": highlight,
         "local_md": local_md, "images_downloaded": mapping,
         "body_marker": "<!-- BODY:REPLACE_ME -->",
-        "sitemap": "regenerated", "description": desc,
+        "sitemap": "regenerated", "description": desc, "excerpt": excerpt,
     }, indent=2))
 
 
