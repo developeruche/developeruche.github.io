@@ -502,6 +502,11 @@ body::before {
 .post-meta { color: var(--color-text-muted); font-size: var(--text-sm); margin-top: var(--space-sm); }
 .post-hero-img {
   width: 100%;
+  /* height:auto is required alongside the width/height attributes on the <img>.
+     Without it those attributes map to a presentational height, both dimensions
+     become definite, and aspect-ratio below is ignored - the hero then renders
+     as a tall box instead of 16:9. */
+  height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   margin-top: var(--space-lg);
