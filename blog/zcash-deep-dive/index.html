@@ -127,10 +127,10 @@
         <p>The answer is yes, and the machinery that makes it yes is one of the most interesting pieces of applied cryptography in production anywhere. This post is a ground-up tour of that machinery. We will start from why the problem matters, build the cryptographic toolbox one primitive at a time, lay out every data structure the protocol actually puts on disk and on the wire, and then walk two transactions end to end: one transparent, one shielded, from the moment a wallet is opened to the moment a recipient's balance updates.</p>
         <p>I have tried to make this readable in order. Each section assumes only what came before it. If you already know Bitcoin's UTXO model, you can skim §1; if you already know commitment schemes and Merkle trees, skim §3. The two lifecycle sections (§7 and §8) are the heart of the post and are written to be followed line by line.</p>
         <blockquote><strong>A note on timing.</strong> Zcash moved fast in 2026. A critical soundness bug was found in the Orchard circuit in May, patched in June, and answered in July with an entirely new shielded pool called <em>Ironwood</em>. A further upgrade, NU7, is targeted for November. This post describes the protocol <strong>as of September 2026</strong>, with the history included where it explains the design. §9 is a dedicated postmortem of the bug, because it is the single best case study in the ecosystem for what a zero-knowledge circuit actually guarantees — and what it does not.</blockquote>
-        <hr />
+        
         <h2 id="table-of-contents">Table of contents</h2>
         <ol><li><a href="#1-the-problem-transparency-is-a-design-choice">The problem: transparency is a design choice</a></li><li><a href="#2-the-philosophy-why-encryption-and-not-obfuscation">The philosophy: why encryption and not obfuscation</a></li><li><a href="#3-the-cryptographic-toolbox">The cryptographic toolbox</a></li><li><a href="#4-architecture-pools-turnstiles-and-addresses">Architecture: pools, turnstiles, and addresses</a></li><li><a href="#5-the-data-structures">The data structures</a></li><li><a href="#6-network-infrastructure">Network infrastructure</a></li><li><a href="#7-lifecycle-i-a-transparent-transaction-end-to-end">Lifecycle I: a transparent transaction, end to end</a></li><li><a href="#8-lifecycle-ii-a-shielded-transaction-end-to-end">Lifecycle II: a shielded transaction, end to end</a></li><li><a href="#9-case-study-the-orchard-soundness-bug">Case study: the Orchard soundness bug</a></li><li><a href="#10-the-road-ahead">The road ahead</a></li><li><a href="#11-appendix-constants-glossary-sources">Appendix: constants, glossary, sources</a></li></ol>
-        <hr />
+        
         <h2 id="1-the-problem-transparency-is-a-design-choice">1. The problem: transparency is a design choice</h2>
         <h3 id="11-bitcoin-did-not-fail-at-privacy-it-never-tried">1.1 Bitcoin did not fail at privacy — it never tried</h3>
         <p>It is worth being precise about this, because the usual framing ("Bitcoin is private-ish, Zcash is more private") gets the engineering backwards.</p>
@@ -147,7 +147,7 @@
         <ul><li><em>Does the input exist?</em></li><li><em>Has it been spent before?</em></li><li><em>Does the value balance?</em></li></ul>
         <p>— while the answers to <em>which</em> input, <em>whose</em> input, and <em>how much</em> are cryptographically unavailable to that node.</p>
         <p>Stated that plainly it sounds impossible. It is not. The trick, in one sentence, is: <strong>replace each plaintext read with a zero-knowledge proof about a commitment.</strong> The rest of this post is the detail of how.</p>
-        <hr />
+        
         <h2 id="2-the-philosophy-why-encryption-and-not-obfuscation">2. The philosophy: why encryption and not obfuscation</h2>
         <p>Zcash's architecture is downstream of a specific philosophical position. It is worth spelling out, because it is the reason the protocol looks the way it does rather than like a mixer, a ring signature scheme, or a compliance-gated pool.</p>
         <h3 id="21-privacy-is-not-secrecy">2.1 Privacy is not secrecy</h3>
@@ -175,7 +175,7 @@
         <h3 id="25-criticisms-worth-taking-seriously">2.5 Criticisms worth taking seriously</h3>
         <p>Good engineering writing does not skip the objections. Four that hold up:</p>
         <ul><li><strong>Trusted setup (historical).</strong> Sprout and Sapling used Groth16, which needs a structured reference string. If every participant in the ceremony colluded and kept their toxic waste, they could forge proofs. The ceremonies were elaborate and multi-party, but "believe at least one of $N$ was honest" is a real trust assumption. <em>Orchard removed this</em>: Halo 2 needs no trusted setup, and both Orchard and Ironwood inherit that property.</li><li><strong>Adoption asymmetry.</strong> A privacy set is only as good as the population using it. For years most ZEC sat transparent because shielding was slow and exchanges required t-addresses. Orchard plus modern wallets that shield by default changed the economics; the shielded fraction grew several-fold across 2025. But the criticism was correct when it was made.</li><li><strong>Protocol funding.</strong> 20% of the block subsidy is directed by consensus rules to development funding. Whether that is prudent long-termism or a tax is a genuine political disagreement, not a technical one. What is <em>not</em> true is the "premine" claim — no coins existed before the genesis block; the allocation is a split of ongoing issuance on the same schedule as miner rewards.</li><li><strong>Complexity is attack surface.</strong> This one got expensive. Orchard's circuit is thousands of constraints, each of which must be exactly right; a single missing equality constraint went unnoticed for four years through multiple professional audits (§9). Encryption buys you privacy that does not decay, and pays for it in a much larger and much subtler trusted computing base.</li></ul>
-        <hr />
+        
         <h2 id="3-the-cryptographic-toolbox">3. The cryptographic toolbox</h2>
         <p>Before any data structure makes sense, you need five primitives. I will introduce each with the property that Zcash actually relies on, because the property is what the protocol's security argument uses — not the name of the algorithm.</p>
         <h3 id="31-hash-functions-and-prfs">3.1 Hash functions and PRFs</h3>
@@ -230,7 +230,7 @@
         <p>$$rk = ak + [\alpha]\,\mathcal{G}$$</p>
         <p>and produce a signature valid under $rk$ using $ask + \alpha$. The signature verifies under $rk$, which is what goes on chain — and $rk$ is statistically independent of $ak$. So the chain sees a fresh, unlinkable verification key on every spend, while the circuit proves that $rk$ was derived from the <em>right</em> $ak$ for the note. Authorisation without identity.</p>
         <p>The <strong>binding signature</strong> is stranger and cleverer: it is a signature whose <em>verification key is computed by the verifier from the transaction's own value commitments</em>. If the amounts balance, the key the verifier derives is $[\sum rcv]\,\mathcal{R}$, for which the prover knows the discrete log (it is the sum of randomness they chose). If the amounts do not balance, the derived key has an unknown discrete log and no signature can exist. It is a proof of balance dressed up as a signature — and it costs zero circuit constraints, because it happens entirely outside the proof.</p>
-        <hr />
+        
         <h2 id="4-architecture-pools-turnstiles-and-addresses">4. Architecture: pools, turnstiles, and addresses</h2>
         <h3 id="41-two-ledgers-sharing-a-currency">4.1 Two ledgers sharing a currency</h3>
         <p>Zcash is best understood as <strong>two ledgers that share a unit of account and a consensus layer</strong>:</p>
@@ -270,7 +270,7 @@
         <p>Modern Zcash uses <strong>unified addresses</strong> almost exclusively. A <code>u1...</code> address is not one address; it is a typed, length-prefixed list of receivers — say an Orchard receiver plus a Sapling receiver plus a transparent receiver — wrapped in an F4Jumble permutation (so that truncating the string corrupts it globally rather than leaking a prefix) and Bech32m-encoded.</p>
         <p>The sender's wallet picks the <em>best</em> receiver it supports. This is the mechanism that made the Ironwood migration painless: existing <code>u1...</code> addresses keep working unchanged, and upgraded wallets simply route new payments to the Ironwood pool behind the same address string. Users were never asked to rotate addresses.</p>
         <p>Within a pool, addresses are <strong>diversified</strong>. From one full viewing key you can derive billions of distinct-looking addresses (§5.5) that all receive to the same wallet and are mutually unlinkable to anyone without your viewing key. Give a different one to your employer, your exchange, and each client, and they cannot collude by comparing strings.</p>
-        <hr />
+        
         <h2 id="5-the-data-structures">5. The data structures</h2>
         <p>This is the reference section. Everything in §7 and §8 refers back here.</p>
         <h3 id="51-the-note">5.1 The note</h3>
@@ -361,24 +361,26 @@ d = 0x00000000000000000002  →  g_d2  →  pk_d2 = [ivk]·g_d2  →  u1exchange
         <p>Ironwood notes are <em>only</em> ever lead byte <code>0x03</code>; Orchard notes are never <code>0x03</code>. That one byte is the sole note-level difference between the two pools.</p>
         <h3 id="57-transactions-v5-and-v6">5.7 Transactions: v5 and v6</h3>
         <p>A <strong>v5 transaction</strong> (ZIP 225, live since NU5) has four zones: common header, transparent, Sapling, Orchard.</p>
-        <pre><code>┌─ common ────────────────────────────────────────────────┐
-│ header (4)  nVersionGroupId (4)  nConsensusBranchId (4)  │
-│ lock_time (4)  nExpiryHeight (4)                         │
-├─ transparent ───────────────────────────────────────────┤
-│ tx_in_count   tx_in[]   tx_out_count   tx_out[]          │
-├─ Sapling ───────────────────────────────────────────────┤
-│ nSpendsSapling   vSpendsSapling[96 each]                 │
-│ nOutputsSapling  vOutputsSapling[756 each]               │
-│ valueBalanceSapling (8)   anchorSapling (32)             │
-│ vSpendProofsSapling[192]  vSpendAuthSigsSapling[64]      │
-│ vOutputProofsSapling[192] bindingSigSapling (64)         │
-├─ Orchard ───────────────────────────────────────────────┤
-│ nActionsOrchard   vActionsOrchard[820 each]              │
-│ flagsOrchard (1)  valueBalanceOrchard (8)                │
-│ anchorOrchard (32)                                       │
-│ sizeProofsOrchard  proofsOrchard[2720 + 2272·n]          │
-│ vSpendAuthSigsOrchard[64 each]  bindingSigOrchard (64)   │
-└──────────────────────────────────────────────────────────┘</code></pre>
+        <pre><code>
+            ┌─ common ────────────────────────────────────────────┐
+            │ header (4)  nVersionGroupId (4)  nConsensusBranchId (4)  │
+            │ lock_time (4)  nExpiryHeight (4)                         │
+            ├─ transparent ────────────────────────────────────────┤
+            │ tx_in_count   tx_in[]   tx_out_count   tx_out[]          │
+            ├─ Sapling ───────────────────────────────────────────┤
+            │ nSpendsSapling   vSpendsSapling[96 each]                 │
+            │ nOutputsSapling  vOutputsSapling[756 each]               │
+            │ valueBalanceSapling (8)   anchorSapling (32)             │
+            │ vSpendProofsSapling[192]  vSpendAuthSigsSapling[64]      │
+            │ vOutputProofsSapling[192] bindingSigSapling (64)         │
+            ├─ Orchard ───────────────────────────────────────────┤
+            │ nActionsOrchard   vActionsOrchard[820 each]              │
+            │ flagsOrchard (1)  valueBalanceOrchard (8)                │
+            │ anchorOrchard (32)                                       │
+            │ sizeProofsOrchard  proofsOrchard[2720 + 2272·n]          │
+            │ vSpendAuthSigsOrchard[64 each]  bindingSigOrchard (64)   │
+            └────────────────────────────────────────────────────┘
+        </code></pre>
         <p><strong>v6</strong> (ZIP 229, live since NU6.3) appends a fifth zone — the <strong>Ironwood component</strong> — with byte-identical structure to the Orchard one, and makes two further changes:</p>
         <ol><li><code>flagsOrchard</code> and <code>flagsIronwood</code> gain a third bit, <code>enableCrossAddress</code> (bit 2). Bits 0 and 1 remain <code>enableSpends</code> and <code>enableOutputs</code>.</li><li><strong>Anchors move from effecting data to authorizing data.</strong> In v5, the anchor is committed by the txid and by the signature hash, so choosing a different anchor means re-signing. In v6, the anchor lives in the <em>auth</em> digest instead, so a transaction can be signed once and then have its anchor and proof updated later without changing the txid.</li></ol>
         <p>That second change sounds like plumbing and is not. It is what makes the privacy-preserving Orchard→Ironwood migration (§10.1) implementable at all: a wallet can pre-sign an entire schedule of migration transactions in one signing session, then re-anchor and re-prove each one at broadcast time hours later. Penumbra is credited in the ZIP for demonstrating the idea.</p>
@@ -402,7 +404,7 @@ auth_digest_v6 = BLAKE2b-256("ZTxAuthHash_" || consensusBranchId,
         <p>Two Zcash-specific fields. <code>nNonce</code> is 32 bytes (not 4), and <code>solution</code> holds the 1,344-byte Equihash solution (§6.1). And <code>hashBlockCommitments</code> (ZIP 221 + ZIP 244) is a hash of:</p>
         <p>$$\mathsf{hashBlockCommitments} = \mathsf{BLAKE2b}(\mathsf{hashChainHistoryRoot} \,\|\, \mathsf{hashAuthDataRoot} \,\|\, \texttt{0}^{32})$$</p>
         <p>The chain history root is the root of an <strong>MMR</strong> (Merkle Mountain Range) over all blocks since Heartwood, which is what enables FlyClient-style logarithmic light-client proofs of chain work. The auth data root is the Merkle root of every transaction's auth digest.</p>
-        <hr />
+        
         <h2 id="6-network-infrastructure">6. Network infrastructure</h2>
         <h3 id="61-proof-of-work-equihash">6.1 Proof of work: Equihash</h3>
         <p>Zcash uses <strong>Equihash</strong> with parameters $(n, k) = (200, 9)$, not SHA-256d.</p>
@@ -504,7 +506,7 @@ zip317(n_orch=50)                      # 250_000 zat = 0.0025 ZEC</code></pre>
         <pre><code>per-output work:  1 Pallas scalar mult  +  1 BLAKE2b KDF  +  1 ChaCha20-Poly1305 (52 B)
 per-output data:  32 (cmx) + 32 (epk) + 52 (ct prefix) = 116 bytes</code></pre>
         <p>Every serious scaling proposal for Zcash is, at bottom, an attack on this loop. Tachyon's answer is to remove the ciphertexts from the chain entirely (out-of-band note delivery) and to replace scanning with an <em>oblivious sync</em> service that does the work without learning what it is looking for.</p>
-        <hr />
+        
         <h2 id="7-lifecycle-i-a-transparent-transaction-end-to-end">7. Lifecycle I: a transparent transaction, end to end</h2>
         <p>We will trace one payment from key generation to confirmation. <strong>Tobi is sending 1.0 ZEC to Ada</strong>, both using transparent addresses.</p>
         <p>The transparent pool is Bitcoin with the serial numbers filed off, so this section doubles as the baseline against which §8's complexity can be measured. Read them as a pair: nearly every step below has a shielded counterpart that does the same job with a proof instead of a plaintext read.</p>
@@ -543,7 +545,7 @@ UTXO #3:  txid e5f6…  vout 0   5.0 ZEC   (coinbase, height 3_449_900)</code></
         <p>Unlike the shielded case, <strong>the fee here is implicit</strong>: it is <code>sum(inputs) − sum(outputs)</code>, never written down. Nodes compute it.</p>
         <h3 id="step-4-build-the-unsigned-transaction">Step 4 — Build the unsigned transaction</h3>
         <pre><code>{
-  "header":             0x80000005,     // fOverwintered | version 5
+  "header":             0x80000005,
   "nVersionGroupId":    "0x26A7270A",
   "nConsensusBranchId": "&lt;NU6.3 branch id&gt;",
   "lock_time":          0,
@@ -594,7 +596,7 @@ transparent_pool_balance += (coinbase subsidy) − (net value shielded)</code></
         <p>Everything:</p>
         <ul><li>Tobi controls two specific prior outputs (<strong>common-input-ownership</strong>: they belong to the same entity).</li><li>His public keys, now revealed.</li><li>Exact amounts: 0.7, 0.9 in; 1.0, 0.5999 out; 0.0001 fee.</li><li>Ada's address, and that she received 1.0 ZEC.</li><li>Which output is almost certainly change (the non-round one paying a never-before-seen address).</li><li>Timing, and — if they were watching the network layer — plausibly Tobi's IP.</li></ul>
         <p>This is a complete, permanent, machine-readable record of a payment. Now let us do the same payment with the data absent.</p>
-        <hr />
+        
         <h2 id="8-lifecycle-ii-a-shielded-transaction-end-to-end">8. Lifecycle II: a shielded transaction, end to end</h2>
         <p>Same payment, shielded. <strong>Tobi sends 1.0 ZEC to Ada</strong>, both using unified addresses, both wallets Ironwood-capable. Tobi holds two Ironwood notes worth 0.7 and 0.9 ZEC.</p>
         <p>I am going to walk this at full detail, because every step exists for a reason and the reasons interlock. Here is the shape of the whole thing before we start:</p>
@@ -782,7 +784,7 @@ new_anchor = IRONWOOD_TREE.root()</code></pre>
         <p>Zero-knowledge on chain does not mean zero information overall. Four residual channels, all real:</p>
         <ol><li><strong>The fee and action count.</strong> Both public. A 50-action transaction is visibly large; a nonstandard fee fingerprints your wallet software. This is why ZIP 317 defines a <em>conventional</em> fee that everyone is expected to pay.</li><li><strong>Pool crossings.</strong> Shielding, unshielding, and Orchard→Ironwood migration all publish an exact amount in the clear. This is the turnstile's price. ZIP 318's migration design — canonical denominations of the form $n \times 10^k$ with $n \in \{1,2,5\}$, Poisson-scheduled broadcast, shared boundary anchors — is an entire engineering effort aimed at making these amounts collide across wallets rather than fingerprint them.</li><li><strong>Timing and network metadata.</strong> If your wallet broadcasts from a stable IP the moment you open the app, an observer correlating broadcasts with your light-wallet-server sync requests can learn a great deal. Hence Tor/Nym routing, and ZIP 318's rule that a background task may sync <em>or</em> broadcast in a given window, never both.</li><li><strong>Your counterparties.</strong> The protocol hides you from the chain. It does not hide you from the person you paid, who knows perfectly well what they received.</li></ol>
         <p>Designing well means knowing which of these you are exposed to. The protocol closes the ones it can close at the consensus layer; the rest are wallet and network-layer problems, and they are where most of the remaining work is.</p>
-        <hr />
+        
         <h2 id="9-case-study-the-orchard-soundness-bug">9. Case study: the Orchard soundness bug</h2>
         <p>In May 2026, a researcher found that the Orchard circuit had not been enforcing constraint 4 from §8's table — the one binding an address to a viewing key. The bug had been live since Orchard's activation in May 2022, through multiple professional audits.</p>
         <p>I am giving this its own section because it is the most instructive thing that has happened to a production ZK system, and because understanding it requires exactly the machinery we have just built.</p>
@@ -841,7 +843,7 @@ Spend #3:  …</code></pre>
         <h3 id="95-what-to-take-from-it">9.5 What to take from it</h3>
         <p>Five things, and they generalise well beyond Zcash:</p>
         <ol><li><strong>A circuit proves what it constrains, not what it means.</strong> There is no compiler error for a missing constraint. The proof system will correctly and eternally prove a weaker statement. This failure mode has no analogue in ordinary software — the code <em>worked</em>.</li><li><strong>Under-constrained arithmetic is the dominant ZK bug class.</strong> Not overflow, not reentrancy — missing equality constraints. Everything built on shared gadget libraries inherits that risk, and <code>halo2_gadgets</code> is used well beyond Zcash.</li><li><strong>Audits are sampling, not proof.</strong> Four years, multiple expert reviews, one missing <code>copy_advice</code>. The answer the ecosystem reached for was formal verification, which is what shipped alongside Ironwood.</li><li><strong>Defence in depth pays for itself.</strong> The turnstile was designed years earlier for exactly this scenario and was the only reason the incident was survivable rather than existential. Build the accounting bound even when you are confident in the cryptography — <em>especially</em> then.</li><li><strong>Privacy and incident response are in tension, and you should plan for it.</strong> In a transparent system you check whether the bug was exploited. Here you cannot, ever. That has to shape the response: you design for containment, not for forensics.</li></ol>
-        <hr />
+        
         <h2 id="10-the-road-ahead">10. The road ahead</h2>
         <p>Three efforts define Zcash's near future, and they map onto the three things this post has shown are expensive.</p>
         <h3 id="101-finishing-the-migration">10.1 Finishing the migration</h3>
@@ -867,7 +869,7 @@ Spend #3:  …</code></pre>
         <p>Targeted for <strong>5 November 2026</strong> (testnet 6 October, final go/no-go 20 October), carrying:</p>
         <ul><li><strong>ZIP 218</strong> — block target spacing from 75s to <strong>25s</strong>, tripling block production. Subsidy per block adjusts so the halving schedule and 21M cap are preserved.</li><li><strong>ZIP 2003</strong> — v4 transactions disabled.</li><li><strong>ZIP 234 + 235</strong> — the <strong>Network Sustainability Mechanism</strong>: 60% of transaction fees removed from circulation, reintroduced into block rewards starting February 2031. This is Zcash's answer to Bitcoin's long-run security-budget problem — fees fund future issuance rather than the cap being broken or miners being left with nothing.</li></ul>
         <p>Notably, NU7 introduces <strong>no new transaction formats</strong>. After a year of emergency upgrades, that is the point.</p>
-        <hr />
+        
         <h2 id="11-appendix-constants-glossary-sources">11. Appendix: constants, glossary, sources</h2>
         <h3 id="111-network-upgrades">11.1 Network upgrades</h3>
         <table><thead><tr><th>Upgrade</th><th>Height</th><th>Date</th><th>Branch ID</th><th>Brought</th></tr></thead><tbody><tr><td>Sprout</td><td>genesis</td><td>2016-10-28</td><td><code>0x00000000</code></td><td>The original shielded pool</td></tr><tr><td>Overwinter</td><td>347,500</td><td>2018-06-25</td><td><code>0x5ba81b19</code></td><td>v3 tx, expiry heights, replay protection</td></tr><tr><td>Sapling</td><td>419,200</td><td>2018-10-28</td><td><code>0x76b809bb</code></td><td>Sapling pool, v4 tx, viewing keys</td></tr><tr><td>Blossom</td><td>653,600</td><td>2019-12-11</td><td><code>0x2bb40e60</code></td><td>75-second blocks</td></tr><tr><td>Heartwood</td><td>903,000</td><td>2020-07-16</td><td><code>0xf5b9230b</code></td><td>Shielded coinbase, ZIP 221 MMR</td></tr><tr><td>Canopy</td><td>1,046,400</td><td>2020-11-18</td><td><code>0xe9ff75a6</code></td><td>1st halving, funding streams</td></tr><tr><td>NU5</td><td>1,687,104</td><td>2022-05-31</td><td><code>0xc2d6d0b4</code></td><td><strong>Orchard</strong>, v5 tx, ZIP 244, UAs</td></tr><tr><td>NU6</td><td>2,726,400</td><td>2024-11-23</td><td><code>0xc8e71055</code></td><td>2nd halving, new funding streams</td></tr><tr><td>NU6.1</td><td>3,146,400</td><td>2025-11-24</td><td><code>0x4dec4df0</code></td><td>ZIP 1016 funding model, lockbox</td></tr><tr><td>NU6.2</td><td>3,364,600</td><td>2026-06-03</td><td>—</td><td><strong>Orchard circuit fix</strong> (emergency)</td></tr><tr><td>NU6.3</td><td>3,428,143</td><td>2026-07-28</td><td>—</td><td><strong>Ironwood</strong>, v6 tx, quantum recoverability</td></tr><tr><td>NU7</td><td>TBD</td><td>~2026-11-05</td><td>—</td><td>25s blocks, NSM, v4 disabled</td></tr></tbody></table>
@@ -884,8 +886,8 @@ Spend #3:  …</code></pre>
         <ul><li><a href="https://seanbowe.com/blog/tachyon-scaling-zcash-oblivious-synchronization/" target="_blank" rel="noopener noreferrer">Tachyon: Scaling Zcash with Oblivious Synchronization — Sean Bowe</a></li><li><a href="https://tachyon.z.cash/overview/" target="_blank" rel="noopener noreferrer">Project Tachyon overview</a></li></ul>
         <p>Implementations:</p>
         <ul><li><a href="https://github.com/ZcashFoundation/zebra" target="_blank" rel="noopener noreferrer">Zebra</a> · <a href="https://github.com/zingolabs/zaino" target="_blank" rel="noopener noreferrer">Zaino</a> · <a href="https://github.com/zcash/zallet" target="_blank" rel="noopener noreferrer">Zallet</a> · <a href="https://github.com/zcash/halo2" target="_blank" rel="noopener noreferrer">halo2</a> · <a href="https://github.com/zcash/orchard" target="_blank" rel="noopener noreferrer">orchard</a></li></ul>
-        <hr />
-        <h2 id="closing">Closing</h2>
+        
+        <h2 id="closing">An Opinionated Hot take</h2>
         <p>The thing worth carrying away from all of this is not any particular formula. It is the shape of the trade.</p>
         <p>Bitcoin's validation rule is a reading rule, so its security and its surveillance are the same property — you cannot keep one and discard the other by changing wallet habits. Zcash replaces each read with a proof about a commitment, and in doing so gets a ledger that can be checked without being seen. The price is a much larger trusted computing base: a circuit whose every constraint must be exactly right, a scanning cost linear in everyone else's activity, transactions 38× the size, and — as June 2026 demonstrated — failure modes that cannot be audited after the fact.</p>
         <p>Zcash's answer to that price is not to claim the cryptography is infallible. It is to bound what a failure can cost. The turnstile is a plaintext accounting rule sitting underneath the encryption, and when the cryptography did fail, that rule was the difference between a bad quarter and a dead protocol. Ironwood is the same instinct applied a second time: when you cannot prove the past was clean, build a present that provably is, and gate the door between them.</p>
