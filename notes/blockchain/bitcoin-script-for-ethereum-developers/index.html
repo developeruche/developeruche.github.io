@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig — Developer Uche</title>
+  <meta name="description" content="A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig — Developer Uche" />
+  <meta property="og:description" content="A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte." />
+  <meta property="og:url" content="https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/" />
+  <meta property="og:image" content="https://developeruche.com/assets/notes/blockchain.png" />
+  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="article:published_time" content="2026-10-14" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig — Developer Uche" />
+  <meta name="twitter:description" content="A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/notes/blockchain.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig",
+  "description": "A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte.",
+  "url": "https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/",
+  "datePublished": "2026-10-14",
+  "inLanguage": "en",
+  "keywords": "Bitcoin, Script, Taproot, Multisig",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Blockchain Notes",
+    "url": "https://developeruche.com/notes/blockchain/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/blockchain/">← Back to Blockchain notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · BLOCKCHAIN</span>
+        <h1 class="post-title">Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-10-14">2026-10-14</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Bitcoin</span>
+          <span>Script</span>
+          <span>Taproot</span>
+          <span>Multisig</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>I spend most of my time in Ethereum's execution layer, where a transaction is a message to a stateful machine and "multisig" usually means a smart contract. For the past few weeks I have been studying Bitcoin from the inside, using <em>Mastering Bitcoin</em> as my guide. This article is the write-up of that study.</p>
+        <p>There is one destination: by the end you should be able to look at any Bitcoin multisig setup (a 2012-era P2SH address, a Lightning channel, a Taproot vault, a MuSig2 key) and explain exactly what is on chain, what the network checks, what it costs, and why it was designed that way. Getting there takes a staircase, and every step depends on the one below it:</p>
+        <ol><li><strong>Foundations</strong>: what Bitcoin is, the UTXO model, and the cryptography it relies on.</li><li><strong>The transaction</strong>: its bytes, its identifiers, its weight, and its life from wallet to block.</li><li><strong>Script</strong>: the stack machine that decides whether a coin may move, and the signatures it checks.</li><li><strong>The output types</strong>, in historical order: P2PK, P2PKH, bare multisig, OP_RETURN, P2SH.</li><li><strong>SegWit</strong>: why it was needed, how it was deployed as a soft fork, P2WPKH and P2WSH.</li><li><strong>Taproot</strong>: Schnorr signatures, MAST, key tweaking, P2TR and Tapscript.</li><li><strong>Time</strong>: absolute and relative timelocks.</li><li><strong>Multisig</strong>, the main event: five generations of it, compared byte for byte.</li><li><strong>Scripts in the wild</strong>: Lightning, HTLCs, Ark, data carriers, and covenant proposals.</li></ol>
+        <p>All numbers in this article (addresses, hashes, transaction weights, signature checks) were reproduced with small Python programs, most of which are included.</p>
+        <blockquote><strong>Notation.</strong> $G$ is the secp256k1 generator, lowercase letters are scalars (private keys, nonces), uppercase letters are curve points (public keys). $H_{tag}(\cdot)$ is a BIP340 tagged hash. <code>&lt;x&gt;</code> in a script means "push the bytes of x". Hex in scripts is shown in the byte order it appears on the wire unless stated otherwise. "vB" means virtual bytes, "WU" means weight units.</blockquote>
+        <h2>Part I: Foundations</h2>
+        <h3>1. What Bitcoin is, precisely</h3>
+        <p>Every digital-money design has to answer three questions: is this money authentic, can it be spent only once, and can only its owner spend it? Before 2008 the second question was always answered by a clearing house that saw every transaction. Bitcoin's contribution was to answer it without one. <em>Mastering Bitcoin</em> breaks the system into four parts:</p>
+        <ol><li><strong>A peer-to-peer network</strong> that gossips transactions and blocks between equal peers.</li><li><strong>A public journal</strong>, the blockchain: an append-only chain of blocks, each committing to its parent by hash.</li><li><strong>Consensus rules</strong> that every full node applies independently to every transaction and block.</li><li><strong>Proof of work</strong>, a lottery that decides who appends the next block and makes rewriting history expensive.</li></ol>
+        <p>The unit of account is the satoshi: 1 BTC = $10^8$ sat. New coins enter circulation only through the <em>block subsidy</em>, which starts at 50 BTC and halves every 210,000 blocks (roughly four years). Bitcoin Core computes it with a right shift:</p>
+        <p>$$ \text{subsidy}(h) = \left\lfloor \frac{50 \cdot 10^{8}}{2^{\lfloor h / 210000 \rfloor}} \right\rfloor \ \text{sat} $$</p>
+        <p>The shift drops fractions of a satoshi, so the total supply is a geometric series with floors:</p>
+        <p>$$ \sum_{i=0}^{32} 210000 \cdot \left\lfloor \frac{5 \cdot 10^{9}}{2^{i}} \right\rfloor = 2{,}099{,}999{,}997{,}690{,}000 \ \text{sat} \approx 20{,}999{,}999.9769 \ \text{BTC} $$</p>
+        <p>Only 33 halving eras pay a non-zero subsidy; after the 33rd halving it rounds down to zero, and miners are paid by fees alone.</p>
+        <p>Four roles show up throughout this article. <strong>Full nodes</strong> download and verify everything and are the only parties that enforce the rules. <strong>Miners</strong> run full nodes, choose which transactions go into blocks, and do the proof of work. <strong>Wallets</strong> hold keys and build transactions. <strong>Lightweight clients</strong> verify block headers and Merkle proofs but trust that miners followed the rules.</p>
+        <p>One distinction will come up again and again: <strong>consensus versus policy</strong>. Consensus rules decide whether a block is valid; break one and every full node rejects your block forever. Policy (also called <em>standardness</em>) is what a node is willing to relay and put in its own block templates by default. Many limits people quote as "Bitcoin rules" (the dust limit, OP_RETURN size, three keys for bare multisig) are policy. Policy can change in any software release; consensus changes need a soft fork. Keep the two apart and much of Bitcoin's design starts to make sense.</p>
+        <h3>2. The UTXO model, for account-model brains</h3>
+        <p>Ethereum's state is a map from addresses to accounts (nonce, balance, code, storage), and a transaction is a message that mutates it. Bitcoin's state is a <strong>set of unspent transaction outputs (UTXOs)</strong>. Each UTXO is identified by an <em>outpoint</em> (the id of the transaction that created it plus an output index) and carries two things: an <strong>amount</strong> and a <strong>locking script</strong> (<code>scriptPubKey</code>) that states the conditions for spending it. Bitcoin Core also stores the creation height and whether it came from a coinbase transaction, because some rules depend on them.</p>
+        <p>A transaction consumes whole UTXOs and creates new ones. Formally, with $U$ the UTXO set, a non-coinbase transaction $T$ with inputs $I$ and outputs $O$ is valid when:</p>
+        <p>$$ \forall i \in I:\ i.\text{outpoint} \in U \ \wedge\ \text{Script}\big(i.\text{unlock},\ U[i.\text{outpoint}].\text{lock},\ T\big) = \text{true} $$</p>
+        <p>$$ \sum_{i \in I} U[i.\text{outpoint}].\text{amount} \ \ge \ \sum_{o \in O} o.\text{amount} $$</p>
+        <p>and the new state is $U' = \big(U \setminus \{i.\text{outpoint}\}_{i \in I}\big) \cup \{(\text{txid}(T), j) \mapsto O_j\}$. The difference between the two sums is the fee, and it goes to whoever mines the block. There is no fee field.</p>
+        <p>Some consequences surprise people coming from accounts:</p>
+        <ul><li><strong>Outputs are spent in full.</strong> To pay 0.2 BTC from a 1 BTC UTXO you create two outputs: 0.2 BTC to the payee and about 0.8 BTC back to yourself (a <em>change output</em>). Forget the change output and the miner keeps the difference.</li><li><strong>There are no nonces.</strong> Replay protection is structural: an outpoint can be spent only once in a valid chain.</li><li><strong>"Balance" is a wallet concept.</strong> The protocol only knows outputs. A wallet sums the UTXOs it can unlock, and choosing which to spend (<em>coin selection</em>) is a wallet decision with fee and privacy trade-offs.</li><li><strong>Validation is per input and stateless.</strong> Each input's script is checked against the output it spends, using only the transaction and the outputs it spends. Inputs can be verified in parallel, and a script's result never depends on chain state beyond what the transaction itself commits to (heights and times enter only through timelock fields).</li><li><strong>The UTXO set is the expensive resource.</strong> Every full node keeps every UTXO in a fast database (several gigabytes today). Many design decisions, from dust policy to SegWit's discount, aim to keep that set small.</li></ul>
+        <p>The book uses a land-registry analogy: bitcoins are not objects you hand over; they are entries in a database that thousands of nodes keep, and a transaction is the evidence that convinces them to update it. The comparison with Ethereum:</p>
+        <table><thead><tr><th></th><th>Ethereum</th><th>Bitcoin</th></tr></thead><tbody><tr><td>State</td><td>Accounts (nonce, balance, code, storage)</td><td>Set of unspent outputs (amount + locking script)</td></tr><tr><td>Transaction</td><td>Message from an account, executed by the EVM</td><td>Consumes whole outputs, creates new ones</td></tr><tr><td>Replay protection</td><td>Account nonce, chain id</td><td>Each outpoint can be spent once</td></tr><tr><td>Who may spend</td><td>Signature recovers the sender; contracts for anything else</td><td>A predicate attached to each output</td></tr><tr><td>Programmability</td><td>Turing complete, persistent storage, gas metered</td><td>Not Turing complete, stateless predicates, hard limits instead of gas</td></tr><tr><td>Fee</td><td>gas used × (base fee + tip), base fee burned</td><td>Implicit: inputs minus outputs, priced per virtual byte, all to the miner</td></tr><tr><td>A failing transaction</td><td>Reverts but still pays gas</td><td>Is invalid, never confirms, pays nothing</td></tr><tr><td>Multisig</td><td>A contract (e.g. a Safe) holds the funds</td><td>Native: a script template or an aggregated key</td></tr></tbody></table>
+        <p>That last row is where we are heading. In Bitcoin, multisig is not an application; it is a property of the coin itself.</p>
+        <p>The book also gives a vocabulary table that shows how the same two ideas have been renamed as the protocol evolved. <em>Authorization</em> is the statement of who may spend; <em>authentication</em> is the proof that the spender is one of them:</p>
+        <table><thead><tr><th>Era</th><th>Authorization (in the output)</th><th>Authentication (in the spend)</th></tr></thead><tbody><tr><td>Whitepaper</td><td>Public key</td><td>Signature</td></tr><tr><td>Original Bitcoin (legacy)</td><td>Output script (<code>scriptPubKey</code>)</td><td>Input script (<code>scriptSig</code>)</td></tr><tr><td>SegWit</td><td>Witness program</td><td>Witness structure</td></tr></tbody></table>
+        <h3>3. The cryptographic toolkit</h3>
+        <h4>Hash functions</h4>
+        <p>Bitcoin uses a handful of hash constructions, and knowing which one is used where saves a lot of confusion:</p>
+        <table><thead><tr><th>Name</th><th>Definition</th><th>Output</th><th>Used for</th></tr></thead><tbody><tr><td>SHA256</td><td>SHA-256</td><td>32 B</td><td>P2WSH script commitments, Taproot sighash sub-hashes, Lightning payment hashes</td></tr><tr><td>HASH256 (SHA256d)</td><td>SHA256(SHA256(x))</td><td>32 B</td><td>txid, wtxid, block hashes, Merkle trees, base58 checksums, legacy and SegWit v0 (BIP143) sighashes</td></tr><tr><td>RIPEMD160</td><td>RIPEMD-160</td><td>20 B</td><td>Building block of HASH160</td></tr><tr><td>HASH160</td><td>RIPEMD160(SHA256(x))</td><td>20 B</td><td>P2PKH, P2SH, P2WPKH commitments</td></tr><tr><td>Tagged hash</td><td>$H_{tag}(x) = \text{SHA256}(\text{SHA256}(tag) \Vert \text{SHA256}(tag) \Vert x)$</td><td>32 B</td><td>Everything in BIP340/341/342 (Schnorr challenges, TapLeaf, TapBranch, TapTweak, TapSighash)</td></tr></tbody></table>
+        <p>Tagged hashes (introduced with Taproot) give every use of SHA256 its own domain, so a hash computed for one purpose can never be reinterpreted as a hash for another.</p>
+        <h4>The secp256k1 curve</h4>
+        <p>Bitcoin's keys live on the elliptic curve secp256k1 (from the SEC 2 standard):</p>
+        <p>$$ y^2 \equiv x^3 + 7 \pmod p, \qquad p = 2^{256} - 2^{32} - 977 $$</p>
+        <p>The points on this curve form a group of prime order</p>
+        <p>$$ n = \texttt{0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141} \approx 1.158 \times 10^{77} $$</p>
+        <p>generated by a fixed point $G$. A <strong>private key</strong> is a scalar $k \in [1, n-1]$ and the <strong>public key</strong> is the point $K = kG$. Computing $K$ from $k$ is fast (double-and-add); recovering $k$ from $K$ is the elliptic curve discrete logarithm problem, believed to be infeasible for classical computers. The whole group law fits in a few lines of Python:</p>
+        <pre><code>P = 2**256 - 2**32 - 977
+N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+G = (0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+     0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8)
+
+def point_add(p1, p2):
+    if p1 is None: return p2                      # None is the point at infinity
+    if p2 is None: return p1
+    if p1[0] == p2[0] and p1[1] != p2[1]: return None
+    if p1 == p2:   # tangent slope for doubling
+        lam = 3 * p1[0] * p1[0] * pow(2 * p1[1], P - 2, P) % P
+    else:          # chord slope for addition
+        lam = (p2[1] - p1[1]) * pow(p2[0] - p1[0], P - 2, P) % P
+    x3 = (lam * lam - p1[0] - p2[0]) % P
+    return (x3, (lam * (p1[0] - x3) - p1[1]) % P)
+
+def point_mul(p, k):                              # double-and-add
+    r = None
+    for i in range(256):
+        if (k &gt;&gt; i) &amp; 1: r = point_add(r, p)
+        p = point_add(p, p)
+    return r
+
+k = 0x1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD   # the book's example key
+K = point_mul(G, k)
+# K.x = f028892bad7ed57d2fb57bf33081d5cfcf6f9ed3d3d7f159c2e2fff579dc341a
+# K.y = 07cf33da18bd734c600b96a72bbc4749d5141c90ec8ac328ae52ddfe2e505bdb</code></pre>
+        <p>(This is the textbook formula, not constant-time code. Never sign real transactions with it.)</p>
+        <h4>Three ways to write a public key</h4>
+        <table><thead><tr><th>Encoding</th><th>Bytes</th><th>Layout</th><th>Where</th></tr></thead><tbody><tr><td>Uncompressed</td><td>65</td><td><code>04</code> ‖ x ‖ y</td><td>Early Bitcoin; non-standard in SegWit</td></tr><tr><td>Compressed</td><td>33</td><td><code>02</code> (y even) or <code>03</code> (y odd) ‖ x</td><td>Legacy and SegWit v0 scripts</td></tr><tr><td>x-only</td><td>32</td><td>x, with y implicitly even</td><td>BIP340 Schnorr, Taproot</td></tr></tbody></table>
+        <p>Compression works because for a given $x$ there are only two valid $y$ values, $y$ and $p - y$, and exactly one of them is even. The book's key has an odd $y$, so its compressed form is <code>03f028…341a</code>. x-only keys go one step further: BIP340 simply declares that every public key is the even-$y$ point with that $x$, and signers negate their secret key when needed to make that true. That saves a byte everywhere and, as we will see, simplifies aggregation.</p>
+        <p>Note the trap the book points out: the compressed and uncompressed encodings of the same key hash to <em>different</em> values, so one private key yields two different legacy addresses.</p>
+        <h4>Key tweaking</h4>
+        <p>Because the map $k \mapsto kG$ is linear, anyone who knows a public key $K$ and a scalar $t$ can compute</p>
+        <p>$$ K' = K + tG \quad\text{and only the key owner can compute}\quad k' = k + t \pmod n, \ \text{with}\ k'G = K'. $$</p>
+        <p>$t$ is called a <strong>tweak</strong>. This one identity powers BIP32 non-hardened derivation (a watch-only wallet derives child public keys from an xpub), pay-to-contract (the tweak commits to a contract), Lightning's per-commitment keys, and Taproot itself. Remember it; it returns in Part VI.</p>
+        <h4>From keys and scripts to addresses</h4>
+        <p>An address is not an account. It is a human-friendly, checksummed encoding of <strong>an output script template plus the data that fills it</strong>. Your wallet decodes the address back into a <code>scriptPubKey</code> and puts that in the output. Two encodings exist.</p>
+        <p><strong>Base58Check</strong> (legacy) is <code>base58(version || payload || first 4 bytes of SHA256d(version || payload))</code>. The base58 alphabet drops <code>0</code>, <code>O</code>, <code>I</code> and <code>l</code> to avoid misreading. The version byte determines the leading character:</p>
+        <table><thead><tr><th>Version byte</th><th>Prefix</th><th>Meaning</th></tr></thead><tbody><tr><td><code>0x00</code></td><td><code>1</code></td><td>P2PKH, payload = HASH160(pubkey)</td></tr><tr><td><code>0x05</code></td><td><code>3</code></td><td>P2SH, payload = HASH160(redeem script)</td></tr><tr><td><code>0x6f</code> / <code>0xc4</code></td><td><code>m</code>,<code>n</code> / <code>2</code></td><td>Testnet P2PKH / P2SH</td></tr><tr><td><code>0x80</code></td><td><code>5</code>, <code>K</code>, <code>L</code></td><td>WIF private key (not an address)</td></tr></tbody></table>
+        <pre><code>import hashlib
+def sha256(b): return hashlib.sha256(b).digest()
+def hash160(b): return hashlib.new("ripemd160", sha256(b)).digest()
+
+B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+def b58check(payload: bytes) -&gt; str:
+    data = payload + sha256(sha256(payload))[:4]
+    n, out = int.from_bytes(data, "big"), ""
+    while n:
+        n, r = divmod(n, 58)
+        out = B58[r] + out
+    return "1" * (len(data) - len(data.lstrip(b"\0"))) + out   # leading zero bytes -&gt; '1'
+
+compressed = bytes.fromhex("03f028892bad7ed57d2fb57bf33081d5cfcf6f9ed3d3d7f159c2e2fff579dc341a")
+print(b58check(b"\x00" + hash160(compressed)))   # 1J7mdg5rbQyUHENYdx39WVWK7fsLpEoXZy</code></pre>
+        <p>The same key in uncompressed form gives <code>1424C2F4bC9JidNjjTUZCbUxv6Sa1Mt62x</code>: same private key, different address.</p>
+        <p><strong>Bech32 and bech32m</strong> (BIP173, BIP350) were designed for SegWit. An address is a human-readable part (<code>bc</code> for mainnet, <code>tb</code> for testnets), the separator <code>1</code>, then 5-bit characters: the witness version (<code>q</code> = 0, <code>p</code> = 1, …), the witness program, and a 6-character BCH checksum. The alphabet is a single case, which makes addresses easier to read aloud and smaller in QR codes, and the code is guaranteed to detect any error affecting up to 4 characters. Bech32 had one flaw: if an address ends in <code>p</code>, you can insert or delete <code>q</code>s just before that final <code>p</code> without breaking the checksum. That was harmless for SegWit v0, whose programs can only be 20 or 32 bytes, but dangerous for future versions with flexible lengths, so v1+ addresses use <strong>bech32m</strong>, which differs only in the constant XORed into the checksum (<code>1</code> versus <code>0x2bc830a3</code>). The book key's P2WPKH address is <code>bc1qh0q7g23e6pdye3sh2ttfvwmld8gfhvnmmfxuck</code>.</p>
+        <table><thead><tr><th>Prefix</th><th>Output type</th><th>Encoding</th></tr></thead><tbody><tr><td><code>1…</code></td><td>P2PKH</td><td>Base58Check</td></tr><tr><td><code>3…</code></td><td>P2SH (including nested SegWit)</td><td>Base58Check</td></tr><tr><td><code>bc1q…</code> (42 chars)</td><td>P2WPKH</td><td>bech32</td></tr><tr><td><code>bc1q…</code> (62 chars)</td><td>P2WSH</td><td>bech32</td></tr><tr><td><code>bc1p…</code> (62 chars)</td><td>P2TR</td><td>bech32m</td></tr><tr><td><code>bc1pfeessrawgf</code></td><td>P2A (pay-to-anchor)</td><td>bech32m</td></tr></tbody></table>
+        <h2>Part II: The Transaction</h2>
+        <h3>4. Anatomy of a transaction, byte by byte</h3>
+        <p>A transaction is a short, flat byte string. Here is the full layout in the extended (SegWit, BIP144) serialization:</p>
+        <table><thead><tr><th>Field</th><th>Size</th><th>Notes</th></tr></thead><tbody><tr><td><code>version</code></td><td>4 B, little-endian</td><td>1 or 2 (2 enables BIP68 relative timelocks); 3 marks a TRUC transaction under relay policy</td></tr><tr><td><code>marker</code>, <code>flag</code></td><td>1 B + 1 B</td><td><code>00 01</code>, present only if some input has witness data</td></tr><tr><td>input count</td><td>compactSize</td><td>at least 1</td></tr><tr><td>↳ outpoint</td><td>32 B txid + 4 B index</td><td>which UTXO is being spent</td></tr><tr><td>↳ <code>scriptSig</code></td><td>compactSize length + bytes</td><td>the legacy unlocking script; empty for native SegWit</td></tr><tr><td>↳ <code>sequence</code></td><td>4 B</td><td>replacement signalling, relative timelocks (see below)</td></tr><tr><td>output count</td><td>compactSize</td><td>at least 1</td></tr><tr><td>↳ amount</td><td>8 B, little-endian</td><td>in satoshis</td></tr><tr><td>↳ <code>scriptPubKey</code></td><td>compactSize length + bytes</td><td>the locking script</td></tr><tr><td>witness</td><td>per input: item count, then length-prefixed items</td><td>one stack per input, no overall count</td></tr><tr><td><code>locktime</code></td><td>4 B</td><td>absolute timelock (height or time)</td></tr></tbody></table>
+        <p>Lengths use <strong>compactSize</strong>: one byte for values up to 252, otherwise a marker byte <code>fd</code>, <code>fe</code> or <code>ff</code> followed by a 2, 4 or 8 byte little-endian integer. The marker trick is neat: in the original format the byte after <code>version</code> is the input count, and a transaction cannot have zero inputs, so <code>00</code> unambiguously announces the extended format to new software while old software never sees it (nodes strip witnesses when talking to peers that do not understand them).</p>
+        <h4>A real transaction, decoded</h4>
+        <p>The book's running example is Alice's payment to Bob's store, transaction <code>466200308696215bbc949d5141a49a4138ecdfdfaa2a8029c1f9bcecd1f96177</code>. All 194 bytes:</p>
+        <pre><code>01000000                                                          version = 1
+00 01                                                             segwit marker, flag
+01                                                                1 input
+  eb3ae38f27191aa5f3850dc9cad00492b88b72404f9da135698679268041c54a  prev txid (internal byte order)
+  01000000                                                        prev output index = 1
+  00                                                              scriptSig length = 0
+  ffffffff                                                        sequence
+02                                                                2 outputs
+  204e000000000000                                                20,000 sat
+  22 5120 3b41daba4c9ace578369740f15e5ec880c28279ee7f51b07dca69c7061e07068
+                                                                  34-byte script: OP_1 &lt;32 bytes&gt;  (P2TR)
+  f824010000000000                                                75,000 sat
+  16 0014 7752c165ea7be772b2c0acb7f4d6047ae6f4768e                22-byte script: OP_0 &lt;20 bytes&gt;  (P2WPKH)
+01                                                                witness for input 0: 1 item
+  41 cf5efe2d…c83e8171301                                         65 bytes: 64-byte Schnorr sig + 0x01
+00000000                                                          locktime = 0</code></pre>
+        <p>Reading it as a protocol engineer:</p>
+        <ul><li>The input spends output 1 of transaction <code>4ac54180…8fe33aeb</code>. The txid appears reversed because Bitcoin shows hashes in <strong>display byte order</strong> (big-endian, as if the digest were a number) but stores them in <strong>internal byte order</strong>. Every Bitcoin developer gets bitten by this exactly once.</li><li>The <code>scriptSig</code> is empty and the witness holds a single 65-byte item. That shape (one item, 64 or 65 bytes, spending a version-1 output) is a <strong>Taproot key-path spend</strong>: a BIP340 Schnorr signature plus an explicit <code>SIGHASH_ALL</code> byte.</li><li>Output 0 pays 20,000 sat to a P2TR script (Alice's change, <code>bc1p8dqa4wjvnt890qmfws83te0v3qxzsfu7ul63kp7u56w8qc0qwp5qv995qn</code>); output 1 pays 75,000 sat to a P2WPKH script (Bob's store, <code>bc1qwafvze0200nh9vkq4jmlf4sy0tn0ga5w0zpkpg</code>).</li><li>The previous output held 100,000 sat, so the fee is $100{,}000 - 20{,}000 - 75{,}000 = 5{,}000$ sat. Nothing in the transaction says so; nodes learn the input amount from their UTXO set.</li></ul>
+        <h4>Two identifiers</h4>
+        <p>$$ \text{txid} = \text{SHA256d}(\text{tx without marker, flag, witness}), \qquad \text{wtxid} = \text{SHA256d}(\text{full serialization}) $$</p>
+        <p>For this transaction the txid is <code>4662…6177</code> and the wtxid is <code>f7cdbc7cf8b910d35cc69962e791138624e4eae7901010a6da4c02e7d238cdac</code>. The txid deliberately excludes signatures; Part V explains why that matters so much. Outpoints and the block header's Merkle root use txids; transaction relay (BIP339) and the SegWit witness commitment use wtxids.</p>
+        <h4>Weight and virtual size</h4>
+        <p>Blocks are limited to 4,000,000 <strong>weight units</strong>. Bytes outside the witness weigh 4 WU each; witness bytes weigh 1 WU:</p>
+        <p>$$ \text{weight} = 4 \cdot \text{base\_size} + \text{witness\_size} = 3 \cdot \text{base\_size} + \text{total\_size}, \qquad \text{vsize} = \left\lceil \frac{\text{weight}}{4} \right\rceil $$</p>
+        <p>Alice's transaction has a 125-byte base serialization and 194 bytes in total, so $3 \cdot 125 + 194 = 569$ WU and 143 vB, exactly what <code>bitcoin-cli getrawtransaction … 2</code> reports. The fee rate is $5000 / 143 \approx 35$ sat/vB. Fee rates are always quoted per virtual byte (or per weight unit), because block space is what miners sell.</p>
+        <h4>Fields whose meaning changed over time</h4>
+        <ul><li><strong><code>version</code></strong>: version 2 (BIP68, 2016) turns on consensus-enforced relative timelocks in <code>sequence</code>. Version 3 is consensus-identical to version 2 but opts into the TRUC relay policy (BIP431, Bitcoin Core 28.0), discussed below. Reserving such knobs for future use protects people who hold <em>presigned</em> transactions: a new rule that only applies to a new version cannot invalidate an old presigned transaction.</li><li><strong><code>sequence</code></strong> has had four lives: Satoshi's high-frequency replacement scheme (disabled early for DoS reasons); the BIP125 opt-in RBF signal (any input with <code>sequence &lt; 0xfffffffe</code>); a BIP68 relative timelock (version ≥ 2 and bit 31 clear); and the switch that enables <code>locktime</code> at all (if every input has <code>0xffffffff</code>, the lock time is ignored).</li><li><strong><code>locktime</code></strong>: 0 means no lock. A value $L$ below 500,000,000 is a block height, and the transaction may only appear in a block whose height is greater than $L$. Anything else is a Unix time that must be below the <strong>median time past</strong> (MTP) of the last 11 blocks (BIP113), which runs about an hour behind wall-clock time.</li></ul>
+        <h4>The coinbase transaction</h4>
+        <p>The first transaction in each block creates the subsidy and collects the fees. It has exactly one input, whose outpoint is null (32 zero bytes, index <code>0xffffffff</code>). Its "scriptSig" is the <em>coinbase field</em>, 2 to 100 bytes, which since BIP34 must begin with the block height. Its outputs may claim at most subsidy plus fees, cannot be spent until 100 blocks later (the <em>maturity</em> rule), and, if any transaction in the block has a witness, must include the SegWit witness commitment (Section 14).</p>
+        <h3>5. The life cycle of a transaction</h3>
+        <p>Here is the whole journey, from the moment a receiver asks to be paid to the moment the payment is buried under blocks:</p>
+        <pre><code>RECEIVER         SENDER'S WALLET                  NETWORK (full nodes)                MINERS
+--------         ---------------                  --------------------                ------
+derive a fresh   decode address -&gt; scriptPubKey
+key/script  ---&gt; select coins, add change
+(addr/invoice)   set version, sequence, locktime
+                 estimate fee rate
+                 sign every input  ---- tx ----&gt;  validate: consensus + policy
+                                                  store in mempool, gossip to peers
+                                                  (fee bumping: RBF, CPFP, packages)
+                                                        |
+                                                        +------------------------&gt; pick txs by fee rate
+                                                                                   coinbase + witness commitment
+                                                                                   Merkle root, 80-byte header
+                                                                                   grind proof of work
+                                                  validate block, update UTXO set &lt;---- new block
+                                                  drop confirmed/conflicting txs
+                 confirmations accumulate; reorg risk shrinks exponentially</code></pre>
+        <h4>5.1 Receiving</h4>
+        <p>The receiver's wallet derives a fresh key (usually along a BIP32 path, see Section 30), wraps it in its preferred script template and hands out the address, often inside a BIP21 URI. The book's example invoice:</p>
+        <pre><code>bitcoin:bc1qk2g6u8p4qm2s2lh3gts5cpt2mrv5skcuu7u3e4?amount=0.01577764&amp;label=Bob%27s%20Store&amp;message=Purchase%20at%20Bob%27s%20Store</code></pre>
+        <p>A principle the book stresses: <strong>the receiver chooses the script, the sender just copies it.</strong> A sender must never "upgrade" a receiver's address to another type (for example turning a P2PKH address into P2WPKH), because the receiver's wallet may be unable to spend it.</p>
+        <h4>5.2 Building</h4>
+        <p>The sender's wallet:</p>
+        <ol><li><strong>Selects coins.</strong> It picks UTXOs that cover amount plus fee, trading off fee (fewer, cheaper-to-spend inputs), privacy (avoid linking unrelated coins) and UTXO hygiene (consolidate when fees are low).</li><li><strong>Creates outputs.</strong> The payment, plus change unless an exact match was found. Ideally the change uses the same script type as the payment so observers cannot tell which is which.</li><li><strong>Estimates the fee rate.</strong> The fee is a bid in an auction for block space. Bitcoin Core's <code>estimatesmartfee</code> buckets recently confirmed transactions by fee rate and asks how long each bucket took to confirm. Since every input type has a different size, the wallet needs the scripts before it can know the fee.</li><li><strong>Sets the knobs.</strong> Many wallets set <code>locktime</code> to the current tip height so the transaction can only be mined in the next block or later (<em>anti fee sniping</em>: a miner trying to re-mine the previous block cannot pull this transaction's fee into it), set <code>sequence</code> to signal RBF, and use version 2.</li></ol>
+        <h4>5.3 Signing</h4>
+        <p>Each input is signed separately. A signature commits to a digest of the transaction (the <em>sighash</em>, Section 7), and the sighash flag decides which parts are covered. Because inputs are independent, different parties can sign different inputs of the same transaction, which is how CoinJoin, payjoin and every multisig workflow operate. The interchange format for that is the <strong>PSBT</strong> (Partially Signed Bitcoin Transaction, BIP174 and BIP370): a container that carries the unsigned transaction plus everything a signer needs (the UTXOs being spent, scripts, derivation paths, partial signatures) between a <em>creator</em>, <em>updaters</em>, <em>signers</em> (often hardware devices), a <em>combiner</em>, a <em>finalizer</em> and an <em>extractor</em>. The book recommends it to anyone building wallets that sign with more than one key, and Part VIII leans on it.</p>
+        <h4>5.4 Broadcast, validation and policy</h4>
+        <p>The wallet hands the transaction to any node. Each node validates it before relaying it, and an invalid transaction dies at the first honest node. The book's checklist, abridged:</p>
+        <ul><li>syntax correct, inputs and outputs non-empty, weight low enough for a block;</li><li>every output value and the total between 0 and 21 million BTC;</li><li><code>locktime</code> and BIP68 sequence locks satisfied;</li><li>signature operation count within limits;</li><li>every spent output exists in the UTXO set (or the mempool) and is unspent; coinbase outputs are mature;</li><li>sum of inputs ≥ sum of outputs;</li><li>every input's scripts validate.</li></ul>
+        <p>Those are consensus checks. On top of them Bitcoin Core applies <strong>policy</strong> before it accepts a transaction into its mempool. As of the current releases (28.0 to 31.0) the important defaults are:</p>
+        <table><thead><tr><th>Policy</th><th>Default</th></tr></thead><tbody><tr><td>Max standard transaction weight</td><td>400,000 WU (a tenth of a block)</td></tr><tr><td>Standard versions</td><td>1, 2 and 3</td></tr><tr><td>Output scripts</td><td>standard templates only: P2PK, P2PKH, P2SH, bare multisig up to 3 keys, OP_RETURN, P2WPKH, P2WSH, P2TR, P2A, and witness programs of future versions</td></tr><tr><td><code>scriptSig</code></td><td>push-only, at most 1,650 bytes</td></tr><tr><td>Dust</td><td>outputs below about 3 sat/vB × (output size + cost to spend it), e.g. 546 sat for P2PKH, 294 for P2WPKH, 330 for P2WSH/P2TR, 240 for P2A</td></tr><tr><td>Minimum relay fee</td><td>0.1 sat/vB (lowered from 1 sat/vB in 29.1)</td></tr><tr><td>OP_RETURN</td><td>multiple outputs, up to 100,000 bytes of script in total (since 30.0; previously one output with a script of at most 83 bytes, i.e. 80 bytes of data)</td></tr><tr><td>Legacy signature operations</td><td>at most 2,500 per transaction (since 29.1, in preparation for the BIP54 "consensus cleanup" proposal)</td></tr><tr><td>Mempool</td><td>300 MB, transactions expire after 2 weeks</td></tr></tbody></table>
+        <p>If a transaction spends an output the node has never seen, it waits in a small <strong>orphan pool</strong> until the parent arrives. Peers announce transactions by wtxid (<code>inv</code>), and the receiver fetches the ones it lacks (<code>getdata</code>).</p>
+        <h4>5.5 Life in the mempool: the fee market</h4>
+        <p>Each node's mempool is its own view of unconfirmed transactions, sorted by how attractive they are to mine. If fees rise after you broadcast, you can <strong>fee bump</strong>:</p>
+        <ul><li><strong>Replace-by-fee (RBF).</strong> Broadcast a conflicting version that spends at least one of the same inputs and pays more. Nodes accept a replacement only if miners would prefer it: traditionally a higher fee rate and a higher absolute fee, and since Core 31.0, formally, a strictly better mempool fee-rate diagram (see below). BIP125 originally required an opt-in signal; Bitcoin Core 28.0 made <em>full RBF</em> the default (any unconfirmed transaction can be replaced) and 29.0 removed the option entirely. Only the signers can create the replacement. The book's warning: when replacing more than once, make every version conflict with every other version, or a miner holding version 0 could confirm it alongside version 2 and pay your recipient twice.</li><li><strong>Child-pays-for-parent (CPFP).</strong> Anyone who receives an output of the stuck transaction (the payee, or the sender through their change) spends it in a high-fee child. Miners evaluate parent and child as a <em>package</em> and mine both if the combined fee rate is attractive.</li><li><strong>Package relay.</strong> A parent below the minimum mempool fee would be rejected before its child could rescue it. Since 28.0 nodes accept and relay <em>one-parent-one-child</em> (1p1c) packages together, and the parent may even pay zero fee (TRUC parents since 28.0, any 1p1c parent since 31.0).</li></ul>
+        <p>The adversarial version of this is <strong>transaction pinning</strong>: in a multiparty protocol, a counterparty uses the anti-DoS rules to make your fee bump impossible, for example by attaching a huge low-fee child so that RBF becomes prohibitively expensive, or by exhausting descendant limits. For time-sensitive contracts like Lightning, a successful pin can mean theft. Three generations of fixes have followed:</p>
+        <ol><li><strong>CPFP carve-out</strong> (2019): one extra small child allowed beyond the descendant limit, plus Lightning's <em>anchor outputs</em>. The book describes this state.</li><li><strong>TRUC transactions</strong> (v3, BIP431, Core 28.0): a v3 transaction may have at most one unconfirmed parent and at most one unconfirmed child, a child of an unconfirmed v3 parent is capped at 1,000 vB, v3 transactions are capped at 10,000 vB, and a new child can evict an existing sibling. Small, predictable topologies are much harder to pin. Paired with the keyless <strong>pay-to-anchor</strong> output (P2A, <code>OP_1 &lt;0x4e73&gt;</code>) and <strong>ephemeral dust</strong> (Core 29.0: a zero-fee transaction may carry one dust output if a child in the same package spends it), a presigned transaction can pay zero fee and let whoever needs it confirmed attach the fee later.</li><li><strong>Cluster mempool</strong> (Core 31.0, April 2026): the mempool is reorganised into clusters of connected transactions, limited to 64 transactions and 101 kvB each, replacing the old 25-ancestor/25-descendant limits. A replacement is accepted only if it makes the mempool's <em>fee-rate diagram</em> strictly better, and the CPFP carve-out was removed; TRUC with sibling eviction is now the recommended tool for contracting protocols.</li></ol>
+        <h4>5.6 Mining</h4>
+        <p>A miner's node builds a <strong>block template</strong>: the most profitable set of transactions, ordered so that parents precede children, within 4 M weight units. It then adds:</p>
+        <ul><li>the <strong>coinbase transaction</strong>, paying subsidy plus fees to the miner, with the block height first in its coinbase field (BIP34);</li><li>the <strong>witness commitment</strong>, an <code>OP_RETURN</code> output in the coinbase containing <code>aa21a9ed</code> and $\text{SHA256d}(\text{witness Merkle root} \Vert \text{witness reserved value})$, where the witness tree is built from wtxids (the coinbase's own wtxid counts as zero);</li><li>the <strong>Merkle root</strong> of all txids, built by pairwise SHA256d hashing (an odd last element is paired with itself, a quirk behind CVE-2012-2459).</li></ul>
+        <p>The 80-byte header holds <code>version</code> (now a BIP9 signalling bitfield), the previous block hash, the Merkle root, a timestamp, the target in compact <code>nBits</code> form, and a 32-bit nonce. Mining means finding a header whose SHA256d, read as a number, is below the target:</p>
+        <p>$$ \text{SHA256d}(\text{header}) < \text{target} = \text{coefficient} \cdot 2^{8(\text{exponent} - 3)} $$</p>
+        <p>The book's block 277,316 has <code>nBits = 0x1903a30c</code>, so the target is $\texttt{0x03a30c} \cdot 2^{8 \cdot (0x19 - 3)}$, a 256-bit number with 62 leading zero bits. Every 2,016 blocks each node recomputes the target so blocks keep arriving about every ten minutes:</p>
+        <p>$$ \text{target}_{new} = \text{target}_{old} \cdot \frac{\text{actual time of the last 2016 blocks}}{20160 \ \text{minutes}} $$</p>
+        <p>clamped to a factor of 4 in either direction (and, thanks to an off-by-one in the original code, measured over 2,015 intervals). The 32-bit nonce is exhausted in a blink, so miners also vary an <em>extra nonce</em> in the coinbase, some version bits, and the timestamp.</p>
+        <h4>5.7 Propagation and validation</h4>
+        <p>The winning block spreads quickly thanks to <strong>compact block relay</strong> (BIP152): peers already hold most transactions in their mempools, so the block travels as a header plus short transaction ids. Each full node then validates every transaction in it, applies it to the UTXO set (remove spent outputs, add created ones), and evicts from its mempool everything that was confirmed or now conflicts. Note what the block does <em>not</em> contain: account balances, state roots or execution traces. It is just the ordered list of transactions; each node derives the state itself.</p>
+        <h4>5.8 Confirmations and finality</h4>
+        <p>Finality is probabilistic. Nodes follow the valid chain with the most cumulative work, so a transaction with $z$ blocks on top can be reversed only by an attacker who produces a longer chain. The whitepaper models the attacker (with a fraction $q$ of hash power, honest miners $p = 1 - q$) and gets:</p>
+        <p>$$ P(\text{attacker catches up}) = 1 - \sum_{k=0}^{z} \frac{\lambda^{k} e^{-\lambda}}{k!} \left(1 - \left(\frac{q}{p}\right)^{z-k}\right), \qquad \lambda = z\,\frac{q}{p} $$</p>
+        <table><thead><tr><th>$z$ (confirmations)</th><th>$q = 0.10$</th><th>$q = 0.30$</th></tr></thead><tbody><tr><td>1</td><td>0.2045873</td><td>0.6277491</td></tr><tr><td>2</td><td>0.0509779</td><td>0.4457171</td></tr><tr><td>4</td><td>0.0034552</td><td>0.2391269</td></tr><tr><td>6</td><td>0.0002428</td><td>0.1321112</td></tr><tr><td>10</td><td>0.0000012</td><td>0.0416605</td></tr></tbody></table>
+        <p>This is where the folk rule of "six confirmations" comes from: against an attacker with 10% of the hash rate, the chance of reversal after six blocks is about 0.02%. Coinbase outputs have a stricter rule (100 blocks) for a different reason: a normal transaction knocked out by a reorg can simply be mined again in the new chain, but a coinbase transaction cannot, so it and everything spending it would vanish.</p>
+        <p>With the transaction's journey mapped, we can zoom into the one step this article cares most about: <em>every input's scripts validate</em>.</p>
+        <h2>Part III: Script, the Machine Behind Every Coin</h2>
+        <h3>6. How Script executes</h3>
+        <h4>Design goals</h4>
+        <p>Script is a small, Forth-like stack language. Its designers made three choices that an EVM engineer should internalise before reading a single opcode:</p>
+        <ol><li><strong>No loops, no jumps.</strong> The only control flow is <code>IF</code>/<code>ELSE</code>/<code>ENDIF</code>. Execution time is bounded by script length, so there is no gas: limits on size and operation counts do the job.</li><li><strong>No state.</strong> A script sees the stack it is given, the transaction being validated, and data about the outputs being spent. Nothing persists after it runs. The same script with the same transaction gives the same answer on every node, forever.</li><li><strong>It is a predicate, not a program.</strong> A script does not <em>do</em> anything; it answers "may this output be spent by this transaction?" with yes or no. The work of moving value is done by the transaction structure itself.</li></ol>
+        <h4>Data model</h4>
+        <ul><li>The <strong>main stack</strong> holds byte vectors of at most 520 bytes. There is also an <strong>alt stack</strong>; together they may hold at most 1,000 elements.</li><li><strong>Numbers</strong> are byte vectors in little-endian, sign-magnitude form ("CScriptNum"). Arithmetic opcodes accept inputs of at most 4 bytes. Examples: 4320 is <code>e010</code>, 800,000 is <code>00350c</code>, 128 is <code>8000</code> (an extra byte keeps the sign bit clear), and −1 is <code>81</code>.</li><li><strong>Booleans</strong>: a value is false if it is empty, all zero bytes, or "negative zero" (zeros ending in <code>0x80</code>). Everything else is true. <code>OP_0</code> pushes the empty vector; comparison opcodes push <code>01</code> or empty.</li></ul>
+        <h4>Encoding</h4>
+        <p>A script is a byte string. Each byte is an opcode, and some opcodes consume the bytes that follow:</p>
+        <table><thead><tr><th>Bytes</th><th>Name</th><th>Effect</th></tr></thead><tbody><tr><td><code>00</code></td><td><code>OP_0</code> / <code>OP_FALSE</code></td><td>push empty vector</td></tr><tr><td><code>01</code>–<code>4b</code></td><td>(direct push)</td><td>push the next 1 to 75 bytes</td></tr><tr><td><code>4c</code>, <code>4d</code>, <code>4e</code></td><td><code>OP_PUSHDATA1/2/4</code></td><td>next 1, 2 or 4 bytes give the length, then push</td></tr><tr><td><code>4f</code></td><td><code>OP_1NEGATE</code></td><td>push −1</td></tr><tr><td><code>51</code>–<code>60</code></td><td><code>OP_1</code>…<code>OP_16</code></td><td>push the number 1 to 16</td></tr><tr><td><code>61</code>, <code>63</code>, <code>64</code>, <code>67</code>, <code>68</code>, <code>69</code>, <code>6a</code></td><td><code>NOP</code>, <code>IF</code>, <code>NOTIF</code>, <code>ELSE</code>, <code>ENDIF</code>, <code>VERIFY</code>, <code>RETURN</code></td><td>flow control</td></tr><tr><td><code>6b</code>–<code>7d</code></td><td><code>TOALTSTACK</code>, <code>DROP</code>, <code>DUP</code>, <code>SWAP</code>, <code>ROT</code>, <code>PICK</code>, <code>ROLL</code>, <code>IFDUP</code>…</td><td>stack manipulation</td></tr><tr><td><code>82</code></td><td><code>OP_SIZE</code></td><td>push the length of the top element</td></tr><tr><td><code>87</code>, <code>88</code></td><td><code>EQUAL</code>, <code>EQUALVERIFY</code></td><td>byte equality</td></tr><tr><td><code>8b</code>–<code>a5</code></td><td><code>ADD</code>, <code>SUB</code>, <code>NUMEQUAL</code>, <code>LESSTHAN</code>, <code>WITHIN</code>, <code>BOOLAND</code>…</td><td>32-bit arithmetic and logic</td></tr><tr><td><code>a6</code>–<code>aa</code></td><td><code>RIPEMD160</code>, <code>SHA1</code>, <code>SHA256</code>, <code>HASH160</code>, <code>HASH256</code></td><td>hashing</td></tr><tr><td><code>ab</code></td><td><code>OP_CODESEPARATOR</code></td><td>changes which part of the script signatures commit to</td></tr><tr><td><code>ac</code>–<code>af</code></td><td><code>CHECKSIG</code>, <code>CHECKSIGVERIFY</code>, <code>CHECKMULTISIG</code>, <code>CHECKMULTISIGVERIFY</code></td><td>signature checks</td></tr><tr><td><code>b1</code>, <code>b2</code></td><td><code>CHECKLOCKTIMEVERIFY</code>, <code>CHECKSEQUENCEVERIFY</code></td><td>timelocks (formerly <code>NOP2</code>, <code>NOP3</code>)</td></tr><tr><td><code>ba</code></td><td><code>OP_CHECKSIGADD</code></td><td>Tapscript only (formerly invalid)</td></tr></tbody></table>
+        <p>Fifteen opcodes, including <code>OP_CAT</code>, <code>OP_SUBSTR</code>, <code>OP_MUL</code>, <code>OP_DIV</code>, <code>OP_LSHIFT</code> and the bitwise <code>AND</code>/<code>OR</code>/<code>XOR</code>, were <strong>disabled</strong> by Satoshi in 2010 after bugs were found. In legacy and SegWit v0 scripts their mere presence fails the script, even inside a branch that never executes. In Tapscript all fifteen fall into the <code>OP_SUCCESSx</code> range (Section 20), which is why the proposal to bring back <code>OP_CAT</code> (BIP347) can be a soft fork rather than a hard one.</p>
+        <p>Pushes have many encodings: the number 2 can be pushed as <code>OP_2</code>, as <code>01 02</code>, as <code>02 02 00</code> (non-minimal), with <code>OP_PUSHDATA1</code>, and so on. That freedom was a source of malleability (Section 13), which is why policy (and, in some contexts, consensus) insists on the <strong>minimal</strong> encoding.</p>
+        <h4>Execution model</h4>
+        <p>For a legacy output, validation of one input is:</p>
+        <ol><li>Run the <code>scriptSig</code> on an empty stack. (It should contain only pushes; this is consensus for P2SH spends and policy otherwise.)</li><li>Copy the resulting stack and run the <code>scriptPubKey</code> of the output being spent on it.</li><li>The input is valid if nothing failed and the top stack element is true.</li></ol>
+        <p>Originally Bitcoin concatenated the two scripts and ran them as one. In 2010 that turned out to be exploitable (the "1 <code>OP_RETURN</code>" bug: at the time, <code>OP_RETURN</code> ended execution and used the top stack item as the result, so an unlocking script could end the combined program early and succeed without ever reaching the lock). Running the scripts separately, passing only the stack between them, closed the hole. P2SH, SegWit and Taproot each add stages to this pipeline, and we will extend the picture as we meet them.</p>
+        <p>Every input is validated against <strong>its own</strong> previous output, independently of the other inputs. The only thing tying them together is the transaction digest that their signatures commit to.</p>
+        <h4>Limits</h4>
+        <table><thead><tr><th>Limit</th><th>Value</th><th>Kind</th></tr></thead><tbody><tr><td>Script size (legacy, P2SH redeem script, P2WSH witness script)</td><td>10,000 bytes</td><td>consensus</td></tr><tr><td>Stack element size</td><td>520 bytes</td><td>consensus</td></tr><tr><td>Non-push opcodes per script</td><td>201</td><td>consensus (not in Tapscript)</td></tr><tr><td>Stack + alt stack elements</td><td>1,000</td><td>consensus</td></tr><tr><td>Keys per <code>CHECKMULTISIG</code></td><td>20</td><td>consensus</td></tr><tr><td>Signature operations per block</td><td>80,000 "sigop cost"</td><td>consensus</td></tr><tr><td><code>scriptSig</code> size</td><td>1,650 bytes</td><td>policy</td></tr><tr><td>P2SH redeem script sigops</td><td>15</td><td>policy</td></tr><tr><td>P2WSH witness script</td><td>3,600 bytes; at most 100 stack items of at most 80 bytes</td><td>policy</td></tr><tr><td>Tapscript stack items</td><td>at most 80 bytes</td><td>policy</td></tr></tbody></table>
+        <h4>Flow control and guard clauses</h4>
+        <p>Because Script is postfix, the condition comes <em>before</em> the <code>IF</code>:</p>
+        <pre><code>&lt;condition&gt; OP_IF
+    &lt;run when true&gt;
+OP_ELSE
+    &lt;run when false&gt;
+OP_ENDIF</code></pre>
+        <p>The interpreter keeps a stack of booleans, one per open <code>IF</code>; an opcode executes only when all of them are true. Unexecuted branches are still parsed (and in legacy scripts still checked for disabled opcodes). Conditions are typically supplied by the spender, which lets one script offer several spending paths: the witness acts as a map through the maze. With nested <code>IF</code>s, the values are consumed top of stack first, so to select the inner <code>ELSE</code> of an outer <code>IF</code> you push <code>0</code> then <code>1</code> (the book's "Isn't that backward?" moment).</p>
+        <p>Opcodes ending in <code>VERIFY</code> are guard clauses: <code>OP_EQUALVERIFY</code> is <code>OP_EQUAL OP_VERIFY</code>, and it aborts the whole script on failure. The book's example: "Bob may spend with a signature <em>and</em> the preimage of a hash" is</p>
+        <pre><code>OP_HASH160 &lt;expected hash&gt; OP_EQUALVERIFY &lt;Bob's pubkey&gt; OP_CHECKSIG</code></pre>
+        <p>spent with <code>&lt;Bob's sig&gt; &lt;preimage&gt;</code>. Use <code>VERIFY</code> for preconditions and <code>IF</code> only when you need alternative paths.</p>
+        <h4>A Script interpreter in under 100 lines</h4>
+        <p>Reading Script is much easier once you have run it. This interpreter covers every opcode used in this article. It takes the signature check as a callback because what a signature commits to (the <em>sighash</em>) depends on the whole transaction and the script version, which is the subject of the next section.</p>
+        <pre><code>import hashlib
+
+def hash160(b): return hashlib.new("ripemd160", hashlib.sha256(b).digest()).digest()
+
+def num(b: bytes) -&gt; int:                       # CScriptNum decode (little-endian, sign-magnitude)
+    if not b: return 0
+    n = int.from_bytes(b, "little")
+    return -(n &amp; ~(0x80 &lt;&lt; 8 * (len(b) - 1))) if b[-1] &amp; 0x80 else n
+
+def enc(n: int) -&gt; bytes:                       # CScriptNum encode (minimal)
+    if n == 0: return b""
+    out, a = bytearray(), abs(n)
+    while a: out.append(a &amp; 0xff); a &gt;&gt;= 8
+    if out[-1] &amp; 0x80: out.append(0x80 if n &lt; 0 else 0)
+    elif n &lt; 0: out[-1] |= 0x80
+    return bytes(out)
+
+def true(b: bytes) -&gt; bool:                     # empty, zeros and "negative zero" are false
+    return any(b[:-1]) or (len(b) &gt; 0 and b[-1] not in (0, 0x80))
+
+def ops(script: bytes):                         # tokenizer: yields (opcode, pushed_data_or_None)
+    i = 0
+    while i &lt; len(script):
+        op = script[i]; i += 1
+        if op &lt;= 0x4e:                          # OP_0, direct pushes, OP_PUSHDATA1/2/4
+            n = op if op &lt; 0x4c else int.from_bytes(script[i:i + (1, 2, 4)[op - 0x4c]], "little")
+            i += 0 if op &lt; 0x4c else (1, 2, 4)[op - 0x4c]
+            yield op, script[i:i + n]; i += n
+        else:
+            yield op, None
+
+def run(script: bytes, stack: list, checksig, tx=None, tapscript=False) -&gt; list:
+    """Execute one script on `stack`. checksig(sig, pubkey) -&gt; bool is supplied by the caller,
+    because what a signature commits to (the sighash) depends on the transaction."""
+    tx = tx or {"locktime": 0, "sequence": 0xffffffff, "version": 2}
+    exec_stack = []                              # one bool per open OP_IF
+    for op, data in ops(script):
+        live = all(exec_stack)
+        if op in (0x63, 0x64):                   # OP_IF / OP_NOTIF
+            v = False
+            if live:
+                c = stack.pop()
+                if tapscript and c not in (b"", b"\x01"): raise ValueError("MINIMALIF")
+                v = true(c) if op == 0x63 else not true(c)
+            exec_stack.append(v)
+        elif op == 0x67: exec_stack[-1] = not exec_stack[-1]          # OP_ELSE
+        elif op == 0x68: exec_stack.pop()                             # OP_ENDIF
+        elif not live: continue                                       # skip unexecuted branch
+        elif data is not None: stack.append(data)                     # push
+        elif 0x51 &lt;= op &lt;= 0x60 or op == 0x4f: stack.append(enc(op - 0x50))   # OP_1..OP_16, OP_1NEGATE
+        elif op == 0x69:                                              # OP_VERIFY
+            if not true(stack.pop()): raise ValueError("VERIFY failed")
+        elif op == 0x6a: raise ValueError("OP_RETURN")
+        elif op == 0x75: stack.pop()                                  # OP_DROP
+        elif op == 0x76: stack.append(stack[-1])                      # OP_DUP
+        elif op == 0x73:                                              # OP_IFDUP
+            if true(stack[-1]): stack.append(stack[-1])
+        elif op == 0x7c: stack[-2], stack[-1] = stack[-1], stack[-2]  # OP_SWAP
+        elif op == 0x82: stack.append(enc(len(stack[-1])))            # OP_SIZE
+        elif op in (0x87, 0x88):                                      # OP_EQUAL[VERIFY]
+            eq = stack.pop() == stack.pop()
+            if op == 0x88 and not eq: raise ValueError("EQUALVERIFY failed")
+            if op == 0x87: stack.append(b"\x01" if eq else b"")
+        elif op in (0x93, 0x94, 0x9c):                                # OP_ADD, OP_SUB, OP_NUMEQUAL
+            b, a = num(stack.pop()), num(stack.pop())
+            stack.append(enc(a + b if op == 0x93 else a - b if op == 0x94 else int(a == b)))
+        elif op == 0xa9: stack.append(hash160(stack.pop()))           # OP_HASH160
+        elif op in (0xac, 0xad):                                      # OP_CHECKSIG[VERIFY]
+            pub, sig = stack.pop(), stack.pop()
+            ok = len(sig) &gt; 0 and checksig(sig, pub)
+            if tapscript and sig and not ok: raise ValueError("bad signature")
+            if op == 0xad and not ok: raise ValueError("CHECKSIGVERIFY failed")
+            if op == 0xac: stack.append(b"\x01" if ok else b"")
+        elif op == 0xba and tapscript:                                # OP_CHECKSIGADD
+            pub, n, sig = stack.pop(), num(stack.pop()), stack.pop()
+            ok = len(sig) &gt; 0 and checksig(sig, pub)
+            if sig and not ok: raise ValueError("bad signature")
+            stack.append(enc(n + ok))
+        elif op == 0xae and not tapscript:                            # OP_CHECKMULTISIG
+            k = num(stack.pop()); keys = [stack.pop() for _ in range(k)]
+            t = num(stack.pop()); sigs = [stack.pop() for _ in range(t)]
+            if stack.pop() != b"": raise ValueError("NULLDUMMY")      # the extra element
+            i = 0                                                     # keys and sigs in the same order
+            for s in sigs:
+                while i &lt; k and not checksig(s, keys[i]): i += 1
+                i += 1
+            stack.append(b"\x01" if i &lt;= k else b"")
+        elif op == 0xb1:                                              # OP_CHECKLOCKTIMEVERIFY
+            n, lt = num(stack[-1]), tx["locktime"]
+            if n &lt; 0 or (n &lt; 500_000_000) != (lt &lt; 500_000_000) or n &gt; lt or tx["sequence"] == 0xffffffff:
+                raise ValueError("CLTV failed")
+        elif op == 0xb2:                                              # OP_CHECKSEQUENCEVERIFY (heights only)
+            n, seq = num(stack[-1]), tx["sequence"]
+            if tx["version"] &lt; 2 or seq &gt;&gt; 31 or (seq &amp; 0xffff) &lt; (n &amp; 0xffff): raise ValueError("CSV failed")
+        else: raise ValueError(f"opcode {op:#x} not in this toy")
+    if exec_stack: raise ValueError("unbalanced OP_IF")
+    return stack
+
+def verify_legacy(script_sig: bytes, script_pubkey: bytes, checksig, tx=None) -&gt; bool:
+    stack = run(script_sig, [], checksig, tx)        # 1. run the unlocking script alone
+    stack = run(script_pubkey, stack, checksig, tx)  # 2. run the locking script on the result
+    return len(stack) &gt; 0 and true(stack[-1])        # 3. success = a true value on top</code></pre>
+        <p>Feeding it the book's first example, the lock <code>3 OP_ADD 5 OP_EQUAL</code> (<code>53 93 55 87</code>) and the key <code>2</code> (<code>52</code>), returns <code>True</code>: the scriptSig leaves <code>[02]</code>, <code>OP_3</code> pushes <code>03</code>, <code>OP_ADD</code> leaves <code>05</code>, <code>OP_5</code> pushes <code>05</code>, and <code>OP_EQUAL</code> leaves <code>01</code>. Anyone who can add can spend that output, which is the point of the example: Script checks a math problem, and only some math problems require a secret to solve. The rest of this article reuses this interpreter with real signatures plugged in. Every result quoted later (valid, invalid, and why) came from running it.</p>
+        <h4>Malleability and the strictness flags</h4>
+        <p>A third party who can change <em>how</em> a valid unlocking script is encoded, without invalidating it, changes the transaction's txid. Bitcoin accumulated a set of rules that remove such freedom:</p>
+        <table><thead><tr><th>Rule</th><th>Requirement</th><th>Status</th></tr></thead><tbody><tr><td>DERSIG (BIP66)</td><td>ECDSA signatures strictly DER-encoded</td><td>consensus (2015)</td></tr><tr><td>LOW_S</td><td>ECDSA <code>s</code> in the lower half of the range</td><td>policy</td></tr><tr><td>MINIMALDATA</td><td>pushes and numbers minimally encoded</td><td>policy</td></tr><tr><td>NULLDUMMY (BIP147)</td><td>the extra <code>CHECKMULTISIG</code> element must be empty</td><td>consensus with SegWit</td></tr><tr><td>NULLFAIL</td><td>a failing signature check must be given an empty signature</td><td>policy; consensus in Tapscript</td></tr><tr><td>MINIMALIF</td><td><code>IF</code> argument exactly empty or <code>01</code></td><td>policy for P2WSH; consensus in Tapscript</td></tr><tr><td>CLEANSTACK</td><td>exactly one element left at the end</td><td>policy for legacy; consensus for SegWit and Tapscript</td></tr><tr><td>WITNESS_PUBKEYTYPE</td><td>compressed keys only in SegWit v0</td><td>policy</td></tr></tbody></table>
+        <p>SegWit removed most of the <em>motivation</em> for these rules by taking signatures out of the txid, but they still matter for fee predictability and for the hygiene of presigned transactions.</p>
+        <h4>How Script gets upgraded</h4>
+        <p>A soft fork may only <strong>tighten</strong> the rules: anything valid under the new rules must have been valid under the old ones, so un-upgraded nodes keep following the chain. Script was designed with hooks for exactly this:</p>
+        <ul><li><strong><code>OP_NOP1</code>–<code>OP_NOP10</code></strong> do nothing, so a soft fork can redefine one to "fail unless condition X holds". <code>OP_CHECKLOCKTIMEVERIFY</code> was <code>OP_NOP2</code> (BIP65) and <code>OP_CHECKSEQUENCEVERIFY</code> was <code>OP_NOP3</code> (BIP112). Because old nodes treat them as no-ops that leave the stack untouched, the new opcodes must leave their argument on the stack too, which is why they are usually followed by <code>OP_DROP</code>.</li><li><strong>Template reinterpretation</strong>: P2SH gave the pattern <code>OP_HASH160 &lt;20 bytes&gt; OP_EQUAL</code> an extra meaning.</li><li><strong>Witness versions</strong>: SegWit made <code>OP_n &lt;2 to 40 bytes&gt;</code> "anyone can spend" for old nodes and versioned for new ones (Part V).</li><li><strong>Tapscript's hooks</strong>: <code>OP_SUCCESSx</code> opcodes, leaf versions, unknown public key types and the annex (Part VI).</li></ul>
+        <h3>7. Signatures: what OP_CHECKSIG actually checks</h3>
+        <p><code>OP_CHECKSIG</code> pops a public key and a signature and checks that the signature was made by that key <strong>over a digest of the spending transaction</strong>. That digest is what makes a signature an authorization of <em>this</em> transaction and not a free-floating proof of key ownership. In the book's notation:</p>
+        <p>$$ \text{Sig} = F_{sig}\big(F_{hash}(m),\ x\big) $$</p>
+        <p>where $x$ is the private key and $m$ is a specific selection of transaction data. Bitcoin uses two signature schemes: ECDSA for legacy and SegWit v0 scripts, and Schnorr (BIP340) for Taproot. Schnorr gets its own section in Part VI; here is ECDSA.</p>
+        <h4>ECDSA</h4>
+        <p>With private key $x$, public key $X = xG$ and message hash $z$:</p>
+        <ul><li><strong>Sign:</strong> pick a secret nonce $k$, compute $R = kG$, $r = R_x \bmod n$, and $s = k^{-1}(z + r x) \bmod n$. The signature is $(r, s)$.</li><li><strong>Verify:</strong> compute $u_1 = z s^{-1}$ and $u_2 = r s^{-1}$, then accept if $(u_1 G + u_2 X)_x \equiv r \pmod n$.</li></ul>
+        <p>Verification works because $u_1 G + u_2 X = s^{-1}(z + r x) G = kG = R$. Two weaknesses matter for Bitcoin. First, if $(r, s)$ is valid then so is $(r, n - s)$, a free mutation for anyone who sees the signature, which is why policy demands the "low S" form. Second, ECDSA is not linear, so signatures do not combine; multi-party ECDSA needs heavy machinery.</p>
+        <p>Signatures are serialized in DER plus a one-byte sighash flag. The book's example, split into fields:</p>
+        <pre><code>30 45                       DER sequence, 69 bytes follow
+02 21 00884d142d86652a3f47ba4746ec719bbfbd040a570b1deccbb6498c75c4ae24cb    r (33 bytes: 0x00 pad because the top bit is set)
+02 20 4b9f039ff08df09cbe9f6addac960298cad530a863ea8f53982c09db8f6e3813      s (32 bytes)
+01                          SIGHASH_ALL</code></pre>
+        <p>So an ECDSA signature costs 71 to 73 bytes on chain. Schnorr signatures are a fixed 64 bytes (65 with an explicit sighash byte).</p>
+        <h4>Nonces are the private key's bodyguard</h4>
+        <p>The nonce must be secret and never reused. If the same $k$ signs two different digests $z_1, z_2$, both signatures share $r$ and anyone can solve two linear equations for the key:</p>
+        <p>$$ s_1 - s_2 = k^{-1}(z_1 - z_2) \ \Rightarrow\ k = \frac{z_1 - z_2}{s_1 - s_2}, \qquad x = \frac{s_1 k - z_1}{r} \pmod n $$</p>
+        <p>This has cost real users real money (badly seeded random number generators in wallets). The standard defence, from RFC6979 for ECDSA and BIP340 for Schnorr, is to derive $k$ deterministically from the private key and the message, optionally mixing in fresh randomness. Remember this section when we reach MuSig2, where deterministic nonces become <em>dangerous</em>.</p>
+        <h4>Sighash flags: choosing what to sign</h4>
+        <p>The last byte of a legacy or SegWit v0 signature (or the optional 65th byte of a Schnorr signature) selects which parts of the transaction the signature covers:</p>
+        <table><thead><tr><th>Flag</th><th>Value</th><th>Signs</th><th>Use case from the book</th></tr></thead><tbody><tr><td><code>ALL</code></td><td><code>0x01</code></td><td>all inputs, all outputs</td><td>normal payments</td></tr><tr><td><code>NONE</code></td><td><code>0x02</code></td><td>all inputs, no outputs</td><td>a "blank cheque" whose destination others may fill in</td></tr><tr><td><code>SINGLE</code></td><td><code>0x03</code></td><td>all inputs, only the output with this input's index</td><td>combinable partial transactions</td></tr><tr><td><code>ALL|ANYONECANPAY</code></td><td><code>0x81</code></td><td>this input, all outputs</td><td>crowdfunding: anyone may add inputs</td></tr><tr><td><code>NONE|ANYONECANPAY</code></td><td><code>0x82</code></td><td>this input only</td><td>a "dust collector": donate a tiny UTXO to whoever sweeps it</td></tr><tr><td><code>SINGLE|ANYONECANPAY</code></td><td><code>0x83</code></td><td>this input and its paired output</td><td>building blocks for swaps and fee attachment</td></tr></tbody></table>
+        <p>Taproot adds <code>SIGHASH_DEFAULT</code> (<code>0x00</code>, implied by a 64-byte signature), which behaves like <code>ALL</code>. Because the flag itself is part of the signed digest, nobody can change it after the fact. Proposals such as <code>SIGHASH_ANYPREVOUT</code> (BIP118), which would let a signature skip committing to the outpoint and enable more flexible Lightning designs, are not active.</p>
+        <h4>The legacy digest and its quadratic cost</h4>
+        <p>For legacy inputs the digest is computed by copying the transaction, blanking every <code>scriptSig</code>, putting the <em>script code</em> (the script being executed, after the last <code>OP_CODESEPARATOR</code>) into the input being signed, adjusting inputs and outputs according to the flag, appending the 4-byte flag, and hashing with SHA256d. Two problems follow:</p>
+        <ol><li><strong>Quadratic hashing.</strong> Each of $n$ inputs hashes a copy of a transaction whose size grows with $n$, so validation does $O(n^2)$ hashing. A single transaction close to 1 MB mined in 2015 took tens of seconds to validate, and worst-case constructions were far worse.</li><li><strong>The amount is not signed.</strong> A legacy signature does not commit to the value of the output being spent, so an offline signer (a hardware wallet) cannot know the fee it is approving without being fed and verifying every previous transaction in full.</li></ol>
+        <p>Both are fixed by the new digest algorithms of SegWit (BIP143) and Taproot (BIP341). There is also a historical oddity: with <code>SIGHASH_SINGLE</code>, if the input's index has no matching output, legacy code signs the constant <code>1</code> instead of a transaction digest, so such a signature can be reused for anything that key controls. Wallets avoid that case.</p>
+        
+        <h2>Part IV: The Legacy Output Types</h2>
+        <p>Bitcoin's output types are best understood as a sequence of fixes. Each one solved a pain point of the one before, and each fix is still visible on chain because old outputs never expire. In this part we walk through the pre-SegWit generation in the order it appeared. For each type: the problem it solved, the exact script, how a spend is evaluated, what it costs, and what was still wrong with it.</p>
+        <h3>8. P2PK: pay to public key</h3>
+        <p>The whitepaper's model, coins sent to a public key and spent with a signature, maps directly onto the simplest possible script.</p>
+        <pre><code>scriptPubKey:  &lt;pubkey&gt; OP_CHECKSIG              21 &lt;33 bytes&gt; ac   (35 bytes; 67 with an uncompressed key)
+scriptSig:     &lt;sig&gt;</code></pre>
+        <p>The combined evaluation is two steps: push the signature, push the key, and <code>OP_CHECKSIG</code> replaces both with true or false. In Bitcoin 0.1 you could pay someone by typing their <strong>IP address</strong>: your node connected to theirs and asked for a fresh public key, then built exactly this script. The feature was removed long ago (the receiver had to be online and reachable, which NATs and laptops made impractical), but P2PK lives on in the early coinbase rewards, which paid miners this way. Many of those 2009 and 2010 outputs have never moved.</p>
+        <p>What was wrong with it:</p>
+        <ul><li>A public key is long (65 bytes back then) and has no checksum, so it is a terrible thing to read over the phone.</li><li>The key itself is on chain from the moment the coins are received, which is relevant to long-term quantum-computing concerns. Hashed output types reveal the key only when the coins are spent, though BIP341's authors call that protection weak at best: a key is exposed while its spending transaction waits to confirm, and a large share of all coins sit in outputs whose keys are already public anyway.</li></ul>
+        <h3>9. P2PKH: pay to public key hash</h3>
+        <p>The fix was to put a 20-byte <em>commitment</em> to the key in the output and reveal the key only when spending.</p>
+        <pre><code>scriptPubKey:  OP_DUP OP_HASH160 &lt;20-byte HASH160(pubkey)&gt; OP_EQUALVERIFY OP_CHECKSIG
+               76 a9 14 &lt;20 bytes&gt; 88 ac                                              (25 bytes)
+scriptSig:     &lt;sig&gt; &lt;pubkey&gt;                                                         (~107 bytes)</code></pre>
+        <p>The evaluation, with the stack's top on the right:</p>
+        <table><thead><tr><th>Step</th><th>Operation</th><th>Stack after</th></tr></thead><tbody><tr><td>1</td><td>push <code>&lt;sig&gt;</code></td><td><code>sig</code></td></tr><tr><td>2</td><td>push <code>&lt;pubkey&gt;</code></td><td><code>sig pubkey</code></td></tr><tr><td></td><td><em>scriptSig done; the stack carries over</em></td><td></td></tr><tr><td>3</td><td><code>OP_DUP</code></td><td><code>sig pubkey pubkey</code></td></tr><tr><td>4</td><td><code>OP_HASH160</code></td><td><code>sig pubkey h(pubkey)</code></td></tr><tr><td>5</td><td>push <code>&lt;pkh&gt;</code></td><td><code>sig pubkey h(pubkey) pkh</code></td></tr><tr><td>6</td><td><code>OP_EQUALVERIFY</code></td><td><code>sig pubkey</code> (aborts if the hashes differ)</td></tr><tr><td>7</td><td><code>OP_CHECKSIG</code></td><td><code>1</code> (or empty if the signature is bad)</td></tr></tbody></table>
+        <p>Running it in the interpreter with a real ECDSA signature from Bob's key returns <code>True</code>; the same script with Alice's signature and Bob's key gets through <code>OP_EQUALVERIFY</code> (the key matches the hash) but <code>OP_CHECKSIG</code> pushes false, so the spend is invalid.</p>
+        <p>Satoshi never explained why the commitment uses SHA256 <em>followed by</em> RIPEMD160, but the result, HASH160, is 20 bytes, and with a version byte and a checksum it becomes the familiar <code>1…</code> address (Section 3). P2PKH was the workhorse of Bitcoin for its first eight years.</p>
+        <p><strong>Cost:</strong> a P2PKH output is 34 bytes (8 amount + 1 length + 25 script) and spending it takes a 148-byte input (36 outpoint + 1 + 107 scriptSig + 4 sequence). A typical one-input, two-output payment is 226 bytes. Keep those numbers in mind; SegWit will cut them sharply.</p>
+        <h3>10. P2MS: bare multisig</h3>
+        <p>Multisignature is as old as Bitcoin's scripting system. A <em>t-of-k</em> multisig (the book's term for what older texts call m-of-n) lists $k$ public keys and requires signatures from at least $t$ of them:</p>
+        <pre><code>scriptPubKey:  OP_t &lt;pubkey_1&gt; ... &lt;pubkey_k&gt; OP_k OP_CHECKMULTISIG
+scriptSig:     OP_0 &lt;sig_a&gt; &lt;sig_b&gt; ...                  (t signatures, in key order)</code></pre>
+        <p>For 2-of-3 with compressed keys the script is <code>52 21&lt;A&gt; 21&lt;B&gt; 21&lt;C&gt; 53 ae</code>, 105 bytes.</p>
+        <h4>The famous off-by-one</h4>
+        <p><code>OP_CHECKMULTISIG</code> pops $k$, the $k$ keys, $t$, the $t$ signatures, and then <strong>one more element</strong> that it ignores. Without that extra element the stack underflows and the script fails, so every multisig spend starts with a dummy push, by convention <code>OP_0</code>. BIP147 (deployed with SegWit) made "the dummy must be empty" a consensus rule, so the quirk is now permanent. Whether it was a bug or a reserved slot for a future "which keys signed" bitmap, only Satoshi could say; the book diplomatically calls it an <em>oddity</em>.</p>
+        <p>My interpreter reproduces all three outcomes for a 2-of-3 between Alice, Bob and Carol:</p>
+        <pre><code>OP_0 &lt;sig_B&gt; &lt;sig_C&gt;   -&gt;  valid
+     &lt;sig_B&gt; &lt;sig_C&gt;   -&gt;  invalid: stack underflow (no dummy)
+OP_0 &lt;sig_C&gt; &lt;sig_B&gt;   -&gt;  invalid: CHECKMULTISIG pushes false (wrong order)</code></pre>
+        <h4>How the matching works, and why order matters</h4>
+        <p><code>OP_CHECKMULTISIG</code> does not search for a key for each signature. It walks the keys and the signatures with two cursors, in the same relative order. Each signature is tried against the current key; on success both cursors advance, on failure only the key cursor advances. If the remaining signatures outnumber the remaining keys, it fails. Consequences:</p>
+        <ul><li>Signatures must appear <strong>in the same order as their public keys</strong> in the script.</li><li>A $t$-of-$k$ check can cost up to $k$ signature verifications: the book's 1-of-5 example checks the single signature against key 0, 1, 2, 3 and finally 4.</li><li>For that reason legacy sigop counting charges a bare <code>CHECKMULTISIG</code> as <strong>20</strong> signature operations regardless of $k$.</li></ul>
+        <h4>Limits and why bare multisig faded</h4>
+        <p>Consensus allows up to 20 keys per <code>CHECKMULTISIG</code>, but Bitcoin Core only relays bare multisig with at most <strong>3</strong> keys. Bare multisig has the same drawbacks as P2PK, multiplied: the sender must obtain the whole script and pay for its bytes, there is no address format, every byte sits in the UTXO set until spent, and the policy is visible to everyone. For 2-of-3 the output is 114 bytes and the input 188 vB.</p>
+        <p>Bare multisig survives today mostly as a data-embedding trick: protocols like Bitcoin Stamps encode arbitrary bytes as fake "public keys" in bare multisig outputs, which are expensive to the UTXO set precisely because they can never be spent. Bitcoin Core exposes <code>-permitbaremultisig</code> (default on) for node operators who want to stop relaying them.</p>
+        <h3>11. OP_RETURN: provably unspendable data</h3>
+        <p>People have always wanted to anchor data in the blockchain, from timestamping a document hash to recording the state of another protocol. Early attempts encoded data as fake addresses, creating unspendable UTXOs that every full node had to keep forever. The compromise was a dedicated template:</p>
+        <pre><code>scriptPubKey:  OP_RETURN &lt;data&gt;</code></pre>
+        <p>Executing <code>OP_RETURN</code> fails the script immediately, so the output can never be spent. Nodes know that up front and <strong>do not store these outputs in the UTXO set</strong>. The data still costs block space and sits in the chain, but not in the expensive database. The amount is normally zero (OP_RETURN outputs are exempt from the dust rule) because anything assigned to it is burned.</p>
+        <p>Uses include document notarisation (the book cites the <code>DOCPROOF</code> prefix of the Proof of Existence service), aggregated timestamping schemes like OpenTimestamps, and token protocols such as Runes, whose messages are <code>OP_RETURN OP_13 &lt;payload&gt;</code> outputs.</p>
+        <p>The allowed size is a matter of policy, and a contested one. For most of the last decade Bitcoin Core relayed one OP_RETURN output per transaction with at most 80 bytes of data. Bitcoin Core 30.0 (October 2025) raised the default limit to 100,000 bytes and allowed several such outputs per transaction; its proponents argued that the old limit no longer stopped data from being embedded and only pushed it into more harmful places, such as fake keys that bloat the UTXO set. The consensus rules never had a limit beyond the transaction size.</p>
+        <h3>12. P2SH: pay to script hash</h3>
+        <p>By 2012 the pain of complex scripts was obvious. The book's illustration is Mohammed, an importer in Dubai whose company wants every customer payment locked in a 2-of-5 multisig (Mohammed, three partners, and their lawyer). With bare multisig, every customer would need special wallet software, would have to be sent the whole script, and would pay to put five public keys in their transaction; and the script would sit in every node's UTXO set until spent.</p>
+        <p><strong>BIP16</strong> turned the problem around: the output commits to the <em>hash</em> of the script, and the spender reveals the script (now called the <strong>redeem script</strong>) at spend time.</p>
+        <pre><code>redeemScript:  2 &lt;PK1&gt; &lt;PK2&gt; &lt;PK3&gt; &lt;PK4&gt; &lt;PK5&gt; 5 OP_CHECKMULTISIG
+scriptPubKey:  OP_HASH160 &lt;20-byte HASH160(redeemScript)&gt; OP_EQUAL      a9 14 &lt;20 bytes&gt; 87   (23 bytes)
+scriptSig:     OP_0 &lt;sig1&gt; &lt;sig2&gt; &lt;serialized redeemScript&gt;</code></pre>
+        <p>For Mohammed's script the book gives the hash <code>54c557e07dde5bb6cb791c7a540e0a4796f5e97e</code>; with base58check version byte <code>0x05</code> it becomes <code>39RF6JqABiHdYHkfChV6USGMe6Nsr66Gzw</code>, which is exactly what my code produces. Customers just pay a <code>3…</code> address like any other.</p>
+        <h4>How a P2SH spend is evaluated</h4>
+        <ol><li>Run the <code>scriptSig</code> (it <strong>must</strong> be push-only) and copy the resulting stack.</li><li>Run the <code>scriptPubKey</code> on it: the top element (the serialized redeem script) is hashed and compared with the commitment. This must succeed.</li><li>Because the <code>scriptPubKey</code> matches the exact P2SH template, take the copied stack from step 1, pop the redeem script, <strong>deserialize it and execute it</strong> on the remaining items. It must also succeed.</li></ol>
+        <p>Step 3 is the soft-fork trick. A node that predates BIP16 only performs steps 1 and 2: to it, a P2SH output is spendable by anyone who knows the redeem script. Upgraded nodes add the constraint of step 3. Old nodes accept every block new nodes accept, so the chain does not split. The same pattern, "looks anyone-can-spend to old nodes, carries new rules for new nodes", is how SegWit and Taproot were deployed.</p>
+        <h4>Why P2SH multisig tops out at 15 keys</h4>
+        <p>The redeem script travels as a single stack element, and stack elements are limited to 520 bytes. A $t$-of-$k$ <code>CHECKMULTISIG</code> script with compressed keys is</p>
+        <p>$$ \text{size} = 1 + 34k + 1 + 1 = 34k + 3 \ \text{bytes} $$</p>
+        <p>so $k = 15$ gives 513 bytes and $k = 16$ gives 547, over the limit. (Policy independently caps P2SH redeem scripts at 15 signature operations.) That is the origin of the "15-of-15" ceiling the book mentions.</p>
+        <h4>Benefits and pitfalls</h4>
+        <p>The book lists the benefits: senders need no special software; the long script moves from the output (and the UTXO set) to the input (only the blockchain); its cost moves from the time of payment to the time of spending; and the fee for it moves from the sender to the receiver, who chose it. The pitfalls:</p>
+        <ul><li><strong>No recursion.</strong> A redeem script cannot itself be P2SH.</li><li><strong>Commit to a broken script and the coins are gone.</strong> Nodes cannot validate a redeem script they have never seen, so an output committing to an invalid script is accepted and can never be spent.</li><li><strong>Only 80-bit collision security.</strong> If an attacker participates in building a multisig script (say, as one of the cosigners who submits a key last), they can grind their own key to find two scripts with the same HASH160, one of which they control alone. That is a collision search, so it costs about $2^{80}$ work rather than $2^{160}$. The book notes that Bitcoin miners collectively perform roughly $2^{80}$ hashes every hour (of a different function, so they cannot do this today), which shows such attacks are not science fiction for large multiparty setups. SegWit's P2WSH uses a 32-byte SHA256 commitment (128-bit collision security) for this reason.</li></ul>
+        <p><strong>Cost:</strong> a 2-of-3 P2SH spend needs <code>OP_0</code>, two ~72-byte signatures and the 105-byte redeem script in the <code>scriptSig</code>: 254 bytes of script, a <strong>297-byte input</strong>, and a typical one-input, two-output transaction of 371 bytes. Every one of those bytes counted at full weight. That is the problem SegWit's discount set out to fix.</p>
+        
+        <h2>Part V: Segregated Witness</h2>
+        <h3>13. The problems SegWit solved</h3>
+        <p>By 2015 Bitcoin had a list of problems that all traced back to one design decision: <strong>signatures were part of the data hashed into the txid.</strong></p>
+        <h4>Third-party malleability</h4>
+        <p>The book's example: the script <code>2 OP_ADD 4 OP_EQUAL</code> can be satisfied by pushing the number 2, and 2 can be pushed as <code>OP_2</code>, <code>01 02</code>, <code>02 02 00</code>, <code>OP_PUSHDATA1 01 02</code>, and many other encodings. Each encoding yields a different, equally valid transaction with a <strong>different txid</strong>. ECDSA adds another free mutation: if $(r, s)$ is a valid signature, so is $(r, n - s)$. So anyone relaying Alice's payment could mutate it, and if the mutant confirmed, any transaction that spent Alice's output by the <em>original</em> txid (say Bob's onward payment to Carol) became permanently invalid, even though nobody did anything wrong.</p>
+        <h4>Second-party malleability</h4>
+        <p>Even with every encoding rule tightened (the abandoned BIP62 tried), a <em>co-signer</em> can always produce a fresh signature with a different nonce, and therefore a different txid. In a two-party contract that is fatal: Bob can change the txid of a transaction Alice depends on.</p>
+        <h4>Circular dependencies</h4>
+        <p>Contract protocols need to sign transactions <strong>before</strong> their parents are signed. The book's example: Alice and Bob want to fund a 2-of-2 output (Tx0) but first want a signed refund (Tx1) that returns their money if the other disappears. Tx1 spends Tx0, so it must reference Tx0's txid. But Tx0's txid depends on Tx0's signatures, and once those exist either party could broadcast Tx0 before signing the refund. Payment channels, and therefore Lightning, were impractical without a fix.</p>
+        <h4>And three more</h4>
+        <ul><li><strong>Quadratic signature hashing</strong> and the unsigned input amount (Section 7).</li><li><strong>Capacity</strong>: the 1 MB block size limit was a political flashpoint.</li><li><strong>Upgradability</strong>: every new script feature needed its own clever soft-fork trick.</li></ul>
+        <p>The fix for the first three was understood as early as 2011: compute the txid <strong>without</strong> the unlocking data. Doing it as a hard fork was off the table. The insight of late 2015 was how to do it as a soft fork.</p>
+        <h3>14. How SegWit was deployed as a soft fork</h3>
+        <p>SegWit (BIP141, with BIP143 for signatures and BIP144 for serialization) defines a new output template, the <strong>witness program</strong>:</p>
+        <pre><code>scriptPubKey:  &lt;version: OP_0 .. OP_16&gt; &lt;witness program: 2 to 40 bytes&gt;</code></pre>
+        <p>To a pre-SegWit node this is just two pushes; it leaves a non-empty element on top, so it is spendable by anyone with an empty <code>scriptSig</code>. A SegWit node instead requires:</p>
+        <ul><li>the <code>scriptSig</code> must be <strong>empty</strong> (or, for nested SegWit, exactly one push of the witness program);</li><li>the spend is authenticated by a new per-input <strong>witness</strong> field, which old nodes never see;</li><li>the version byte selects the rules: v0 is defined by BIP141, v1 by BIP341 (Taproot), and v2 to v16 remain <strong>anyone-can-spend</strong> to everyone, reserved for future soft forks. For v0 the program must be exactly 20 or 32 bytes; any other length is invalid.</li></ul>
+        <p>Old nodes allow an empty <code>scriptSig</code>; new nodes <em>require</em> it. Every block valid under the new rules is valid under the old, so it is a soft fork. The witnesses are still committed to, just not in the txid: the coinbase transaction carries a Merkle root of all <strong>wtxids</strong> (Section 5.6), so a block's witnesses cannot be swapped without changing the coinbase, and therefore the block's Merkle root and hash.</p>
+        <table><thead><tr><th>Problem</th><th>How SegWit fixes it</th></tr></thead><tbody><tr><td>Third-party malleability</td><td>witnesses are outside the txid</td></tr><tr><td>Second-party malleability</td><td>same: re-signing changes the wtxid, not the txid</td></tr><tr><td>Circular dependencies</td><td>presign a child against a parent's txid before the parent is signed</td></tr><tr><td>Quadratic hashing</td><td>new digest algorithm with cached sub-hashes (BIP143)</td></tr><tr><td>Unsigned amounts</td><td>the digest commits to the spent amount</td></tr><tr><td>Capacity</td><td>block weight: witness bytes weigh a quarter</td></tr><tr><td>Upgrades</td><td>16 more witness versions, each a clean slate</td></tr></tbody></table>
+        <p>Note what does <em>not</em> change: legacy inputs in a SegWit transaction are as malleable as ever. Only inputs spending witness programs get the guarantees.</p>
+        <p>SegWit activated at block 481,824 in August 2017, after one of the most contentious episodes in Bitcoin's history: BIP9 miner signalling stalled for months, a user-activated soft fork (BIP148) threatened to reject non-signalling blocks, and miners finally signalled. The book's Chapter 12 tells the story, including the discovery that some miners stood to lose a hidden efficiency advantage (covert ASICBoost) if SegWit activated.</p>
+        <h3>15. P2WPKH, P2WSH and their nested forms</h3>
+        <p>Version 0 defines two programs, distinguished purely by length.</p>
+        <h4>P2WPKH: 20-byte program</h4>
+        <pre><code>scriptPubKey:  OP_0 &lt;20-byte HASH160(pubkey)&gt;            00 14 &lt;20 bytes&gt;      (22 bytes)
+scriptSig:     (empty)
+witness:       &lt;sig&gt; &lt;pubkey&gt;</code></pre>
+        <p>Validation: the witness must contain exactly two items, the HASH160 of the second must equal the program, and then the pair is checked exactly as if it were spending <code>OP_DUP OP_HASH160 &lt;program&gt; OP_EQUALVERIFY OP_CHECKSIG</code>. That reconstructed P2PKH script is also what the signature digest calls the <em>script code</em>. The book converts the P2PKH output <code>OP_DUP OP_HASH160 ab68025513c3dbd2f7b92a94e0581f5d50f654e7 OP_EQUALVERIFY OP_CHECKSIG</code> into the P2WPKH output <code>0 ab68025513c3dbd2f7b92a94e0581f5d50f654e7</code> (address <code>bc1q4d5qy4gnc0da9aae922wqkqlt4g0v4889q04gu</code>). The public key must be compressed (policy), and only the receiver should ever create such an output from their own key; the book is emphatic that a sender must not convert someone's P2PKH address into P2WPKH on their behalf.</p>
+        <p>Cost: the input is 41 non-witness bytes (164 WU) plus a 108-byte witness, <strong>68 vB instead of 148 vB</strong>.</p>
+        <h4>P2WSH: 32-byte program</h4>
+        <pre><code>scriptPubKey:  OP_0 &lt;32-byte SHA256(witnessScript)&gt;      00 20 &lt;32 bytes&gt;      (34 bytes)
+scriptSig:     (empty)
+witness:       &lt;arg_1&gt; ... &lt;arg_m&gt; &lt;witnessScript&gt;</code></pre>
+        <p>Validation: the last witness item is the <strong>witness script</strong>; its single SHA256 must equal the program; it is executed with the remaining items as the initial stack; and execution must end with exactly one true element. Compared with P2SH:</p>
+        <ul><li><strong>SHA256, not HASH160</strong>: a 32-byte commitment gives 128-bit collision resistance, closing the multiparty collision attack described in Section 12.</li><li><strong>No 520-byte ceiling on the script</strong>: the witness script is not a stack push, so consensus allows up to 10,000 bytes (policy: 3,600 bytes, at most 100 other items of at most 80 bytes). A single <code>CHECKMULTISIG</code> can now use its full 20 keys.</li><li>MINIMALIF is policy, which helps make branch selection non-malleable.</li></ul>
+        <p>The book's example rewrites Mohammed's P2SH output as <code>0 a9b7b38d972cabc7961dbfbcb841ad4508d133c47ba87457b4a0e8aae86dbb89</code>, spent with the witness <code>&lt;SigA&gt; &lt;SigB&gt; &lt;2 PubA PubB PubC PubD PubE 5 OP_CHECKMULTISIG&gt;</code> (plus the dummy) and an empty <code>scriptSig</code>.</p>
+        <h4>Nested SegWit: P2SH-P2WPKH and P2SH-P2WSH</h4>
+        <p>In 2017 most wallets could not send to a bech32 address. To get SegWit's benefits anyway, a receiver could wrap the witness program inside P2SH: the redeem script <em>is</em> the witness program.</p>
+        <pre><code>P2SH-P2WPKH
+  redeemScript:  0014&lt;20-byte pubkey hash&gt;                 (22 bytes)
+  scriptPubKey:  OP_HASH160 &lt;HASH160(redeemScript)&gt; OP_EQUAL
+  scriptSig:     &lt;0014...&gt;                                 (a single 23-byte push)
+  witness:       &lt;sig&gt; &lt;pubkey&gt;
+
+P2SH-P2WSH
+  redeemScript:  0020&lt;32-byte SHA256(witnessScript)&gt;       (34 bytes)
+  scriptSig:     &lt;0020...&gt;                                 (a single 35-byte push)
+  witness:       &lt;args...&gt; &lt;witnessScript&gt;</code></pre>
+        <p>The book's examples check out: wrapping <code>0 ab68…54e7</code> gives the script hash <code>3e0547268b3b19288b3adef9719ec8659f4b2b0b</code> and the address <code>37Lx99uaGn5avKBxiW26HjedQE3LrDCZru</code>; wrapping Mohammed's P2WSH program gives <code>86762607e8fe87c0c37740cddee880988b9455b2</code> and <code>3Dwz1MXhM6EfFoJChHCxh1jWHb8GQqRenG</code>. Nested outputs cost more than native ones (a P2SH-P2WPKH input is 91 vB versus 68), and the outer P2SH layer brings back 80-bit collision security, so they are a transition technology. You will still see them in old wallets and exchanges.</p>
+        <h3>16. Weight, the witness discount, and BIP143</h3>
+        <h4>Why witness bytes are cheaper</h4>
+        <p>The weight formula from Section 4 counts witness bytes at a quarter of the cost of everything else. Two reasons are usually given. First, witness data never enters the UTXO set: once validated it is only needed by nodes serving historical blocks, and pruned nodes can discard it. Second, it rebalances the cost of creating outputs (which burdens every node until spent) against spending them (which shrinks the UTXO set). BIP141 also explains why it is a single composite limit rather than "1 MB base plus 3 MB witness": two separate limits would turn block building and fee estimation into a two-dimensional knapsack problem.</p>
+        <p>The effect on everyday transactions (one input, two outputs, signatures of 72 bytes for ECDSA and 64 for Schnorr):</p>
+        <table><thead><tr><th>Transaction</th><th>Size</th><th>Change vs P2PKH</th></tr></thead><tbody><tr><td>P2PKH</td><td>226 vB</td><td>(baseline)</td></tr><tr><td>P2SH-P2WPKH</td><td>166 vB</td><td>−27%</td></tr><tr><td>P2WPKH</td><td>141 vB</td><td>−38%</td></tr><tr><td>P2TR key path</td><td>154 vB</td><td>−32%</td></tr><tr><td>P2WSH 2-of-3</td><td>201 vB</td><td></td></tr><tr><td>P2SH 2-of-3</td><td>371 vB</td><td></td></tr></tbody></table>
+        <p>(P2TR outputs are 12 bytes bigger than P2WPKH outputs, which is why a single-signature Taproot payment is slightly larger than a P2WPKH one even though its input is smaller. The multisig rows foreshadow Part VIII.)</p>
+        <h4>BIP143: a signature digest that scales</h4>
+        <p>For v0 witness programs the signed message is SHA256d of a fixed-layout preimage:</p>
+        <table><thead><tr><th>#</th><th>Field</th><th>Notes</th></tr></thead><tbody><tr><td>1</td><td><code>nVersion</code> (4)</td><td></td></tr><tr><td>2</td><td><code>hashPrevouts</code> (32)</td><td>SHA256d of all outpoints; zero with <code>ANYONECANPAY</code></td></tr><tr><td>3</td><td><code>hashSequence</code> (32)</td><td>SHA256d of all sequences; zero with <code>ANYONECANPAY</code>, <code>SINGLE</code> or <code>NONE</code></td></tr><tr><td>4</td><td>outpoint (36)</td><td>of the input being signed</td></tr><tr><td>5</td><td><code>scriptCode</code></td><td>the witness script, or for P2WPKH the reconstructed <code>76a914{20}88ac</code></td></tr><tr><td>6</td><td><strong>amount</strong> (8)</td><td>value of the output being spent (new)</td></tr><tr><td>7</td><td><code>nSequence</code> (4)</td><td>of this input</td></tr><tr><td>8</td><td><code>hashOutputs</code> (32)</td><td>SHA256d of all outputs; only the matching output with <code>SINGLE</code>; zero with <code>NONE</code></td></tr><tr><td>9</td><td><code>nLockTime</code> (4)</td><td></td></tr><tr><td>10</td><td>sighash type (4)</td><td></td></tr></tbody></table>
+        <p>Items 2, 3 and 8 are computed once per transaction and reused for every input, so total hashing grows <strong>linearly</strong> with the number of inputs. And because item 6 commits to the amount, a signer that is told the wrong amount produces a signature that is simply invalid. That made life easier for hardware wallets, though not entirely safe: a signature commits only to the amount of <em>its own</em> input, and a malicious host can still lie about the others across two signing sessions. Taproot's digest closes that gap (Section 19).</p>
+        
+        <h2>Part VI: Taproot</h2>
+        <p>Taproot (BIPs 340, 341 and 342, activated in November 2021 at block 709,632) is three ideas assembled into one output type: a better signature scheme, a way to hide unused spending conditions, and a trick that lets the cooperative case look like an ordinary single-key payment. The book builds it from the ground up, and so will we.</p>
+        <h3>17. Schnorr signatures (BIP340)</h3>
+        <h4>From an identity protocol to a signature</h4>
+        <p>The book starts with Schnorr's 1989 <em>identification</em> protocol. Alice has private key $x$ and public key $xG$, and wants to prove she knows $x$ without revealing it:</p>
+        <ol><li>Alice picks a secret random <strong>nonce</strong> $k$ and sends $kG$.</li><li>Bob replies with a random <strong>challenge</strong> $e$.</li><li>Alice sends $s = k + e x$.</li><li>Bob accepts if $sG = kG + e\,(xG)$.</li></ol>
+        <p>The book's toy version with plain integers makes the algebra concrete (and insecure, since integers can be divided): with $G = 5$, $x = 3$, $k = 7$, $e = 11$ we get $xG = 15$, $kG = 35$, $s = 7 + 11 \cdot 3 = 40$, and Bob checks $40 \cdot 5 = 200 = 35 + 11 \cdot 15$.</p>
+        <p>Two details carry the security. The nonce hides $x$: with $k$ unknown, $s = k + ex$ is one equation in two unknowns. And the <em>order</em> matters: if an impostor learned $e$ before committing to $kG$, they could pick any $s$ and set $kG = sG - e\,xG$, passing the check without knowing $x$.</p>
+        <p>Bitcoin cannot have Bob in the loop, since thousands of nodes (including ones that do not exist yet) must verify the proof. The <strong>Fiat-Shamir transform</strong> replaces Bob's challenge with a hash: $e = H(kG \Vert m)$. Alice cannot predict the hash before choosing $kG$, so the order is enforced by mathematics, and including $m$ binds the proof to a message. BIP340 additionally hashes in the public key, $e = H(R \Vert P \Vert m)$, which prevents a signature for one key being turned into a signature for a related key (exactly the danger with BIP32's publicly tweakable keys).</p>
+        <h4>BIP340 precisely</h4>
+        <p>BIP340 uses 32-byte <strong>x-only</strong> public keys and nonces: every point is implicitly the one with even $y$. To sign message $m$ with secret key $d_0$:</p>
+        <ol><li>$P = d_0 G$; if $P$ has odd $y$, use $d = n - d_0$ (so that $dG$ has even $y$), else $d = d_0$.</li><li>Derive the nonce deterministically from the key, the message and optional randomness: $k_0 = H_{\text{BIP0340/nonce}}\big((d \oplus H_{\text{BIP0340/aux}}(a)) \Vert P_x \Vert m\big)$; $R = k_0 G$; flip $k$ to $n - k_0$ if $R$ has odd $y$.</li><li>$e = H_{\text{BIP0340/challenge}}(R_x \Vert P_x \Vert m) \bmod n$.</li><li>$s = k + e\,d \bmod n$. The signature is $R_x \Vert s$: exactly <strong>64 bytes</strong>.</li></ol>
+        <p>Verification recomputes $e$ and checks that $R' = sG - eP$ has even $y$ and $x$-coordinate $R_x$. In code (reusing <code>point_add</code>, <code>point_mul</code>, <code>G</code>, <code>N</code>, <code>P</code> from Section 3):</p>
+        <pre><code>def tagged_hash(tag, msg):
+    t = hashlib.sha256(tag.encode()).digest()
+    return hashlib.sha256(t + t + msg).digest()
+
+def lift_x(x):                                    # the even-y point with this x, if any
+    y_sq = (pow(x, 3, P) + 7) % P
+    y = pow(y_sq, (P + 1) // 4, P)
+    if pow(y, 2, P) != y_sq: return None
+    return (x, y if y % 2 == 0 else P - y)
+
+def xonly(pt): return pt[0].to_bytes(32, "big")
+def i(b): return int.from_bytes(b, "big")
+
+def schnorr_sign(msg, d0, aux=b"\0" * 32):
+    Pk = point_mul(G, d0); d = d0 if Pk[1] % 2 == 0 else N - d0
+    t = (d ^ i(tagged_hash("BIP0340/aux", aux))).to_bytes(32, "big")
+    k0 = i(tagged_hash("BIP0340/nonce", t + xonly(Pk) + msg)) % N
+    R = point_mul(G, k0); k = k0 if R[1] % 2 == 0 else N - k0
+    e = i(tagged_hash("BIP0340/challenge", xonly(R) + xonly(Pk) + msg)) % N
+    return xonly(R) + ((k + e * d) % N).to_bytes(32, "big")
+
+def schnorr_verify(msg, pubkey32, sig):
+    Pk, r, s = lift_x(i(pubkey32)), i(sig[:32]), i(sig[32:])
+    if Pk is None or r &gt;= P or s &gt;= N: return False
+    e = i(tagged_hash("BIP0340/challenge", sig[:32] + pubkey32 + msg)) % N
+    R = point_add(point_mul(G, s), point_mul((Pk[0], P - Pk[1]), e))   # sG - eP
+    return R is not None and R[1] % 2 == 0 and R[0] == r</code></pre>
+        <p>This code reproduces all 19 official BIP340 test vectors (signing and verification).</p>
+        <h4>Why Bitcoin wanted Schnorr</h4>
+        <ul><li><strong>Provable security</strong> from the discrete log assumption in the random oracle model, which ECDSA has never had.</li><li><strong>Fixed 64-byte encoding</strong>, versus 71 to 73 bytes of DER.</li><li><strong>Linearity.</strong> Signatures and keys add: if $s_1 = k_1 + e x_1$ and $s_2 = k_2 + e x_2$ share the same $e$ (computed from the summed nonce and key), then $s_1 + s_2$ is a valid signature for the key $X_1 + X_2$ with nonce $R_1 + R_2$. This is the foundation of MuSig2, FROST and adaptor signatures (Part VIII).</li><li><strong>Batch verification.</strong> With random weights $a_i$, the $u$ checks $s_i G = R_i + e_i P_i$ collapse into one multi-scalar multiplication, $\left(\sum a_i s_i\right) G = \sum a_i R_i + \sum (a_i e_i) P_i$, which the book estimates at about half the cost of individual verification for a block's worth of signatures. Taproot's rules were shaped so that nodes <em>can</em> do this; that constraint is why Tapscript dropped <code>OP_CHECKMULTISIG</code> (Section 20).</li></ul>
+        <h3>18. MAST and pay-to-contract, the two ingredients</h3>
+        <h4>MAST: only reveal the branch you use</h4>
+        <p>Section 6's <code>IF</code>/<code>ELSE</code> trees work, but the book lists three costs: every branch adds bytes that every spender pays for, scripts have size limits that cap the number of branches, and <strong>every branch is revealed</strong> on every spend. If Mohammed's company spends with the 2-of-3 partners path, the whole world (including their lawyer) sees the lawyer's recovery clauses and can track their funds.</p>
+        <p>A Merkle tree fixes all three. Hash each alternative script into a leaf, hash leaves pairwise up to a root, commit to the root, and at spend time reveal only the script being used plus the sibling hashes on its path. A path costs one 32-byte hash per level, so the cost grows with $\log_2$ of the number of alternatives: a path of 15 hashes (480 bytes) selects one script out of 32,768. Placement matters too: putting the most likely script near the root (a Huffman tree, weighted by probability) minimises the expected cost. Unused branches stay private, and so does their <em>number</em>: a tree could hold one condition or a trillion.</p>
+        <p>The name has a history the book enjoys: the original idea was <em>Merklized Abstract Syntax Trees</em>, which Merklize every sub-expression; what Bitcoin adopted is a set of complete alternative scripts, so Anthony Towns coined the backronym <em>Merklized Alternative Script Trees</em>.</p>
+        <h4>Pay-to-contract: commit inside a public key</h4>
+        <p>Recall key tweaking from Section 3. Bob wants proof of what he paid Alice for. They hash a description of the deal into a scalar $t = H(\text{contract})$, Bob pays to $A' = A + tG$, and Alice spends with $a' = a + t$. Later Bob can reveal $A$ and the contract to prove the payment; Alice's spend proves she knew the contract. To everyone else, $A'$ is just another key.</p>
+        <h4>Putting them together</h4>
+        <p>In 2018 developers realised these combine. Most contracts end with everyone happy, and a contract that ends happily needs no enforcement, only a signature from all parties. So: make the "everyone agrees" case a <strong>public key</strong> (possibly an aggregate of many parties' keys), and use pay-to-contract to tweak that key with the <strong>Merkle root</strong> of the fallback scripts. If everyone cooperates, spend with one signature for the tweaked key; the scripts are never revealed, and the spend looks exactly like any single-key payment. If not, reveal one script and prove it was committed to.</p>
+        <h3>19. P2TR: the Taproot construction (BIP341)</h3>
+        <h4>Building an output</h4>
+        <p>Given an <strong>internal key</strong> $P$ (x-only) and a tree of scripts:</p>
+        <p>$$ h_{leaf} = H_{\text{TapLeaf}}\big(v \ \Vert\ \text{compact\_size}(|s|) \ \Vert\ s\big), \qquad v = \texttt{0xc0} \ \text{for Tapscript} $$</p>
+        <p>$$ h_{branch} = H_{\text{TapBranch}}\big(\min(a, b) \ \Vert\ \max(a, b)\big) $$</p>
+        <p>$$ t = H_{\text{TapTweak}}\big(P_x \ \Vert\ \text{root}\big), \qquad Q = P + tG $$</p>
+        <p>The output is <code>OP_1 &lt;Q_x&gt;</code>: 34 bytes, <code>51 20 &lt;32 bytes&gt;</code>, displayed as a <code>bc1p…</code> bech32m address. Children of a branch are sorted before hashing, so Merkle proofs do not need left/right flags. With no script tree at all, BIP341 still recommends tweaking with $t = H_{\text{TapTweak}}(P_x)$, which provably commits to "no scripts" and stops a malicious co-signer from hiding a script path in an aggregate key.</p>
+        <h4>Two ways to spend</h4>
+        <p><strong>Key path.</strong> The witness is a single item: a 64-byte signature (65 with an explicit sighash byte) that verifies against $Q$. Whoever controls $P$'s secret $d$ signs with $d + t$ (adjusting signs for even $y$). That is what Alice's transaction in Section 4 did.</p>
+        <p><strong>Script path.</strong> The witness is <code>&lt;inputs to the script ...&gt; &lt;script&gt; &lt;control block&gt;</code>. The control block is</p>
+        <p>$$ \underbrace{(v \,|\, \text{parity}(Q))}_{1 \text{ byte}} \ \Vert\ \underbrace{P_x}_{32} \ \Vert\ \underbrace{e_1 \Vert e_2 \Vert \dots \Vert e_m}_{32m \text{ bytes, } m \le 128} $$</p>
+        <p>and a node verifies it like this:</p>
+        <ol><li>If there are at least two witness items and the last starts with <code>0x50</code>, remove it: it is the <strong>annex</strong>, reserved for future soft forks and covered by signatures. Do not use it.</li><li>If one item remains, it is a key-path signature: verify it against $Q$. Otherwise take the last item as the control block $c$ and the one before it as the script $s$.</li><li>Compute $k_0 = h_{leaf}(v, s)$ and fold in the path: $k_{j+1} = H_{\text{TapBranch}}(\text{sorted}(k_j, e_{j+1}))$.</li><li>Compute $t = H_{\text{TapTweak}}(P_x \Vert k_m)$ and check that $P + tG$ has $x$-coordinate $Q_x$ and the parity bit from $c$.</li><li>Execute $s$ under the rules of leaf version $v$ (Tapscript for <code>0xc0</code>; unknown leaf versions succeed, reserved for future soft forks) with the remaining items as the initial stack.</li></ol>
+        <h4>When there should be no key path</h4>
+        <p>Sometimes no single key (or aggregate) should be able to spend. BIP341 suggests a "nothing up my sleeve" (NUMS) internal key whose discrete log nobody knows:</p>
+        <p>$$ H = \text{lift\_x}\big(\text{SHA256}(\text{uncompressed encoding of } G)\big) = \texttt{50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0} $$</p>
+        <p>Using $H$ directly marks your output as "script path only" to anyone who checks; using $H + rG$ for a random $r$ hides that, and revealing $r$ later proves it.</p>
+        <h4>A worked example</h4>
+        <p>Here is a complete 2-of-3 output for Alice, Bob and Carol that we will analyse further in Part VIII. The internal key is a MuSig2 aggregate of Alice and Bob (the pair expected to sign day to day, Section 26), and the tree holds two fallback leaves for Alice with Carol and Bob with Carol:</p>
+        <pre><code>def ser_compact_size(n):           # enough for scripts under 253 bytes
+    return bytes([n])
+
+def tapleaf_hash(script, v=0xC0):
+    return tagged_hash("TapLeaf", bytes([v]) + ser_compact_size(len(script)) + script)
+
+def tapbranch_hash(a, b):
+    return tagged_hash("TapBranch", min(a, b) + max(a, b))
+
+def taproot_output_key(internal_x: bytes, merkle_root: bytes):
+    t = i(tagged_hash("TapTweak", internal_x + merkle_root))
+    Q = point_add(lift_x(i(internal_x)), point_mul(G, t))
+    return Q                       # scriptPubKey = OP_1 &lt;xonly(Q)&gt;; parity bit = Q[1] &amp; 1
+
+# 32-byte x-only keys of the three signers (derived from toy secrets "alice", "bob", "carol")
+A = bytes.fromhex("9997a497d964fc1a62885b05a51166a65a90df00492c8d7cf61d6accf54803be")
+B = bytes.fromhex("4edfcf9dfe6c0b5c83d1ab3f78d1b39a46ebac6798e08e19761f5ed89ec83c10")
+C = bytes.fromhex("9094567ba7245794198952f68e5723ac5866ad2f67dd97223db40e14c15b092e")
+
+leaf_AC = b"\x20" + A + b"\xad" + b"\x20" + C + b"\xac"     # &lt;A&gt; CHECKSIGVERIFY &lt;C&gt; CHECKSIG
+leaf_BC = b"\x20" + B + b"\xad" + b"\x20" + C + b"\xac"     # &lt;B&gt; CHECKSIGVERIFY &lt;C&gt; CHECKSIG
+root = tapbranch_hash(tapleaf_hash(leaf_AC), tapleaf_hash(leaf_BC))
+internal = bytes.fromhex("b2137077e857a79ca67f28ed8195ebeeb85668af309d228fb9cc65eae718fb02")  # MuSig2(A, B)
+Q = taproot_output_key(internal, root)</code></pre>
+        <p>The intermediate values:</p>
+        <pre><code>TapLeaf(A&amp;C)  293d8517a70f99003525bff3a26c665ab5b68a493d645b184e22400fe9b53fb7
+TapLeaf(B&amp;C)  73ffe226e095a49b5d4b6ba7ab7826c9eb6c155947e57b7dd5e175e847087a1a
+Merkle root   f2a73554974065bd1c4b9c8aab45cbc31f672468757ab3ab497315f69c224a83
+tweak t       479b0cde09d7b166b2c2fa1205330318e6951c4087c498dc231eb3e49da10c09
+output key Q  32a0bd1162ca433c64fa1e1a2f5bb7452e159d26e6c18dd192fc7e04a49fcaa3  (odd y)
+address       bc1px2st6ytzefpnce86rcdz7kahg5hpt8fxumqcm5vjl3lqffyle23srmmuas</code></pre>
+        <p>To spend through the Alice-and-Carol leaf, the control block is <code>c1</code> (leaf version <code>c0</code> plus parity bit 1) ‖ the internal key ‖ the sibling hash <code>TapLeaf(B&amp;C)</code>: 65 bytes. The same code reproduces the official BIP341 wallet test vectors, and an independent descriptor library (<code>embit</code>) derives the same address from <code>tr(b213…fb02,{and_v(v:pk(A),pk(C)),and_v(v:pk(B),pk(C))})</code>.</p>
+        <h4>The Taproot signature digest</h4>
+        <p>BIP341 replaces BIP143's digest for v1 outputs. The message is $H_{\text{TapSighash}}(\texttt{0x00} \Vert \text{SigMsg})$, a single SHA256 of a tagged hash (no double hashing), where <code>SigMsg</code> contains, in order: the hash type, version, lock time, and (unless <code>ANYONECANPAY</code>) SHA256s of all prevouts, <strong>all spent amounts</strong>, <strong>all spent scriptPubKeys</strong> and all sequences; then (unless <code>NONE</code> or <code>SINGLE</code>) a hash of all outputs; then a <code>spend_type</code> byte (key path or script path, annex or not), this input's position or details, the annex hash if present, the matching output for <code>SINGLE</code>; and for script-path spends the <strong>TapLeaf hash</strong> being executed, a key version, and the position of the last executed <code>OP_CODESEPARATOR</code>.</p>
+        <p>Three changes stand out:</p>
+        <ul><li><strong>Every input's amount and scriptPubKey are signed.</strong> If the host lies about any input's value, or about which inputs belong to the wallet, every signature it obtains is invalid. A hardware wallet can therefore trust the amounts it is shown when it computes the fee, closing the cross-session lie described at the end of Part V.</li><li><strong>Script-path signatures commit to the leaf.</strong> A signature made for one leaf cannot be replayed in another leaf that contains the same key.</li><li><strong><code>SIGHASH_DEFAULT</code> (0x00)</strong>: a 64-byte signature means "everything", saving the sighash byte.</li></ul>
+        <h4>What Taproot buys, and what it costs</h4>
+        <p>When the key path is used, an input is 57.5 vB regardless of how many people stand behind the key or how many fallback scripts exist, and it is indistinguishable from any other single-signature Taproot spend. Script-path spends reveal only the branch used. The costs, which the book is honest about: an output that never wants a key path still pays 33 bytes for the internal key in every script-path spend; Taproot outputs commit to a public key directly (the tweaked $Q$) rather than to a hash; and the output is 43 bytes, a little more than P2WPKH's 31.</p>
+        <h3>20. Tapscript (BIP342)</h3>
+        <p>Leaf version <code>0xc0</code> runs <strong>Tapscript</strong>, a revision of Script with the following differences:</p>
+        <table><thead><tr><th>Aspect</th><th>Legacy and SegWit v0</th><th>Tapscript</th></tr></thead><tbody><tr><td>Signature scheme</td><td>ECDSA, DER, 71 to 73 bytes</td><td>BIP340 Schnorr, 64 or 65 bytes</td></tr><tr><td>Public keys</td><td>33-byte compressed (65 legacy)</td><td>32-byte x-only; empty key fails; any other length is an "unknown key type" that always validates (reserved for soft forks)</td></tr><tr><td>Multisig opcodes</td><td><code>CHECKMULTISIG(VERIFY)</code></td><td><strong>disabled</strong>; use <code>OP_CHECKSIGADD</code></td></tr><tr><td>Failed signature checks</td><td>push false (NULLFAIL is policy)</td><td>the signature must be empty; a non-empty invalid signature fails the whole script</td></tr><tr><td><code>IF</code> arguments</td><td>MINIMALIF is policy (P2WSH)</td><td>exactly empty or <code>01</code>, by consensus</td></tr><tr><td>Script size</td><td>10,000 bytes</td><td>no limit beyond block weight</td></tr><tr><td>Non-push opcodes</td><td>at most 201</td><td>no limit</td></tr><tr><td>Signature operations</td><td>counted against the block's sigop limit</td><td>per-input budget: 50 + the input's witness size in bytes; each executed check with a non-empty signature costs 50</td></tr><tr><td>Stack</td><td>1,000 elements, 520 bytes each</td><td>same, now also checked on the initial stack</td></tr><tr><td>Upgrade hooks</td><td><code>OP_NOPx</code></td><td><code>OP_SUCCESSx</code>, leaf versions, unknown key types, annex</td></tr></tbody></table>
+        <h4>OP_CHECKSIGADD</h4>
+        <p><code>OP_CHECKSIGADD</code> (<code>0xba</code>) pops a public key, a number $n$ and a signature, and pushes $n + 1$ if the signature is valid or $n$ if it is empty. It is equivalent to <code>OP_ROT OP_SWAP OP_CHECKSIG OP_ADD</code> in one byte. A $t$-of-$k$ threshold becomes a running count:</p>
+        <pre><code>&lt;pk_1&gt; OP_CHECKSIG &lt;pk_2&gt; OP_CHECKSIGADD ... &lt;pk_k&gt; OP_CHECKSIGADD &lt;t&gt; OP_NUMEQUAL</code></pre>
+        <p>Why replace <code>CHECKMULTISIG</code>? Because it tries each signature against keys until one matches, so some checks are <em>expected</em> to fail, and you cannot batch-verify a set of checks some of which are supposed to fail. In Tapscript every non-empty signature must be valid, so a node could validate all of a block's signatures in one batch and reject the block if the batch fails. Part VIII shows <code>OP_CHECKSIGADD</code> in action.</p>
+        <h4>OP_SUCCESSx</h4>
+        <p>Opcodes 80, 98, 126 to 129, 131 to 134, 137 to 138, 141 to 142, 149 to 153 and 187 to 254 are renamed <code>OP_SUCCESSx</code>. If one appears <em>anywhere</em> in a tapscript, even in an unexecuted branch, the script succeeds immediately; the check happens before execution. That sounds alarming, but only the output's owner chose the script, so nobody can inject one into your coins. Its purpose is upgrades: a soft fork can turn any <code>OP_SUCCESSx</code> into a real opcode with arbitrary semantics (even ones that push to the stack, which redefined <code>OP_NOP</code>s could never do), because making a "succeed" opcode sometimes fail only tightens the rules. The flip side: using one today makes your output anyone-can-spend. <code>OP_CAT</code> (126) and the disabled arithmetic opcodes all live in this range, which is why covenant proposals target Tapscript.</p>
+        
+        <h2>Part VII: The Output Types Side by Side, and Time</h2>
+        <h3>21. The output-type map</h3>
+        <p>Every standard output type in one table. Input sizes assume compressed keys, 72-byte ECDSA signatures (including the sighash byte) and 64-byte Schnorr signatures; multisig rows are 2-of-3.</p>
+        <table><thead><tr><th>Type</th><th>Since</th><th><code>scriptPubKey</code></th><th>Spent with</th><th>Output</th><th>Input</th><th>Address</th><th>Output commits to</th></tr></thead><tbody><tr><td>P2PK</td><td>2009</td><td><code>&lt;pk&gt; OP_CHECKSIG</code></td><td>scriptSig <code>&lt;sig&gt;</code></td><td>44 B</td><td>114 vB</td><td>none</td><td>the raw key</td></tr><tr><td>P2PKH</td><td>2009</td><td><code>OP_DUP OP_HASH160 &lt;20&gt; OP_EQUALVERIFY OP_CHECKSIG</code></td><td>scriptSig <code>&lt;sig&gt; &lt;pk&gt;</code></td><td>34 B</td><td>148 vB</td><td><code>1…</code></td><td>HASH160 of the key</td></tr><tr><td>P2MS (bare)</td><td>2009</td><td><code>OP_2 &lt;pk&gt; &lt;pk&gt; &lt;pk&gt; OP_3 OP_CHECKMULTISIG</code></td><td>scriptSig <code>OP_0 &lt;sig&gt; &lt;sig&gt;</code></td><td>114 B</td><td>188 vB</td><td>none</td><td>the raw script</td></tr><tr><td>OP_RETURN</td><td>2014 (policy)</td><td><code>OP_RETURN &lt;data&gt;</code></td><td>unspendable</td><td>9 B + script</td><td>n/a</td><td>none</td><td>nothing (data)</td></tr><tr><td>P2SH</td><td>2012, BIP16</td><td><code>OP_HASH160 &lt;20&gt; OP_EQUAL</code></td><td>scriptSig <code>… &lt;redeemScript&gt;</code></td><td>32 B</td><td>297 vB (2-of-3)</td><td><code>3…</code></td><td>HASH160 of the script (80-bit collision security)</td></tr><tr><td>P2SH-P2WPKH</td><td>2017</td><td>P2SH</td><td>scriptSig <code>&lt;0014…&gt;</code> + witness <code>&lt;sig&gt; &lt;pk&gt;</code></td><td>32 B</td><td>91 vB</td><td><code>3…</code></td><td>HASH160 of a v0 program</td></tr><tr><td>P2SH-P2WSH</td><td>2017</td><td>P2SH</td><td>scriptSig <code>&lt;0020…&gt;</code> + witness <code>… &lt;script&gt;</code></td><td>32 B</td><td>139.5 vB (2-of-3)</td><td><code>3…</code></td><td>HASH160 of a v0 program (80-bit)</td></tr><tr><td>P2WPKH</td><td>2017, BIP141</td><td><code>OP_0 &lt;20&gt;</code></td><td>witness <code>&lt;sig&gt; &lt;pk&gt;</code></td><td>31 B</td><td>68 vB</td><td><code>bc1q…</code> (42)</td><td>HASH160 of the key</td></tr><tr><td>P2WSH</td><td>2017, BIP141</td><td><code>OP_0 &lt;32&gt;</code></td><td>witness <code>… &lt;witnessScript&gt;</code></td><td>43 B</td><td>104.5 vB (2-of-3)</td><td><code>bc1q…</code> (62)</td><td>SHA256 of the script (128-bit)</td></tr><tr><td>P2TR</td><td>2021, BIP341</td><td><code>OP_1 &lt;32&gt;</code></td><td>key path <code>&lt;sig&gt;</code>; script path <code>… &lt;script&gt; &lt;control&gt;</code></td><td>43 B</td><td>57.5 vB (key path)</td><td><code>bc1p…</code></td><td>tweaked key (128-bit)</td></tr><tr><td>P2A</td><td>2024 (policy), BIP433</td><td><code>OP_1 &lt;4e73&gt;</code></td><td>empty witness</td><td>13 B</td><td>41 vB</td><td><code>bc1pfeessrawgf</code></td><td>nothing (keyless)</td></tr><tr><td>Future SegWit</td><td>reserved</td><td><code>OP_2</code>…<code>OP_16</code> <code>&lt;2–40 B&gt;</code></td><td>not standard to spend yet</td><td>≤ 51 B</td><td>n/a</td><td><code>bc1z…</code> …</td><td>to be defined</td></tr></tbody></table>
+        <p>Two patterns jump out. First, each generation moved bytes from the output (paid by the sender, stored in the UTXO set) into the spend (paid by the receiver, discounted in the witness). Second, the commitment got stronger: from nothing (P2PK, bare multisig) to 160-bit hashes, to 256-bit hashes or keys.</p>
+        <p>Policy also sets a <strong>dust threshold</strong> per type: an output is dust if its value is below the cost of the output plus the input that would later spend it, priced at 3 sat/vB. The resulting numbers, which Lightning's specification lists explicitly:</p>
+        <table><thead><tr><th>Type</th><th>Dust threshold</th><th>Calculation (bytes × 3 sat/vB)</th></tr></thead><tbody><tr><td>P2PKH</td><td>546 sat</td><td>(34 output + 148 input) × 3</td></tr><tr><td>P2SH</td><td>540 sat</td><td>(32 + 148) × 3</td></tr><tr><td>P2WPKH</td><td>294 sat</td><td>(31 + 67) × 3, the input's witness discounted</td></tr><tr><td>P2WSH, P2TR</td><td>330 sat</td><td>(43 + 67) × 3</td></tr><tr><td>P2A</td><td>240 sat</td><td>(13 + 67) × 3</td></tr><tr><td>Unknown SegWit versions</td><td>354 sat</td><td>(51 + 67) × 3</td></tr><tr><td>OP_RETURN</td><td>never dust</td><td>unspendable, not in the UTXO set</td></tr></tbody></table>
+        <h3>22. Timelocks: programming with time</h3>
+        <p>Bitcoin has four timelock mechanisms, forming a 2×2 grid:</p>
+        <table><thead><tr><th></th><th>Transaction field</th><th>Script opcode</th></tr></thead><tbody><tr><td><strong>Absolute</strong> ("not before height/time X")</td><td><code>nLockTime</code></td><td><code>OP_CHECKLOCKTIMEVERIFY</code> (BIP65, 2015)</td></tr><tr><td><strong>Relative</strong> ("not before N blocks/seconds after the spent output confirmed")</td><td><code>nSequence</code> (BIP68, 2016)</td><td><code>OP_CHECKSEQUENCEVERIFY</code> (BIP112, 2016)</td></tr></tbody></table>
+        <p>The <strong>field</strong> restricts when a <em>transaction</em> can be mined. The <strong>opcode</strong> restricts which transactions can spend an <em>output</em>, by forcing the spending transaction to set the field. The difference matters. The book's example: Alice signs a transaction to Bob with <code>nLockTime</code> three months ahead and hands it to him. Bob cannot broadcast it early, but nothing stops Alice from spending the same coins elsewhere tomorrow. To guarantee Bob the money, the condition must live in the <em>output</em>.</p>
+        <h4>Absolute: OP_CHECKLOCKTIMEVERIFY</h4>
+        <pre><code>&lt;Bob's pubkey&gt; OP_CHECKSIGVERIFY &lt;now + 12960 blocks&gt; OP_CHECKLOCKTIMEVERIFY</code></pre>
+        <p>12,960 blocks is about 90 days. <code>OP_CHECKLOCKTIMEVERIFY</code> (CLTV) fails unless all of these hold:</p>
+        <ul><li>the stack is non-empty and the top item, read as a number, is non-negative;</li><li>it is the same <em>kind</em> of lock as the transaction's <code>nLockTime</code> (both heights below 500,000,000, or both timestamps);</li><li>it is less than or equal to the transaction's <code>nLockTime</code>;</li><li>the input's <code>nSequence</code> is not <code>0xffffffff</code> (otherwise <code>nLockTime</code> would be ignored).</li></ul>
+        <p>Since the transaction can only be mined after its <code>nLockTime</code>, the output can only be spent after the script's time. Like every redefined <code>NOP</code>, CLTV leaves its argument on the stack, so it is usually followed by <code>OP_DROP</code> (above it simply serves as the final true value).</p>
+        <p>Two gotchas from the book. All time-based locks are measured against <strong>median time past</strong>, about an hour behind the clock. And since a transaction has one <code>nLockTime</code>, a script that requires both a height-based and a time-based CLTV can never be satisfied, nor can a transaction spend two inputs whose CLTVs use different kinds. Miniscript (Section 30) detects such mistakes.</p>
+        <h4>Relative: nSequence and OP_CHECKSEQUENCEVERIFY</h4>
+        <p>BIP68 gives the input's <code>nSequence</code> a second meaning when the transaction version is at least 2:</p>
+        <pre><code> bit 31           bit 22                              bits 15..0
++---------------+-----------------------------------+------------------------------+
+| disable flag  | type: 0 = blocks, 1 = 512-s units | lock value (16 bits)         |
++---------------+-----------------------------------+------------------------------+</code></pre>
+        <p>If bit 31 is clear, the input cannot be mined until the output it spends is at least that old: up to 65,535 blocks (about 455 days) or $65{,}535 \times 512$ s (about 388 days). Examples: <code>0x00000090</code> means 144 blocks (about a day); <code>0x004000a8</code> means $168 \times 512 = 86{,}016$ seconds. Any relative lock also signals RBF, since such a sequence is below <code>0xfffffffe</code>.</p>
+        <p><code>OP_CHECKSEQUENCEVERIFY</code> (CSV) is to <code>nSequence</code> what CLTV is to <code>nLockTime</code>:</p>
+        <pre><code>&lt;1000&gt; OP_CHECKSEQUENCEVERIFY OP_DROP &lt;pubkey&gt; OP_CHECKSIG</code></pre>
+        <p>It requires transaction version ≥ 2, the disable bit clear, the same type flag, and a value at least as large as the script's. BIP68 then enforces the actual age. Because the clock starts when the output confirms, relative locks are the natural tool for chains of presigned transactions: "the other party has N blocks to respond after you publish". Lightning's penalty mechanism is built on exactly this (Section 31).</p>
+        <h4>The book's grand finale: a company account with time-based fallbacks</h4>
+        <p>Here is the book's Example 7-1 in full. Mohammed's company account is controlled by three partners (Mohammed, Saeed and Zaira) and their lawyer:</p>
+        <ul><li>normally, any 2 of the 3 partners can spend;</li><li>after 30 days of inactivity, the lawyer plus any 1 partner can spend;</li><li>after 90 days, the lawyer alone can spend.</li></ul>
+        <pre><code>01  OP_IF
+02    OP_IF
+03      2
+04    OP_ELSE
+05      &lt;30 days&gt; OP_CHECKSEQUENCEVERIFY OP_DROP
+06      &lt;Lawyer's Pubkey&gt; OP_CHECKSIGVERIFY
+07      1
+08    OP_ENDIF
+09    &lt;Mohammed's Pubkey&gt; &lt;Saeed's Pubkey&gt; &lt;Zaira's Pubkey&gt; 3 OP_CHECKMULTISIG
+10  OP_ELSE
+11    &lt;90 days&gt; OP_CHECKSEQUENCEVERIFY OP_DROP
+12    &lt;Lawyer's Pubkey&gt; OP_CHECKSIG
+13  OP_ENDIF</code></pre>
+        <p>The clever bit is lines 3 and 7: both branches of the inner <code>IF</code> just push the <em>threshold</em> for the shared <code>CHECKMULTISIG</code> on line 9, 2 normally or 1 when the lawyer has already signed. The spender picks a path with the values on top of the stack (consumed top first):</p>
+        <table><thead><tr><th>Path</th><th>Unlocking data (top of stack last)</th><th><code>nSequence</code> needed</th></tr></thead><tbody><tr><td>2 of 3 partners</td><td><code>OP_0 &lt;Mohammed's sig&gt; &lt;Zaira's sig&gt; OP_TRUE OP_TRUE</code></td><td>any</td></tr><tr><td>lawyer + 1 partner</td><td><code>OP_0 &lt;Saeed's sig&gt; &lt;Lawyer's sig&gt; OP_FALSE OP_TRUE</code></td><td>≥ 4,320 blocks</td></tr><tr><td>lawyer alone</td><td><code>&lt;Lawyer's sig&gt; OP_FALSE</code></td><td>≥ 12,960 blocks</td></tr></tbody></table>
+        <p>With compressed keys the script is 192 bytes. Running it through the interpreter with real signatures and 30 days as 4,320 blocks and 90 days as 12,960: path 1 is valid; path 2 is valid with <code>nSequence = 4320</code> and fails with "CSV failed" at <code>nSequence = 100</code>; path 3 is valid at 12,960 and fails at 4,320.</p>
+        <p>This script is a fine piece of engineering and also a perfect illustration of what Taproot fixed: every spend reveals all four keys, both timelocks and the company's governance structure, and every spend pays for the bytes of all three paths. We will rebuild it as a Taproot output in Section 28.</p>
+        
+        <h2>Part VIII: Multisig, Five Generations</h2>
+        <p>Everything so far was preparation for this part. "Multisig" in Bitcoin is not one technique but a family that grew with each protocol upgrade. We now have all the pieces to compare them precisely.</p>
+        <h3>23. The multisig design space</h3>
+        <p>Two distinctions organise everything:</p>
+        <ul><li><strong>$k$-of-$k$ versus $t$-of-$k$.</strong> Either everyone must sign (a <em>multisignature</em> in the narrow sense) or any $t$ of them may (a <em>threshold</em> policy).</li><li><strong>Scripted versus scriptless.</strong> In a <em>scripted</em> multisig, the keys and the individual signatures go on chain and Script checks them. In a <em>scriptless</em> one, the parties combine keys and signatures off chain with cryptography, and the chain sees one key and one signature.</li></ul>
+        <p>Choosing between constructions means trading along these axes:</p>
+        <table><thead><tr><th>Axis</th><th>Scripted (CHECKMULTISIG, CHECKSIGADD)</th><th>Scriptless (MuSig2, FROST)</th></tr></thead><tbody><tr><td>On-chain size</td><td>grows with the number of keys and signatures</td><td>constant: one key, one signature</td></tr><tr><td>Privacy</td><td>the policy and the signers are public on spend</td><td>indistinguishable from a single-key spend</td></tr><tr><td>Accountability</td><td>anyone can see which keys signed</td><td>nobody can prove who did or did not sign</td></tr><tr><td>Signing interaction</td><td>each signer signs independently, in any order, once</td><td>at least two rounds; signers keep secret nonce state between them</td></tr><tr><td>Key setup</td><td>just collect public keys</td><td>MuSig2: non-interactive aggregation; FROST: an interactive DKG (or a trusted dealer)</td></tr><tr><td>Expressiveness</td><td>any mix of keys, timelocks, hashlocks</td><td>just a key (but can be combined with Taproot leaves)</td></tr><tr><td>Tooling</td><td>universal in wallets and hardware signers</td><td>standardised (MuSig2) or still being standardised (FROST)</td></tr></tbody></table>
+        <p>The book's example of the interaction cost is memorable: if one of your hardware signers lives in a bank safe deposit box, a scripted multisig needs one visit to sign, a scriptless one may need two or three.</p>
+        <p>The five generations, which the rest of this part walks through:</p>
+        <table><thead><tr><th>Generation</th><th>Construction</th><th>Since</th></tr></thead><tbody><tr><td>1</td><td>bare <code>CHECKMULTISIG</code> (P2MS)</td><td>2009</td></tr><tr><td>2</td><td><code>CHECKMULTISIG</code> inside P2SH</td><td>2012</td></tr><tr><td>3</td><td><code>CHECKMULTISIG</code> inside P2WSH (and P2SH-P2WSH)</td><td>2017</td></tr><tr><td>4</td><td>Tapscript: <code>CHECKSIGADD</code>, <code>CHECKSIGVERIFY</code> chains, one leaf per signing set</td><td>2021</td></tr><tr><td>5</td><td>scriptless: MuSig2 ($k$-of-$k$) and FROST ($t$-of-$k$) in the Taproot key path</td><td>2021 onwards (BIP327 from 2022, FROST drafts 2024–26)</td></tr></tbody></table>
+        <h3>24. Generations 1 to 3: CHECKMULTISIG in bare, P2SH and P2WSH outputs</h3>
+        <p>The first three generations run the same script, <code>OP_t &lt;pk_1&gt; … &lt;pk_k&gt; OP_k OP_CHECKMULTISIG</code>, and differ only in where it lives:</p>
+        <table><thead><tr><th></th><th>Bare (P2MS)</th><th>P2SH</th><th>P2SH-P2WSH</th><th>P2WSH</th></tr></thead><tbody><tr><td>Script lives in</td><td>the output</td><td>the <code>scriptSig</code></td><td>the witness</td><td>the witness</td></tr><tr><td>Output commits with</td><td>nothing (the script itself)</td><td>HASH160 (20 B)</td><td>HASH160 of a SHA256 program</td><td>SHA256 (32 B)</td></tr><tr><td>Max keys</td><td>3 (policy)</td><td>15 (520-byte push)</td><td>20 per <code>CHECKMULTISIG</code></td><td>20 per <code>CHECKMULTISIG</code></td></tr><tr><td>Unlocking data</td><td><code>OP_0 &lt;sigs&gt;</code> in <code>scriptSig</code></td><td><code>OP_0 &lt;sigs&gt; &lt;redeemScript&gt;</code> in <code>scriptSig</code></td><td><code>scriptSig</code> = <code>&lt;0020…&gt;</code>; witness = <code>"" &lt;sigs&gt; &lt;script&gt;</code></td><td>witness = <code>"" &lt;sigs&gt; &lt;script&gt;</code></td></tr><tr><td>2-of-3 input</td><td>188 vB</td><td>297 vB</td><td>139.5 vB</td><td>104.5 vB</td></tr></tbody></table>
+        <p>For signature-operation accounting, <code>CHECKMULTISIG</code> inside a P2SH redeem script or P2WSH witness script is counted "accurately" as $k$ sigops (read from the preceding <code>OP_k</code>, for $k \le 16$), versus a flat 20 in a bare output.</p>
+        <h4>Where you meet generation 3 today</h4>
+        <p>P2WSH <code>CHECKMULTISIG</code> remains the most widely supported multisig format: it is what most multisig coordinators and hardware signers default to, from personal cold storage to collaborative custody. It is also inside every Lightning channel opened without Taproot. BOLT 3 defines the funding output as a P2WSH of</p>
+        <pre><code>2 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 OP_CHECKMULTISIG</code></pre>
+        <p>where <code>pubkey1</code> is the lexicographically lesser of the two funding keys, and every commitment transaction spends it with the witness <code>0 &lt;signature_for_pubkey1&gt; &lt;signature_for_pubkey2&gt;</code> (the <code>0</code> being our old friend, the dummy).</p>
+        <h4>Alternatives inside the same generation</h4>
+        <p><code>CHECKMULTISIG</code> is not the only way to write a policy in P2WSH:</p>
+        <ul><li>A $k$-of-$k$ can be a chain: <code>&lt;A&gt; OP_CHECKSIGVERIFY &lt;B&gt; OP_CHECKSIG</code>. For 2-of-2 that is 70 bytes versus 71, and it needs no dummy element.</li><li>A threshold can be a counter: <code>&lt;A&gt; OP_CHECKSIG OP_SWAP &lt;B&gt; OP_CHECKSIG OP_ADD OP_SWAP &lt;C&gt; OP_CHECKSIG OP_ADD 2 OP_EQUAL</code>, with an empty signature for each non-signer. Miniscript compiles its <code>thresh()</code> fragment into exactly this kind of pattern, which mixes freely with timelocks and hashlocks.</li></ul>
+        <h4>Key order matters</h4>
+        <p><code>CHECKMULTISIG</code> is order-sensitive, and the script hash depends on the order of keys. If three cosigners each build "the" multisig from the same three keys in a different order, they get three different addresses. <strong>BIP67</strong> fixes a canonical order (sort compressed keys lexicographically), and descriptors expose it as <code>sortedmulti()</code>. For the toy keys of Alice, Bob and Carol used throughout this part:</p>
+        <pre><code>wsh(multi(2,A,B,C))           bc1qgckaltpvatqeds5czpe4cex7egywc7uh6gezcxqeaagnjdnxy93q6cvsfz
+wsh(sortedmulti(2,A,B,C))     bc1qr4uvawnp3nz7az3y0f0dchkd6ujqwznms7fd6ey24q7d9yqnu37qst7lx9
+sh(wsh(sortedmulti(2,A,B,C))) 38Hj7kSWxBLvhojqqVjujs6ZNMJFqgZG5q
+sh(sortedmulti(2,A,B,C))      32JCHnM8YukpZMZYNnyhVTosZjLvmjuSp8</code></pre>
+        <p>Same keys, same policy, four different addresses, all computed by my code and cross-checked against an independent descriptor implementation.</p>
+        <p><strong>Strengths of generations 1–3:</strong> universal support, signers who never talk to each other (a PSBT can be passed from one hardware device to the next), and full accountability: given the public keys, anyone can tell which keys produced the signatures. <strong>Weaknesses:</strong> every spend publishes all $k$ keys and the threshold, fingerprinting the wallet; cost grows linearly in $k$ and $t$; 20 keys per opcode.</p>
+        <h3>25. Generation 4: Tapscript multisig</h3>
+        <p>Tapscript removed <code>CHECKMULTISIG</code> and gave us three replacements, which can be mixed inside one Taproot tree.</p>
+        <h4>25.1 One leaf, a running count: <code>multi_a</code></h4>
+        <pre><code>&lt;A&gt; OP_CHECKSIG &lt;B&gt; OP_CHECKSIGADD &lt;C&gt; OP_CHECKSIGADD OP_2 OP_NUMEQUAL</code></pre>
+        <p>That is 104 bytes for three keys (each push is 33 bytes: <code>0x20</code> plus an x-only key). The witness provides one slot per key <strong>in reverse order</strong>, a valid signature or an empty vector, followed by the script and the control block. For Alice and Carol signing, the witness is <code>&lt;sig_C&gt; &lt;&gt; &lt;sig_A&gt; &lt;script&gt; &lt;control block&gt;</code>. The interpreter's trace (stack top on the right):</p>
+        <pre><code>initial                    sig_C  []  sig_A
+&lt;A&gt; OP_CHECKSIG            sig_C  []  1          Alice's signature checks out
+&lt;B&gt; OP_CHECKSIGADD         sig_C  1              empty signature: count unchanged
+&lt;C&gt; OP_CHECKSIGADD         2                     Carol's signature: count + 1
+OP_2 OP_NUMEQUAL           1                     2 == 2</code></pre>
+        <p>Two consequences of BIP342's rules: a non-signer <em>must</em> contribute an empty vector, and if any slot holds a non-empty but invalid signature, the <strong>whole script fails</strong> (the interpreter reports "bad signature" when Alice's signature is placed in Bob's slot). Descriptors call this <code>multi_a(t, …)</code> and <code>sortedmulti_a(t, …)</code> (BIP387, up to 999 keys, bounded by the 1,000-element stack limit). With the NUMS point as internal key, <code>tr(H, multi_a(2,A,B,C))</code> gives <code>bc1p0xj4cx4w9mf2sfsyusf3dezlrgyna0ayfdrwrs76k99qtv43pl0sfklkhx</code>. (A real wallet should use $H + rG$ rather than bare $H$, as Section 19 explained.)</p>
+        <p>A surprise in the numbers: this input is <strong>108.75 vB, slightly larger than the 104.5 vB of P2WSH <code>CHECKMULTISIG</code></strong>. Schnorr signatures save 16 WU and x-only keys save 3, but the control block adds 34 and the two extra counting opcodes add 2. <code>multi_a</code> is not about size; it is about everything around it: batch-verifiable signatures, sitting in a tree with other branches that stay hidden, and coexisting with a key path.</p>
+        <h4>25.2 Everyone signs: <code>CHECKSIGVERIFY</code> chains</h4>
+        <p>For $k$-of-$k$ in a leaf: <code>&lt;A&gt; OP_CHECKSIGVERIFY &lt;B&gt; OP_CHECKSIGVERIFY &lt;C&gt; OP_CHECKSIG</code>. No counting, no empty slots, and the smallest scripted form.</p>
+        <h4>25.3 One leaf per signing set</h4>
+        <p>Rather than one leaf that accepts any $t$ of $k$ signatures, build one leaf for each possible set of $t$ signers, each a $t$-of-$t$ chain. A spend reveals only the keys that actually signed (and one 32-byte hash per tree level), and the other keys stay private. The number of leaves is $\binom{k}{t}$ and the proof length $\lceil \log_2 \binom{k}{t} \rceil$:</p>
+        <table><thead><tr><th>Policy</th><th>Leaves $\binom{k}{t}$</th><th>Max path length (balanced tree)</th></tr></thead><tbody><tr><td>2-of-3</td><td>3</td><td>2</td></tr><tr><td>3-of-5</td><td>10</td><td>4</td></tr><tr><td>4-of-7</td><td>35</td><td>6</td></tr><tr><td>6-of-10</td><td>210</td><td>8</td></tr><tr><td>10-of-15</td><td>3,003</td><td>12</td></tr><tr><td>15-of-20</td><td>15,504</td><td>14</td></tr></tbody></table>
+        <p>The tree grows combinatorially, but that cost is paid off chain when building the tree; on chain the cost grows only logarithmically. A 2-of-2 leaf at depth 1 costs 107.5 vB to spend, at depth 2 115.5 vB.</p>
+        <h4>25.4 One aggregated key per signing set</h4>
+        <p>Replace each $t$-of-$t$ chain with a single key that is the MuSig2 aggregate of that set: the leaf is just <code>&lt;agg&gt; OP_CHECKSIG</code> (34 bytes). BIP342 itself suggests this as the most efficient scripted threshold. A spend is one Schnorr signature: <strong>82.75 vB</strong> at depth 1, 90.75 vB at depth 2, and observers learn only which <em>aggregate</em> signed. The price is that the signers in that set must run the interactive MuSig2 protocol, which brings us to generation 5.</p>
+        <h3>26. Generation 5: scriptless multisig with MuSig2</h3>
+        <p>The goal: $k$ parties, one 32-byte public key, one 64-byte signature, and nothing on chain to say there was more than one signer. Schnorr's linearity makes it <em>almost</em> trivial; the "almost" is where the attacks live.</p>
+        <h4>The naive scheme and the key-cancellation attack</h4>
+        <p>Let each party $i$ have $x_i$, $X_i = x_i G$. Naively, the joint key is $X = \sum X_i$; each party picks a nonce $r_i$, the joint nonce is $R = \sum r_i G$, the challenge is $e = H(R \Vert X \Vert m)$, each party returns $s_i = r_i + e x_i$, and $s = \sum s_i$ satisfies $sG = R + eX$.</p>
+        <p>The book shows why this breaks: Bob waits for Alice's key $X_A$ and announces $X_B = zG - X_A$. The joint key is $X_A + X_B = zG$, which Bob alone controls. Commit-then-reveal of keys helps but is easy to get wrong. MuSig instead <strong>weights each key by a hash of the whole key set</strong>:</p>
+        <p>$$ L = H_{\text{KeyAgg list}}(X_1 \Vert X_2 \Vert \dots \Vert X_k), \qquad a_i = H_{\text{KeyAgg coefficient}}(L \Vert X_i), \qquad \tilde{X} = \sum_i a_i X_i $$</p>
+        <p>Now Bob cannot choose $X_B$ to cancel Alice's term, because changing $X_B$ changes every coefficient. (BIP327 sets the coefficient of the second distinct key to 1, a harmless optimisation.) Aggregation needs no interaction: anyone with the public keys can compute $\tilde{X}$.</p>
+        <h4>Why two nonces</h4>
+        <p>The nonces are the subtle part. A two-round protocol with <em>one</em> nonce per signer turns out to be insecure when an attacker can open many signing sessions concurrently (Wagner's generalised-birthday algorithm, and later the ROS attack, let them combine sessions into a forgery). The first MuSig added a third round in which everyone commits to their nonce before revealing it. <strong>MuSig2</strong> gets back to two rounds by having each signer contribute <em>two</em> nonces and binding them with a hash:</p>
+        <ol><li><strong>Round 1 (nonces).</strong> Each signer $i$ samples $r_{i,1}, r_{i,2}$ and publishes $R_{i,1} = r_{i,1}G$ and $R_{i,2} = r_{i,2}G$. Aggregates: $R_1 = \sum_i R_{i,1}$, $R_2 = \sum_i R_{i,2}$. This round does not depend on the message, so it can be done in advance.</li><li><strong>Round 2 (signatures).</strong> Everyone computes $b = H_{\text{MuSig/noncecoef}}(R_1 \Vert R_2 \Vert \tilde{X} \Vert m)$, $R = R_1 + bR_2$ and $e = H_{\text{BIP0340/challenge}}(R \Vert \tilde{X} \Vert m)$, and each signer returns $s_i = r_{i,1} + b\,r_{i,2} + e\,a_i x_i$. The signature is $(R, s = \sum_i s_i)$.</li></ol>
+        <p>Verification is <strong>plain BIP340</strong>, because</p>
+        <p>$$ sG = \sum_i (r_{i,1} + b\,r_{i,2})G + e \sum_i a_i x_i G = R_1 + bR_2 + e\tilde{X} = R + e\tilde{X}. $$</p>
+        <p>The real BIP327 algorithm also handles the even-$y$ conventions of x-only keys (negating nonces or keys where needed) and supports <strong>tweaking</strong> the aggregate key, which is exactly what you need to use $\tilde{X}$ as a Taproot internal key and spend through the key path.</p>
+        <h4>MuSig2 in 40 lines</h4>
+        <p>This toy reuses the helpers from Sections 3 and 17. Its key aggregation and partial signatures reproduce the official BIP327 test vectors, and the final signature passes the <code>schnorr_verify</code> from Section 17 unchanged.</p>
+        <pre><code>import os
+def sec(pt): return bytes([2 + (pt[1] &amp; 1)]) + xonly(pt)            # 33-byte compressed key
+def parse_sec(b):
+    pt = lift_x(i(b[1:]))
+    return pt if (pt[1] &amp; 1) == (b[0] &amp; 1) else (pt[0], P - pt[1])
+
+def key_agg(pubkeys):                                                # BIP327 KeyAgg (no tweaks)
+    L = tagged_hash("KeyAgg list", b"".join(pubkeys))
+    second = next((pk for pk in pubkeys[1:] if pk != pubkeys[0]), None)
+    coeff = lambda pk: 1 if pk == second else i(tagged_hash("KeyAgg coefficient", L + pk)) % N
+    Q = None
+    for pk in pubkeys:
+        Q = point_add(Q, point_mul(parse_sec(pk), coeff(pk)))
+    return Q, coeff
+
+def nonce_agg(pubnonces):                                            # each pubnonce = R1 || R2
+    agg = b""
+    for j in (0, 1):
+        R = None
+        for pn in pubnonces:
+            R = point_add(R, parse_sec(pn[33 * j:33 * (j + 1)]))
+        agg += sec(R)
+    return agg
+
+def session(aggnonce, Q, msg):
+    b = i(tagged_hash("MuSig/noncecoef", aggnonce + xonly(Q) + msg)) % N
+    R = point_add(parse_sec(aggnonce[:33]), point_mul(parse_sec(aggnonce[33:]), b))
+    e = i(tagged_hash("BIP0340/challenge", xonly(R) + xonly(Q) + msg)) % N
+    return b, R, e
+
+def partial_sign(k1, k2, sk, pubkeys, aggnonce, msg):
+    Q, coeff = key_agg(pubkeys)
+    b, R, e = session(aggnonce, Q, msg)
+    if R[1] % 2: k1, k2 = N - k1, N - k2                             # BIP340 needs even-y R
+    d = sk if Q[1] % 2 == 0 else N - sk                              # ...and an even-y key
+    return (k1 + b * k2 + e * coeff(sec(point_mul(G, sk))) * d) % N
+
+# three signers, one key, one signature
+sks = [i(os.urandom(32)) % N for _ in range(3)]
+pks = [sec(point_mul(G, sk)) for sk in sks]
+X_agg, _ = key_agg(pks)
+msg = tagged_hash("demo", b"spend the 3-of-3")
+nonces = [(i(os.urandom(32)) % N, i(os.urandom(32)) % N) for _ in sks]          # round 1
+aggnonce = nonce_agg([sec(point_mul(G, k1)) + sec(point_mul(G, k2)) for k1, k2 in nonces])
+partials = [partial_sign(k1, k2, sk, pks, aggnonce, msg) for (k1, k2), sk in zip(nonces, sks)]  # round 2
+_, R, _ = session(aggnonce, X_agg, msg)
+sig = xonly(R) + (sum(partials) % N).to_bytes(32, "big")
+assert schnorr_verify(msg, xonly(X_agg), sig)                        # an ordinary BIP340 signature</code></pre>
+        <h4>The rules that keep MuSig2 safe</h4>
+        <ul><li><strong>Never reuse a secret nonce.</strong> If a signer answers two sessions with the same $(r_{i,1}, r_{i,2})$ but a different $b$ or $e$, the two partial signatures are two linear equations in $x_i$. BIP327 tells implementations to erase the secret nonce once used.</li><li><strong>Do not derive nonces deterministically from (key, message).</strong> This is the counter-intuitive one. RFC6979-style determinism is the <em>safe</em> choice for single-signer ECDSA and Schnorr, but in MuSig2 a malicious co-signer can rerun a session for the same message with different nonces of their own. Your deterministic nonce stays the same while $b$ and $e$ change, and your key leaks. BIP327 allows deterministic signing only for the <em>last</em> signer, who already knows everyone else's nonces.</li><li><strong>Signers are stateful between rounds.</strong> The secret nonce must survive from round 1 to round 2 and then be destroyed, which is awkward for hardware signers designed to be stateless.</li></ul>
+        <h4>Where MuSig2 is used</h4>
+        <p>MuSig2 is standardised in BIP327 (marked Deployed), with companion specifications for deriving child keys from an aggregate (BIP328), PSBT fields for nonces and partial signatures (BIP373) and a <code>musig()</code> descriptor expression (BIP390, still a draft). It secures the shared outputs of protocols where the parties are online anyway: Lightning's simple Taproot channels (deployed experimentally in LND) use a MuSig2 2-of-2 for the funding output, and Ark's batch outputs are an $n$-of-$n$ MuSig2 between all participants and the operator (Section 32).</p>
+        <h3>27. Threshold signatures with FROST</h3>
+        <p>MuSig2 is $k$-of-$k$. For a $t$-of-$k$ policy that still produces one key and one signature you need a <strong>threshold signature</strong> scheme, and in the Schnorr world the leading one is FROST (Flexible Round-Optimized Schnorr Threshold signatures).</p>
+        <h4>The algebra: secret sharing in the exponent</h4>
+        <p>Shamir's secret sharing hides a secret $x$ in a random polynomial of degree $t - 1$:</p>
+        <p>$$ f(z) = x + a_1 z + a_2 z^2 + \dots + a_{t-1} z^{t-1}, \qquad \text{share}_j = f(j) $$</p>
+        <p>Any $t$ shares determine the polynomial, and so $x = f(0)$, by Lagrange interpolation; fewer than $t$ reveal nothing:</p>
+        <p>$$ x = \sum_{j \in S} \lambda_j \, f(j), \qquad \lambda_j = \prod_{m \in S,\ m \ne j} \frac{m}{m - j} \pmod n $$</p>
+        <p>For signers $S = \{1, 3\}$ of a 2-of-3, $\lambda_1 = 3/2$ and $\lambda_3 = -1/2$ (as field elements mod $n$). The trick is that nobody ever reconstructs $x$. Each signer multiplies their share by their Lagrange coefficient <em>inside</em> a Schnorr signature, and the sum of those partial signatures is a signature for $X = xG$.</p>
+        <p>In a real deployment the polynomial is not chosen by a dealer who knows $x$: each participant deals a polynomial of their own and the group key is the sum, using commitments (Feldman or Pedersen verifiable secret sharing) so everyone can check that the shares they received are consistent. That is a <strong>distributed key generation (DKG)</strong>; ChillDKG is the Bitcoin-specific proposal. The book describes the simplest variant, where each participant splits their MuSig key share among the others so that any $t$ can reconstruct a missing participant, and points out the two inherent caveats: <strong>no accountability</strong> (a threshold signature cannot reveal who signed) and <strong>manipulation attacks</strong> (a participant can tell different cosigners different stories to collect enough shares to sign alone, unless all communication is broadcast).</p>
+        <h4>Signing in two rounds</h4>
+        <ol><li>Each signer $j$ in the signing set $S$ publishes two nonce commitments $D_j = d_j G$, $E_j = e_j G$.</li><li>Everyone computes a <strong>binding factor</strong> per signer, $\rho_j = H(j, m, B)$ where $B$ is the list of all commitments, the group nonce $R = \sum_{j \in S} (D_j + \rho_j E_j)$, and the BIP340 challenge $c = H(R \Vert X \Vert m)$. Each signer returns $z_j = d_j + \rho_j e_j + \lambda_j \cdot \text{share}_j \cdot c$, and $z = \sum z_j$ satisfies $zG = R + cX$: an ordinary BIP340 signature.</li></ol>
+        <p>The binding factors play the role of MuSig2's $b$: they stop an attacker from adapting their nonce to everyone else's. A toy 2-of-3 with a trusted dealer, again verified with the plain <code>schnorr_verify</code>:</p>
+        <pre><code>rand = lambda: i(os.urandom(32)) % N
+x, a1 = rand(), rand()                                   # dealer's secret polynomial f(z) = x + a1*z
+if point_mul(G, x)[1] % 2: x = N - x                     # x-only group key: force even y
+X = point_mul(G, x)
+share = {j: (x + a1 * j) % N for j in (1, 2, 3)}
+
+def lagrange(j, S):
+    num = den = 1
+    for m in S:
+        if m != j: num, den = num * m % N, den * (m - j) % N
+    return num * pow(den, N - 2, N) % N
+
+S, msg = (1, 3), tagged_hash("demo", b"2-of-3 spend")    # Alice (1) and Carol (3) sign
+nonce = {j: (rand(), rand()) for j in S}                 # round 1: d_j, e_j and their commitments
+comm = {j: (point_mul(G, d), point_mul(G, e)) for j, (d, e) in nonce.items()}
+commit_list = b"".join(bytes([j]) + sec(D) + sec(E) for j, (D, E) in sorted(comm.items()))
+rho = {j: i(tagged_hash("toy/rho", bytes([j]) + msg + commit_list)) % N for j in S}
+R = None
+for j in S:
+    R = point_add(R, point_add(comm[j][0], point_mul(comm[j][1], rho[j])))
+flip = R[1] % 2 == 1                                     # BIP340 needs an even-y R
+if flip: R = (R[0], P - R[1])
+c = i(tagged_hash("BIP0340/challenge", xonly(R) + xonly(X) + msg)) % N
+z = 0
+for j in S:                                              # round 2: partial signatures
+    d, e = nonce[j]
+    if flip: d, e = N - d, N - e
+    z += d + rho[j] * e + lagrange(j, S) * share[j] * c
+assert schnorr_verify(msg, xonly(X), xonly(R) + (z % N).to_bytes(32, "big"))</code></pre>
+        <h4>Where FROST stands</h4>
+        <p>When <em>Mastering Bitcoin</em> went to press, no scriptless threshold scheme had a BIP. As of 2026 there are drafts: ChillDKG for key generation and a "FROST Signing Protocol for BIP340 Signatures" draft opened in January 2026 that adapts RFC 9591 to x-only keys and Taproot tweaks, closely following BIP327's structure. They are still under review, so production FROST today means carefully chosen libraries and custom integration. The attraction is obvious: a 2-of-3, a 7-of-10 or a 67-of-100 all cost the same 57.5 vB to spend and look exactly like a single-signature wallet.</p>
+        <h3>28. Hybrid designs: keys on top, scripts underneath</h3>
+        <p>BIP341's own advice for using Taproot is a design method:</p>
+        <ol><li>Put the <strong>most likely</strong> spending condition in the key path. If it involves several parties, aggregate their keys (MuSig2, or FROST for thresholds).</li><li>Put the less likely conditions in leaves, more likely ones nearer the root.</li><li>If no single key or aggregate should ever be able to spend, use a NUMS internal key.</li></ol>
+        <h4>Example 1: everyday 2-of-3</h4>
+        <p>This is the output built in Section 19. Alice and Bob are the usual signers, Carol holds a backup key:</p>
+        <pre><code>                     output key  Q = P + t*G          (on chain: OP_1 &lt;Q&gt;)
+                                   |
+                 +-----------------+------------------+
+                 |                                    |
+       internal key P = MuSig2(A, B)            Merkle root
+       (key path: one signature)                      |
+                                        +-------------+-------------+
+                                        |                           |
+                                &lt;A&gt; CHECKSIGVERIFY          &lt;B&gt; CHECKSIGVERIFY
+                                &lt;C&gt; CHECKSIG                &lt;C&gt; CHECKSIG</code></pre>
+        <table><thead><tr><th>Who signs</th><th>Path</th><th>Input size</th><th>What observers learn</th></tr></thead><tbody><tr><td>Alice + Bob</td><td>key path, MuSig2</td><td>57.5 vB</td><td>nothing: looks like a single-key spend</td></tr><tr><td>Alice + Carol</td><td>leaf 1 (depth 1)</td><td>107.5 vB</td><td>two keys signed under a script; one hidden sibling</td></tr><tr><td>Bob + Carol</td><td>leaf 2 (depth 1)</td><td>107.5 vB</td><td>likewise</td></tr></tbody></table>
+        <p>Replacing each leaf's chain with a MuSig2 aggregate of the pair would cut the fallback spends to 82.75 vB, at the cost of an interactive signing round for those pairs.</p>
+        <h4>Example 2: a multisig that decays into a recovery key</h4>
+        <p>Inheritance and key-loss recovery are where scripts earn their keep. Normal operation is 2-of-3; if the coins sit untouched for about six months (26,280 blocks), a recovery key $R$ held by a lawyer or heir can sweep them:</p>
+        <pre><code>tr(H, { multi_a(2,A,B,C), and_v(v:pk(R),older(26280)) })</code></pre>
+        <p>The second leaf compiles to <code>&lt;R&gt; OP_CHECKSIGVERIFY &lt;26280&gt; OP_CHECKSEQUENCEVERIFY</code>, and with the toy keys (and the bare NUMS key $H$) the address is <code>bc1p02lmc4ef6g3kjv4qfcdzejjmjhdhflxvypjxzxsp6e3qexfu6lkqpep3fz</code>; my Taproot code and the independent descriptor library agree. Because the timelock is <em>relative</em>, the clock restarts whenever the coins move, so the owners keep the recovery path dormant simply by spending to themselves now and then. That "dead man's switch" pattern is the basis of several inheritance-oriented wallets.</p>
+        <h4>Example 3: Mohammed's company account, rebuilt</h4>
+        <p>Section 22's 192-byte script translates into a Taproot tree like this:</p>
+        <ul><li><strong>key path:</strong> MuSig2 of Mohammed, Saeed and Zaira (or a FROST 2-of-3 key once that tooling is mature);</li><li><strong>leaf 1 (depth 1):</strong> <code>multi_a(2, M, S, Z)</code>, any two partners;</li><li><strong>leaf 2 (depth 2):</strong> <code>&lt;L&gt; OP_CHECKSIGVERIFY &lt;4320&gt; OP_CHECKSEQUENCEVERIFY OP_DROP &lt;M&gt; OP_CHECKSIG &lt;S&gt; OP_CHECKSIGADD &lt;Z&gt; OP_CHECKSIGADD OP_1 OP_NUMEQUAL</code>, the lawyer plus one partner after 30 days;</li><li><strong>leaf 3 (depth 2):</strong> <code>&lt;L&gt; OP_CHECKSIGVERIFY &lt;12960&gt; OP_CHECKSEQUENCEVERIFY</code>, the lawyer alone after 90 days.</li></ul>
+        <table><thead><tr><th>Spending path</th><th>P2WSH (the book's script)</th><th>Taproot tree</th></tr></thead><tbody><tr><td>all three partners</td><td>127.25 vB (via the 2-of-3 path)</td><td><strong>57.5 vB</strong> (key path)</td></tr><tr><td>two partners</td><td>127.25 vB</td><td>116.75 vB</td></tr><tr><td>lawyer + one partner, after 30 days</td><td>127.0 vB</td><td>134.75 vB</td></tr><tr><td>lawyer alone, after 90 days</td><td>108.0 vB</td><td>91.75 vB</td></tr><tr><td>revealed on chain</td><td>everything, every time</td><td>only the path used; nothing on the key path</td></tr></tbody></table>
+        <p>Taproot is not uniformly smaller: the second path re-lists the partners' keys and pays for a control block, so it costs a little more than the monolithic script. But the common case collapses to the cheapest possible spend, and the existence of a lawyer, the timelocks and the company's governance stay private until someone actually needs them.</p>
+        <h3>29. The numbers: one 2-of-3 policy, eight encodings</h3>
+        <p>Here is one policy, "any two of Alice, Bob and Carol", written every way this article has covered. Sizes are for one input with 72-byte ECDSA and 64-byte Schnorr signatures, computed by serialising real transactions:</p>
+        <table><thead><tr><th>#</th><th>Encoding</th><th>Input</th><th>Output</th><th>Revealed when spent</th><th>Who-signed visible?</th><th>Signing rounds</th></tr></thead><tbody><tr><td>1</td><td>Bare multisig (P2MS)</td><td>188 vB</td><td>114 B</td><td>3 keys, threshold</td><td>yes</td><td>1</td></tr><tr><td>2</td><td>P2SH</td><td>297 vB</td><td>32 B</td><td>3 keys, threshold</td><td>yes</td><td>1</td></tr><tr><td>3</td><td>P2SH-P2WSH</td><td>139.5 vB</td><td>32 B</td><td>3 keys, threshold</td><td>yes</td><td>1</td></tr><tr><td>4</td><td>P2WSH</td><td>104.5 vB</td><td>43 B</td><td>3 keys, threshold</td><td>yes</td><td>1</td></tr><tr><td>5</td><td>P2TR, <code>multi_a</code> leaf, NUMS key</td><td>108.75 vB</td><td>43 B</td><td>3 keys, threshold</td><td>yes</td><td>1</td></tr><tr><td>6</td><td>P2TR, 2-of-2 leaf at depth 1</td><td>107.5 vB</td><td>43 B</td><td>2 keys, one hash</td><td>yes</td><td>1</td></tr><tr><td>7</td><td>P2TR, MuSig2-pair leaf at depth 1</td><td>82.75 vB</td><td>43 B</td><td>1 aggregate key, one hash</td><td>which pair</td><td>2</td></tr><tr><td>8</td><td>P2TR key path, MuSig2 pair or FROST 2-of-3</td><td>57.5 vB</td><td>43 B</td><td>nothing</td><td>no</td><td>2</td></tr></tbody></table>
+        <p>From row 2 to row 8 the cost of spending falls by more than a factor of five, and the information leaked falls to zero. In between sits a spectrum of trade-offs, which is why newer multisig designs increasingly combine constructions: a key path for the common case, scripted leaves for recovery and accountability.</p>
+        <h3>30. Running multisig in practice</h3>
+        <p>Cryptography is the easy part of multisig. Many real-world failures come from operations instead: lost configuration, mismatched keys, and signing devices that were tricked.</p>
+        <h4>Descriptors are the wallet</h4>
+        <p>A seed phrase alone cannot recover a multisig wallet. The book makes the point with Alice, Bob and Carol: although Alice needs only one other signature to spend, she needs <strong>all three public keys</strong> (and the script template) just to <em>find</em> the coins on chain, because the outputs commit to all of them. The standard way to record that information is an <strong>output script descriptor</strong> (BIPs 380 to 390):</p>
+        <pre><code>wsh(sortedmulti(2,
+    [a1b2c3d4/48h/0h/0h/2h]xpub6E.../&lt;0;1&gt;/*,
+    [e5f6a7b8/48h/0h/0h/2h]xpub6F.../&lt;0;1&gt;/*,
+    [c9d0e1f2/48h/0h/0h/2h]xpub6G.../&lt;0;1&gt;/*))</code></pre>
+        <p>Each key carries its origin (master key fingerprint and derivation path, here the BIP48 convention <code>m/48'/0'/0'/2'</code> for P2WSH multisig), the <code>&lt;0;1&gt;</code> multipath expression (BIP389) covers receive and change addresses, and <code>/*</code> ranges over indexes. The Taproot equivalents are <code>tr(KEY, sortedmulti_a(2, …))</code> for the scripted form and <code>tr(musig(A,B), {...})</code> for MuSig2 (BIP390). <strong>Back up the descriptor alongside every seed.</strong> It is not secret in the same way (it cannot spend), but it reveals your entire transaction history.</p>
+        <h4>PSBT, round by round</h4>
+        <p>A typical 2-of-3 P2WSH spend with hardware signers:</p>
+        <ol><li>The <strong>coordinator</strong> (a desktop wallet that knows the descriptor) creates a PSBT: the unsigned transaction, plus for each input the UTXO being spent, the witness script and every key's derivation path.</li><li>Signer 1 checks the PSBT, verifies the change output belongs to the same descriptor, signs, and adds a partial signature.</li><li>Signer 2 does the same, in any order and without talking to signer 1.</li><li>The <strong>finalizer</strong> assembles the witness (<code>""</code>, the signatures in key order, the witness script) and extracts a network transaction.</li></ol>
+        <p>Taproot adds PSBT fields for key-path and script-path signatures, leaf scripts and control blocks (BIP371); MuSig2 adds fields for public nonces and partial signatures (BIP373), which turns the flow into two passes around the signers.</p>
+        <p>Step 2's change check is where hardware wallets earn their money. A malicious coordinator can otherwise replace the change output with an address that <em>looks</em> like a multisig of yours but contains the attacker's keys. To check, the device must know the full policy, so modern devices ask you to <strong>register</strong> the descriptor (or "wallet policy", BIP388) once and verify its fingerprint on screen.</p>
+        <h4>Miniscript</h4>
+        <p>Hand-written scripts like Mohammed's are error-prone: a mixed height/time timelock, a malleable branch, or a path that can never be satisfied are easy to write and hard to spot. <strong>Miniscript</strong> (BIP379) is a structured subset of Script with a type system that can prove a script correct, non-malleable and within resource limits, compute worst-case witness sizes, and let any compliant wallet produce a witness for any policy. It composes:</p>
+        <pre><code>and_v(v:pk(R),older(26280))      -&gt;  &lt;R&gt; OP_CHECKSIGVERIFY &lt;26280&gt; OP_CHECKSEQUENCEVERIFY
+multi_a(2,A,B,C)                 -&gt;  &lt;A&gt; OP_CHECKSIG &lt;B&gt; OP_CHECKSIGADD &lt;C&gt; OP_CHECKSIGADD OP_2 OP_NUMEQUAL</code></pre>
+        <p>and it is what lets descriptors like <code>tr(H, {multi_a(…), and_v(…)})</code> exist at all.</p>
+        <h4>Choosing a construction</h4>
+        <table><thead><tr><th>If you need…</th><th>Prefer</th></tr></thead><tbody><tr><td>maximum compatibility with today's hardware signers and coordinators</td><td>P2WSH <code>sortedmulti</code></td></tr><tr><td>to prove which keys signed (audit, corporate governance)</td><td>scripted multisig: P2WSH or Tapscript <code>multi_a</code></td></tr><tr><td>privacy and minimum fees, parties online together (channels, Ark, joint accounts)</td><td>MuSig2 in the Taproot key path</td></tr><tr><td>recovery paths, inheritance, decaying thresholds</td><td>Taproot: key path for normal use, timelocked leaves for recovery</td></tr><tr><td>large $t$-of-$k$ with constant cost</td><td>FROST in the key path (maturing), or one MuSig2 leaf per signing set</td></tr><tr><td>signers that cannot keep state between rounds</td><td>scripted multisig</td></tr></tbody></table>
+        
+        <h2>Part IX: Scripts in the Wild</h2>
+        <p>Abstract templates are one thing; scripts that guard billions of dollars every day are another. This part reads a few of them line by line.</p>
+        <h3>31. Lightning's scripts</h3>
+        <p>Lightning (specified in the BOLTs) is one of the most heavily used contract systems on Bitcoin, and BOLT 3 is a masterclass in Script. Every channel is built from a handful of templates.</p>
+        <h4>The funding output and the commitment transactions</h4>
+        <p>We met the funding output in Section 24: a P2WSH 2-of-2 <code>CHECKMULTISIG</code>. Each party then holds its own version of a <strong>commitment transaction</strong> that spends it. The versions are <em>asymmetric</em>, as in the book's Hitesh-and-Irene example: in my copy, the other party's money is paid to them immediately, while my own money is locked behind a delay and a revocation escape hatch. Publishing my commitment is always allowed, but it costs me a wait.</p>
+        <h4><code>to_local</code>: delayed, revocable</h4>
+        <pre><code>OP_IF
+    # Penalty transaction
+    &lt;revocationpubkey&gt;
+OP_ELSE
+    `to_self_delay`
+    OP_CHECKSEQUENCEVERIFY
+    OP_DROP
+    &lt;local_delayedpubkey&gt;
+OP_ENDIF
+OP_CHECKSIG</code></pre>
+        <p>The owner spends it with <code>&lt;local_delayedsig&gt; &lt;&gt;</code> (an empty vector selects the <code>ELSE</code> branch, which MINIMALIF requires to be exactly empty) after <code>to_self_delay</code> blocks, enforced by CSV. If the owner ever publishes an <strong>old</strong> commitment, the counterparty spends it immediately with <code>&lt;revocation_sig&gt; 1</code> and takes everything.</p>
+        <p>The revocation key is a nice application of key tweaking (Section 3). Each commitment has a fresh <code>per_commitment_point</code> chosen by its owner, and the other party has a <code>revocation_basepoint</code>:</p>
+        <p>$$ \text{revocationpubkey} = B_{rev} \cdot H(B_{rev} \Vert C) + C \cdot H(C \Vert B_{rev}) $$</p>
+        <p>where $B_{rev}$ is the revocation basepoint and $C$ the per-commitment point. Its private key is $b_{rev} \cdot H(B_{rev} \Vert C) + c \cdot H(C \Vert B_{rev})$, which needs <em>both</em> secrets. When a channel moves to a new state, the owner of the old commitment hands over the old per-commitment secret $c$, and from then on the counterparty can compute the revocation key for that old state. The hash coefficients play the same role as MuSig's: neither side can pick a point that cancels the other's. The book notes that LN indexes states with a 48-bit counter, so a channel can go through about $2.8 \times 10^{14}$ updates.</p>
+        <h4>Anchor outputs: fee bumping with two lines of Script</h4>
+        <p>Commitment transactions are signed long before they are broadcast, so their fee is a guess. Anchor outputs let either party bump the fee later with CPFP:</p>
+        <pre><code>&lt;local_funding_pubkey/remote_funding_pubkey&gt; OP_CHECKSIG OP_IFDUP
+OP_NOTIF
+    OP_16 OP_CHECKSEQUENCEVERIFY
+OP_ENDIF</code></pre>
+        <p>Trace both ways through it:</p>
+        <ul><li><strong>Owner, with a signature:</strong> <code>OP_CHECKSIG</code> leaves <code>1</code>; <code>OP_IFDUP</code> duplicates it because it is true; <code>OP_NOTIF</code> consumes one copy and skips the body; the remaining <code>1</code> makes the spend valid. The owner can attach a fee-paying child at once.</li><li><strong>Anyone, with an empty witness:</strong> <code>OP_CHECKSIG</code> leaves false; <code>OP_IFDUP</code> does not duplicate false; <code>OP_NOTIF</code> consumes it and runs <code>OP_16 OP_CHECKSEQUENCEVERIFY</code>, which passes only if the input is 16 blocks old, and leaves <code>16</code> (true) on the stack.</li></ul>
+        <p>The second path exists so that unused 330-sat anchors do not pollute the UTXO set forever: once the commitment is 16 blocks deep, anyone can sweep them. My interpreter agrees: the owner path leaves <code>01</code>, the anyone path leaves <code>10</code> (16) with <code>nSequence = 16</code>, and fails with "CSV failed" at <code>nSequence = 5</code>.</p>
+        <p>With anchors, every <em>other</em> commitment output gets at least a one-block CSV, including <code>to_remote</code>:</p>
+        <pre><code>&lt;remotepubkey&gt; OP_CHECKSIGVERIFY 1 OP_CHECKSEQUENCEVERIFY</code></pre>
+        <p>That stops a counterparty from using their own unconfirmed output to attach children and pin the commitment transaction; the only CPFP hooks are the anchors.</p>
+        <p>The newest variant goes further. With <code>zero_fee_commitments</code>, the commitment is a <strong>version 3 (TRUC)</strong> transaction that normally pays no fee of its own and carries a single <code>shared_anchor</code>:</p>
+        <pre><code>OP_1 &lt;0x4e73&gt;</code></pre>
+        <p>That is P2A, spent with an empty witness by whichever party needs the transaction confirmed, with a value of at most 240 sat (below dust is allowed under the ephemeral-dust rule). This is the TRUC, package relay, P2A and ephemeral dust machinery of Section 5.5 working together.</p>
+        <h4>The offered HTLC: branching on the size of a witness item</h4>
+        <p>An in-flight payment is an HTLC output on the commitment. For an HTLC <em>I</em> offered, the script is:</p>
+        <pre><code># To remote node with revocation key
+OP_DUP OP_HASH160 &lt;RIPEMD160(SHA256(revocationpubkey))&gt; OP_EQUAL
+OP_IF
+    OP_CHECKSIG
+OP_ELSE
+    &lt;remote_htlcpubkey&gt; OP_SWAP OP_SIZE 32 OP_EQUAL
+    OP_NOTIF
+        # To local node via HTLC-timeout transaction (timelocked).
+        OP_DROP 2 OP_SWAP &lt;local_htlcpubkey&gt; 2 OP_CHECKMULTISIG
+    OP_ELSE
+        # To remote node with preimage.
+        OP_HASH160 &lt;RIPEMD160(payment_hash)&gt; OP_EQUALVERIFY
+        OP_CHECKSIG
+    OP_ENDIF
+OP_ENDIF</code></pre>
+        <p>Three spending paths, chosen by inspecting the witness itself:</p>
+        <ol><li><strong>Revocation</strong>, witness <code>&lt;revocation_sig&gt; &lt;revocationpubkey&gt;</code>: the top item hashes to the committed value, <code>OP_EQUAL</code> is true, and a plain <code>OP_CHECKSIG</code> follows. Storing only a hash of the revocation key saves bytes in the common case.</li><li><strong>Payment preimage</strong>, witness <code>&lt;remotehtlcsig&gt; &lt;payment_preimage&gt;</code>: the hash test fails, so we enter <code>ELSE</code>. The remote key is pushed and swapped under the preimage, and <code>OP_SIZE 32 OP_EQUAL</code> asks <em>"is the top item 32 bytes long?"</em> A preimage is exactly 32 bytes and a signature never is, so this one test tells the two remaining paths apart. Then <code>OP_HASH160</code> of the preimage is compared with <code>RIPEMD160(payment_hash)</code>. Since Lightning's <code>payment_hash</code> is SHA256 of the preimage, $\text{HASH160}(\text{preimage}) = \text{RIPEMD160}(\text{payment\_hash})$, a neat way to reuse the cheaper 20-byte comparison.</li><li><strong>Timeout</strong>, witness <code>0 &lt;remotehtlcsig&gt; &lt;localhtlcsig&gt; &lt;&gt;</code>: the empty item has size 0, so the <code>NOTIF</code> branch drops it and performs a 2-of-2 <code>CHECKMULTISIG</code> with both HTLC keys. The remote signature exists only on a presigned <em>HTLC-timeout</em> transaction whose <code>nLockTime</code> is the HTLC's expiry, so this path cannot be used early.</li></ol>
+        <p>I ran all three paths through the interpreter with real keys and signatures: all valid, and a wrong preimage fails at <code>OP_EQUALVERIFY</code>. With anchors, a <code>1 OP_CHECKSEQUENCEVERIFY OP_DROP</code> is added before the final <code>OP_ENDIF</code>, for the same anti-pinning reason as above.</p>
+        <h3>32. HTLCs, Ark, data carriers and covenants</h3>
+        <h4>Hash time-locked contracts and atomic swaps</h4>
+        <p>Stripped of Lightning's revocation machinery, the book's HTLC is:</p>
+        <pre><code>OP_IF
+    OP_HASH160 &lt;H&gt; OP_EQUALVERIFY &lt;Receiver's pubkey&gt; OP_CHECKSIG     # claim with the secret
+OP_ELSE
+    &lt;lock time&gt; OP_CHECKLOCKTIMEVERIFY OP_DROP &lt;Payer's pubkey&gt; OP_CHECKSIG   # refund after timeout
+OP_ENDIF</code></pre>
+        <p>With $H$ = HASH160 of a secret $R$ and a lock time of block 800,000, the interpreter accepts <code>&lt;receiver sig&gt; &lt;R&gt; 1</code>, rejects a wrong secret at <code>OP_EQUALVERIFY</code>, accepts the refund <code>&lt;payer sig&gt; 0</code> in a transaction with <code>nLockTime = 800001</code>, and rejects it with <code>nLockTime = 799999</code>.</p>
+        <p>The book's routing example shows why HTLCs compose. Eric invoices Alice with $H$; Alice offers Bob an HTLC for 1.003 BTC expiring in 10 blocks; Bob offers Carol 1.002 BTC for 9 blocks; Carol offers Diana 1.001 for 8; Diana offers Eric 1.000 for 7. When Eric claims with $R$, the secret flows back down the chain and every hop claims its incoming HTLC. Decreasing timeouts guarantee that each intermediary learns $R$ before their own refund deadline arrives. The same hash lock, with the same SHA256 secret, works on any chain that can check a hash, which is how BTC can be swapped atomically against coins on another chain (Ethereum included) or against a Lightning payment (a "submarine swap"). Schnorr signatures also allow replacing the hash with a point (<em>adaptor signatures</em> and PTLCs), so the hops of a payment no longer share one recognisable hash.</p>
+        <h4>Ark's virtual UTXOs</h4>
+        <p>Ark protocols such as Arkade let many users share one on-chain output while each holds a <em>virtual</em> UTXO (VTXO) they can exit on chain unilaterally. Arkade's documentation describes the VTXO as a Taproot output with an unspendable internal key and two leaves:</p>
+        <ul><li><strong>collaborative path</strong> (the default): <code>checkSig(userPK) &amp;&amp; checkSig(operatorPK)</code>, used for off-chain transfers;</li><li><strong>unilateral exit path</strong>: <code>checkSig(userPK) &amp;&amp; relativeTimelock(exitDelay)</code>, the user's guaranteed way out, where the CSV delay prevents double-spending races.</li></ul>
+        <p>In Tapscript, one natural encoding is <code>&lt;user&gt; OP_CHECKSIGVERIFY &lt;operator&gt; OP_CHECKSIG</code> and <code>&lt;exitDelay&gt; OP_CHECKSEQUENCEVERIFY OP_DROP &lt;user&gt; OP_CHECKSIG</code>. Batches of VTXOs hang from a tree of presigned transactions rooted at a <strong>batch output</strong> locked to an $n$-of-$n$ <strong>MuSig2</strong> key of all the VTXO owners and the operator, with an operator sweep path after the batch expires; thanks to MuSig2, each node of that tree appears on chain as a single signature if users ever have to exit. Look closely and you see the patterns of this article combined: Taproot leaves, a 2-of-2, a CSV escape hatch (Lightning's <code>to_local</code> idea), and scriptless multisig for the shared outputs.</p>
+        <h4>Data in Script: OP_RETURN, envelopes and fake keys</h4>
+        <p>Three techniques carry non-financial data today, and each sits at a different point of the cost/UTXO trade-off:</p>
+        <ul><li><strong><code>OP_RETURN</code> outputs</strong> (Section 11): pruned from the UTXO set, full weight, and since Core 30.0 relayed up to 100 kB by default. Runes use <code>OP_RETURN OP_13 &lt;payload&gt;</code>.</li><li><strong>Witness envelopes</strong> in Tapscript leaves. Ordinals inscriptions place data in a branch that never executes (example below). The envelope is added to an ordinary <code>&lt;pubkey&gt; OP_CHECKSIG</code> leaf, so only the key holder can reveal it. It is committed by a Taproot output and revealed in the witness of the spend (a commit-reveal pair of transactions). It works because Tapscript removed the 10,000-byte script limit; each push is still capped at 520 bytes, so large files are split into many pushes. The data pays the witness discount and never touches the UTXO set.</li><li><strong>Fake public keys</strong> in bare multisig (Section 10): the most expensive option for node operators, since the outputs can never be spent.</li></ul>
+        <p>An inscription envelope:</p>
+        <pre><code>OP_FALSE OP_IF
+    OP_PUSH "ord"
+    OP_PUSH 1  OP_PUSH "text/plain;charset=utf-8"
+    OP_PUSH 0  OP_PUSH "Hello, world!"
+OP_ENDIF</code></pre>
+        <p>Whether this is a legitimate use of block space is one of Bitcoin's long-running arguments. Technically it is a clean demonstration of how flexible "commit now, reveal later" becomes once Taproot is available.</p>
+        <h4>Covenants: what Script still cannot do</h4>
+        <p>Everything in this article constrains <em>who</em> may spend and <em>when</em>. Script cannot constrain <em>where the coins go next</em>: apart from what a signature commits to, it has no way to inspect the spending transaction's outputs. That is why vaults today rely on presigned transactions and deleted keys, and why Ark needs an operator to cosign. Several soft-fork proposals would add such <strong>covenants</strong>: <code>OP_CHECKTEMPLATEVERIFY</code> (BIP119) to commit to the exact shape of the spending transaction, <code>OP_CHECKSIGFROMSTACK</code> (BIP348) to verify signatures over arbitrary data, <code>OP_CAT</code> (BIP347) to re-enable concatenation inside Tapscript, <code>SIGHASH_ANYPREVOUT</code> (BIP118) for rebindable signatures, <code>OP_VAULT</code> (BIP345) for vaults, and combinations such as LNHANCE. As of this writing none of them has activated, and how (or whether) to activate them is an open debate. Meanwhile, BitVM-style designs push today's rules to their limit, using enormous Taproot trees and presigned transaction graphs to verify arbitrary computation optimistically, without any soft fork.</p>
+        
+        <h2>Part X: The Whole Picture</h2>
+        <h3>33. The evolution in one page</h3>
+        <p>Read in order, the output types tell a single story:</p>
+        <table><thead><tr><th>Step</th><th>What the output commits to</th><th>What moved, and why</th></tr></thead><tbody><tr><td>P2PK</td><td>a public key</td><td>the whitepaper's model, made scriptable</td></tr><tr><td>P2PKH</td><td>a hash of a key</td><td>shorter outputs, checksummed addresses; the key appears only when spending</td></tr><tr><td>P2MS</td><td>a full script</td><td>multiple keys, but the sender pays and the UTXO set stores it</td></tr><tr><td>P2SH</td><td>a hash of a script</td><td>the script's cost and complexity move to the receiver and to spend time</td></tr><tr><td>P2WPKH / P2WSH</td><td>a versioned witness program</td><td>unlocking data leaves the txid (no malleability), gets cheaper, and becomes upgradable</td></tr><tr><td>P2TR</td><td>a tweaked public key that hides a script tree</td><td>the common case collapses into one signature; unused branches stay private</td></tr></tbody></table>
+        <p>Five principles recur through that history:</p>
+        <ol><li><strong>Commit, then reveal only what is needed.</strong> Hashes of keys, hashes of scripts, Merkle trees of scripts, and finally keys that commit to trees.</li><li><strong>Push cost away from the UTXO set.</strong> From output to input, from the base transaction to the discounted witness.</li><li><strong>Upgrade by tightening.</strong> Every improvement used space reserved earlier: <code>OP_NOP</code>s, anyone-can-spend templates, witness versions, leaf versions, <code>OP_SUCCESSx</code>, the annex.</li><li><strong>Multisig migrated from Script into cryptography</strong>, but Script stays in charge of the unhappy paths: timeouts, recovery keys, revocation and accountability.</li><li><strong>Bitcoin's "smart contracts" are transaction graphs.</strong> Lightning, Ark and vaults are not code with storage; they are carefully ordered sets of presigned transactions whose outputs carry keys, hashes and timelocks. Coming from Ethereum, that was the biggest shift in thinking for me: the protocol is the graph, and Script is the set of locks on its edges.</li></ol>
+        <p>The story continues. Cluster mempool and TRUC transactions are making fee bumping for presigned transactions reliable. The covenant debate goes on. A proposal for a script-path-only output type without the Taproot key path (P2MR, BIP360, still a draft) shows how the same commit-and-reveal ideas may be reused to prepare for quantum computers. Whatever comes next, it will be built from the pieces in this article.</p>
+        <h3>References</h3>
+        <p><strong>The book</strong></p>
+        <ul><li>Andreas M. Antonopoulos and David A. Harding, <em>Mastering Bitcoin: Programming the Open Blockchain</em>, 3rd edition, O'Reilly, 2023. Especially chapters 4 (Keys and Addresses), 6 (Transactions), 7 (Authorization and Authentication), 8 (Digital Signatures), 9 (Transaction Fees), 12 (Mining and Consensus) and 14 (Second-Layer Applications).</li><li>Satoshi Nakamoto, <em>Bitcoin: A Peer-to-Peer Electronic Cash System</em>, 2008 (Appendix A of the book).</li></ul>
+        <p><strong>Specifications</strong> (all at <a href="https://github.com/bitcoin/bips" target="_blank" rel="noopener noreferrer">github.com/bitcoin/bips</a>)</p>
+        <ul><li>Script and transactions: BIP16 (P2SH), BIP65 (CLTV), BIP66 (strict DER), BIP68 (relative lock time), BIP112 (CSV), BIP113 (median time past), BIP125 (opt-in RBF), BIP147 (NULLDUMMY)</li><li>SegWit: BIP141 (consensus), BIP143 (signature digest), BIP144 (serialization), BIP173 (bech32)</li><li>Taproot: BIP340 (Schnorr), BIP341 (Taproot), BIP342 (Tapscript), BIP350 (bech32m)</li><li>Multisig and wallets: BIP32 (HD keys), BIP48 (multisig derivation paths), BIP67 (sorted multisig keys), BIP174 and BIP370 (PSBT), BIP371 (Taproot PSBT fields), BIP327 (MuSig2), BIP328 (MuSig2 derivation), BIP373 (MuSig2 PSBT fields), BIP379 (Miniscript), BIPs 380–387 and 389–390 (descriptors, including <code>multi_a</code> and <code>musig()</code>), BIP388 (wallet policies)</li><li>Policy and proposals: BIP431 (TRUC), BIP433 (P2A), BIP54 (consensus cleanup), BIP118, BIP119, BIP345, BIP347, BIP348 (covenant proposals), BIP360 (P2MR)</li></ul>
+        <p><strong>Other sources</strong></p>
+        <ul><li>Lightning BOLT 3, <em>Bitcoin Transaction and Script Formats</em>: <a href="https://github.com/lightning/bolts/blob/master/03-transactions.md" target="_blank" rel="noopener noreferrer">github.com/lightning/bolts/blob/master/03-transactions.md</a></li><li>Bitcoin Core release notes for <a href="https://bitcoincore.org/en/releases/28.0/" target="_blank" rel="noopener noreferrer">28.0</a>, <a href="https://bitcoincore.org/en/releases/29.0/" target="_blank" rel="noopener noreferrer">29.0</a>, <a href="https://bitcoincore.org/en/releases/29.1/" target="_blank" rel="noopener noreferrer">29.1</a>, <a href="https://bitcoincore.org/en/releases/30.0/" target="_blank" rel="noopener noreferrer">30.0</a> and <a href="https://bitcoincore.org/en/releases/31.0/" target="_blank" rel="noopener noreferrer">31.0</a></li><li>Arkade documentation on VTXOs: <a href="https://docs.arkadeos.com/learn/pillars/vtxos" target="_blank" rel="noopener noreferrer">docs.arkadeos.com</a></li><li>Draft BIP, <em>FROST Signing Protocol for BIP340 Signatures</em>: <a href="https://github.com/bitcoin/bips/pull/2070" target="_blank" rel="noopener noreferrer">bitcoin/bips pull request 2070</a></li></ul>
+        <h3>Appendix: opcode and size cheat sheet</h3>
+        <p><strong>Opcodes used in this article</strong></p>
+        <table><thead><tr><th>Hex</th><th>Opcode</th><th>Effect</th></tr></thead><tbody><tr><td><code>00</code></td><td><code>OP_0</code> / <code>OP_FALSE</code></td><td>push empty vector</td></tr><tr><td><code>01</code>–<code>4b</code></td><td>push <em>n</em></td><td>push the next <em>n</em> bytes</td></tr><tr><td><code>51</code>–<code>60</code></td><td><code>OP_1</code>–<code>OP_16</code></td><td>push 1 to 16</td></tr><tr><td><code>63</code> / <code>64</code> / <code>67</code> / <code>68</code></td><td><code>IF</code> / <code>NOTIF</code> / <code>ELSE</code> / <code>ENDIF</code></td><td>conditional execution</td></tr><tr><td><code>69</code></td><td><code>VERIFY</code></td><td>fail unless the top is true</td></tr><tr><td><code>6a</code></td><td><code>RETURN</code></td><td>fail immediately (marks data outputs)</td></tr><tr><td><code>73</code></td><td><code>IFDUP</code></td><td>duplicate the top if it is true</td></tr><tr><td><code>75</code> / <code>76</code> / <code>7c</code></td><td><code>DROP</code> / <code>DUP</code> / <code>SWAP</code></td><td>stack manipulation</td></tr><tr><td><code>82</code></td><td><code>SIZE</code></td><td>push the length of the top item</td></tr><tr><td><code>87</code> / <code>88</code></td><td><code>EQUAL</code> / <code>EQUALVERIFY</code></td><td>byte equality</td></tr><tr><td><code>93</code> / <code>94</code> / <code>9c</code></td><td><code>ADD</code> / <code>SUB</code> / <code>NUMEQUAL</code></td><td>arithmetic</td></tr><tr><td><code>a9</code></td><td><code>HASH160</code></td><td>RIPEMD160(SHA256(x))</td></tr><tr><td><code>ac</code> / <code>ad</code></td><td><code>CHECKSIG</code> / <code>CHECKSIGVERIFY</code></td><td>signature check</td></tr><tr><td><code>ae</code></td><td><code>CHECKMULTISIG</code></td><td>$t$-of-$k$ check (legacy, SegWit v0)</td></tr><tr><td><code>b1</code></td><td><code>CHECKLOCKTIMEVERIFY</code></td><td>absolute timelock (was <code>NOP2</code>)</td></tr><tr><td><code>b2</code></td><td><code>CHECKSEQUENCEVERIFY</code></td><td>relative timelock (was <code>NOP3</code>)</td></tr><tr><td><code>ba</code></td><td><code>CHECKSIGADD</code></td><td>counting signature check (Tapscript)</td></tr></tbody></table>
+        <p><strong>Sizes</strong></p>
+        <table><thead><tr><th>Item</th><th>Size</th></tr></thead><tbody><tr><td>ECDSA signature (DER + sighash byte)</td><td>71–73 B</td></tr><tr><td>Schnorr signature</td><td>64 B (65 with an explicit sighash byte)</td></tr><tr><td>Public key</td><td>65 B uncompressed, 33 B compressed, 32 B x-only</td></tr><tr><td>Taproot control block</td><td>33 + 32·depth B</td></tr><tr><td>Outputs</td><td>P2PKH 34, P2SH 32, P2WPKH 31, P2WSH 43, P2TR 43, P2A 13 B</td></tr><tr><td>Inputs (single signature)</td><td>P2PKH 148, P2SH-P2WPKH 91, P2WPKH 68, P2TR key path 57.5 vB</td></tr><tr><td>Transaction overhead</td><td>10 B, plus 0.5 vB for the SegWit marker and flag</td></tr><tr><td>Block</td><td>4,000,000 WU; 80-byte header</td></tr></tbody></table>
+      </div>
+
+      <a class="back-link" href="/notes/blockchain/" style="margin-top: var(--space-lg);">← Back to Blockchain notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

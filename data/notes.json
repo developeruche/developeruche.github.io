@@ -1,5 +1,21 @@
 [
   {
+    "title": "Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig",
+    "slug": "bitcoin-script-for-ethereum-developers",
+    "category": "blockchain",
+    "date": "2026-10-14",
+    "excerpt": "A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte.",
+    "tags": [
+      "Bitcoin",
+      "Script",
+      "Taproot",
+      "Multisig"
+    ],
+    "link": "/notes/blockchain/bitcoin-script-for-ethereum-developers/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Evolutionary Algorithms",
     "slug": "evolutionary-algorithms",
     "category": "artificial-intelligence",

@@ -212,7 +212,8 @@ def convert(md):
                 row = row.strip()
                 if row.startswith("|"): row = row[1:]
                 if row.endswith("|"): row = row[:-1]
-                return [c.strip() for c in row.split("|")]
+                # split on unescaped pipes only; "\|" is a literal pipe in a cell
+                return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", row)]
             head = cells(bl[0])
             body = [cells(r) for r in bl[2:] if r.strip()]
             t = ["<table>", "<thead><tr>"] + [f"<th>{inline(c)}</th>" for c in head] + ["</tr></thead>", "<tbody>"]
