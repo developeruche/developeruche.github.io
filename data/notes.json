@@ -1,5 +1,21 @@
 [
   {
+    "title": "Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370",
+    "slug": "psbt-bip174-bip370",
+    "category": "blockchain",
+    "date": "2026-10-19",
+    "excerpt": "The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors.",
+    "tags": [
+      "Bitcoin",
+      "PSBT",
+      "Wallets",
+      "Multisig"
+    ],
+    "link": "/notes/blockchain/psbt-bip174-bip370/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig",
     "slug": "bitcoin-script-for-ethereum-developers",
     "category": "blockchain",

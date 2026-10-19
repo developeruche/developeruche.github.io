@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370 — Developer Uche</title>
+  <meta name="description" content="The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/blockchain/psbt-bip174-bip370/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370 — Developer Uche" />
+  <meta property="og:description" content="The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors." />
+  <meta property="og:url" content="https://developeruche.com/notes/blockchain/psbt-bip174-bip370/" />
+  <meta property="og:image" content="https://developeruche.com/assets/notes/blockchain.png" />
+  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="article:published_time" content="2026-10-19" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370 — Developer Uche" />
+  <meta name="twitter:description" content="The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/notes/blockchain.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370",
+  "description": "The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions \u2014 checked against the BIP test vectors.",
+  "url": "https://developeruche.com/notes/blockchain/psbt-bip174-bip370/",
+  "datePublished": "2026-10-19",
+  "inLanguage": "en",
+  "keywords": "Bitcoin, PSBT, Wallets, Multisig",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Blockchain Notes",
+    "url": "https://developeruche.com/notes/blockchain/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/blockchain/">← Back to Blockchain notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · BLOCKCHAIN</span>
+        <h1 class="post-title">Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-10-19">2026-10-19</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Bitcoin</span>
+          <span>PSBT</span>
+          <span>Wallets</span>
+          <span>Multisig</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>A PSBT carries an unsigned Bitcoin transaction together with everything its signers need to check and sign it, and it collects their signatures until the transaction is complete. This article covers the format byte by byte, what each participant must do and verify, and what version 2 changed. Every example is a test vector from the BIPs, decoded and checked independently.</p>
+        <p><strong>Contents</strong></p>
+        <ol><li>Why PSBT exists</li><li>Roles</li><li>The wire format</li><li>Field reference</li><li>What each role does and checks</li><li>PSBT version 2 (BIP370)</li><li>Taproot and MuSig2 fields</li><li>Implementer checklist</li></ol>
+        <hr />
+        <h2>1. Why PSBT exists</h2>
+        <p>An unsigned transaction does not contain what a signer needs. Its inputs name coins only by outpoint (a txid and an output index), so:</p>
+        <ul><li><strong>The signer can't see what it is spending.</strong> A SegWit signature commits to the amount being spent, and a Taproot signature to the amounts and scripts of all inputs. Showing the user the fee also needs every input's value. An offline device cannot look any of this up.</li><li><strong>Scripts hide behind hashes.</strong> A P2SH or P2WSH output contains only the hash of its script, and a Taproot output only a tweaked key. The signer needs the script itself, and for Taproot the internal key, the leaf and its Merkle proof.</li><li><strong>The signer doesn't know which keys are its own.</strong> A hardware wallet stores a seed, not a list of keys. It needs the BIP32 derivation path of every key it should sign with, and of every change output it should recognise.</li><li><strong>Signatures arrive one at a time.</strong> In a multisig, each participant signs on their own device, in any order, and something has to carry the partial set until it is complete.</li></ul>
+        <p>Before PSBT, every wallet solved this with a format of its own. BIP174, first drafted in 2017 and supported by Bitcoin Core since version 0.17, defined a common one. Later BIPs extended it for Taproot, MuSig2 and silent payments without changing its structure.</p>
+        <h2>2. Roles</h2>
+        <p>BIP174 divides the work into roles. One program often plays several (a wallet is usually Creator, Updater, Finalizer and Extractor at once), but each role has a defined job and a defined set of checks.</p>
+        <table><thead><tr><th>Role</th><th>Job</th><th>Bitcoin Core RPC</th></tr></thead><tbody><tr><td>Creator</td><td>Starts the PSBT: in v0 with the complete unsigned transaction, in v2 with an empty one</td><td><code>createpsbt</code>, <code>walletcreatefundedpsbt</code></td></tr><tr><td>Constructor (v2 only)</td><td>Adds inputs and outputs while the PSBT still allows it</td><td></td></tr><tr><td>Updater</td><td>Adds the data signers need: UTXOs, scripts, derivation paths, sighash types</td><td><code>utxoupdatepsbt</code>, <code>walletprocesspsbt</code></td></tr><tr><td>Signer</td><td>Verifies that data and adds its signatures</td><td><code>walletprocesspsbt</code>, <code>descriptorprocesspsbt</code></td></tr><tr><td>Combiner</td><td>Merges copies of the same PSBT that different parties have worked on</td><td><code>combinepsbt</code></td></tr><tr><td>Input Finalizer</td><td>Turns each input's signatures and scripts into a final scriptSig and witness</td><td><code>finalizepsbt</code></td></tr><tr><td>Transaction Extractor</td><td>Produces the network transaction once every input is final</td><td><code>finalizepsbt</code></td></tr></tbody></table>
+        <pre><code>Creator ─► Constructor ─► Updater ─┬─► Signer A ─┐
+           (v2 only)               └─► Signer B ─┴─► Combiner ─► Input Finalizer ─► Transaction Extractor</code></pre>
+        <p>Signers can also work in sequence, each passing its output to the next, in which case no Combiner is needed. In Bitcoin Core, <code>decodepsbt</code> prints any PSBT and <code>analyzepsbt</code> reports which role it needs next.</p>
+        <h2>3. The wire format</h2>
+        <pre><code>psbt   := magic global-map input-map* output-map*
+magic  := 0x70 0x73 0x62 0x74 0xff            "psbt" followed by 0xff
+map    := record* 0x00
+record := keylen keytype keydata valuelen value</code></pre>
+        <ul><li><strong>Lengths and types are compact-size integers</strong>, the variable-length encoding transactions use: one byte below <code>0xfd</code>, otherwise a <code>0xfd</code>, <code>0xfe</code> or <code>0xff</code> prefix followed by 2, 4 or 8 bytes. <code>keylen</code> covers <code>keytype</code> and <code>keydata</code> together, and <code>keytype</code> must be minimally encoded.</li><li><strong>There is one input map per transaction input and one output map per output, in order.</strong> Maps carry no index or count of their own. A v0 parser learns how many to read from the unsigned transaction, a v2 parser from <code>INPUT_COUNT</code> and <code>OUTPUT_COUNT</code>.</li><li><strong>A key is <code>keytype ‖ keydata</code>, and it must be unique within its map.</strong> A PSBT with a duplicate key is invalid. Key data is what lets one type appear several times: an input has one <code>PARTIAL_SIG</code> record per public key, each keyed by that key.</li><li><strong><code>0x00</code> ends a map</strong>, because no real key has length zero.</li><li><strong>Unknown types are passed through untouched.</strong> This is the extension mechanism: new BIPs register new types in a registry kept next to BIP174, and old software keeps carrying them. Type <code>0xFC</code> is a proprietary namespace for internal use; its key data starts with an identifier string and a subtype.</li><li><strong>The <code>0xff</code> in the magic makes PSBTs and transactions mutually unparseable.</strong> No transaction parser accepts a PSBT, and no PSBT parser accepts a transaction.</li><li><strong><code>PSBT_GLOBAL_VERSION</code> (<code>0xFB</code>) holds the version; if it is absent, the version is 0.</strong> A parser that sees a version it doesn't know must stop, because the PSBT may contain types it cannot safely ignore.</li><li><strong>PSBT files are binary, with the extension <code>.psbt</code>.</strong> As text, PSBTs are base64, which is why they start with <code>cHNidP8</code>.</li></ul>
+        <h3>A fresh PSBT, byte by byte</h3>
+        <p>This is the Creator's output from BIP174's test vectors: a version 0 PSBT for a transaction with two inputs and two outputs, 167 bytes in all.</p>
+        <pre><code>70 73 62 74 ff                  magic: "psbt" + 0xff
+01 00                           key: length 1, type 0x00 (PSBT_GLOBAL_UNSIGNED_TX)
+9a                              value: 154 bytes follow
+   02000000                     transaction version 2
+   02                           2 inputs
+   58e87a21…b2abdd75 00000000   input 0 spends 75ddabb2…:0 (txid bytes reversed)
+   00 ffffffff                  empty scriptSig, sequence
+   838d0427…d07cea1d 01000000   input 1 spends 1dea7cd0…:1
+   00 ffffffff                  empty scriptSig, sequence
+   02                           2 outputs
+   70aaf00800000000             1.49990000 BTC
+   16 0014 d85c2b71…1dda124d    to a P2WPKH script
+   00e1f50500000000             1.00000000 BTC
+   16 0014 00aea9a2…1d87008f    to a P2WPKH script
+   00000000                     lock time 0
+00                              end of the global map
+00 00                           input maps 0 and 1 (empty)
+00 00                           output maps 0 and 1 (empty)</code></pre>
+        <p>The Creator knows only the transaction, so all of it sits in the global map, and the four empty maps are slots for later roles. These are some of the records an Updater and a Signer put into them later (key, then value):</p>
+        <pre><code>input 0:
+01 03 | 04 01000000                            SIGHASH_TYPE: SIGHASH_ALL
+22 06 029583bf…ab96e07f                        BIP32_DERIVATION, keyed by a 33-byte public key
+      | 10 d90c6a4f 00000080 00000080 00000080       master fingerprint d90c6a4f, path m/0'/0'/0'
+22 02 029583bf…ab96e07f                        PARTIAL_SIG, keyed by the same public key
+      | 47 30440220…3261118c 01                      71 bytes: DER signature + sighash byte
+input 1:
+01 01 | 20 00c2eb0b00000000 17 a914b7f5…a921e887   WITNESS_UTXO: 2.00000000 BTC, P2SH script</code></pre>
+        <h2>4. Field reference</h2>
+        <p>These are the fields defined by BIP174 and BIP370. Names drop the <code>PSBT_GLOBAL_</code>, <code>PSBT_IN_</code> and <code>PSBT_OUT_</code> prefixes.</p>
+        <p><strong>Global map</strong></p>
+        <table><thead><tr><th>Type</th><th>Name</th><th>Key data</th><th>Value</th><th>Versions</th></tr></thead><tbody><tr><td><code>0x00</code></td><td><code>UNSIGNED_TX</code></td><td></td><td>the transaction, with empty scriptSigs and witnesses, in legacy serialization</td><td>v0 only, required</td></tr><tr><td><code>0x01</code></td><td><code>XPUB</code></td><td>78-byte extended public key</td><td>master fingerprint ‖ derivation path</td><td></td></tr><tr><td><code>0x02</code></td><td><code>TX_VERSION</code></td><td></td><td>transaction version</td><td>v2 only, required</td></tr><tr><td><code>0x03</code></td><td><code>FALLBACK_LOCKTIME</code></td><td></td><td>lock time to use if no input requires one</td><td>v2 only</td></tr><tr><td><code>0x04</code>, <code>0x05</code></td><td><code>INPUT_COUNT</code>, <code>OUTPUT_COUNT</code></td><td></td><td>compact-size counts</td><td>v2 only, required</td></tr><tr><td><code>0x06</code></td><td><code>TX_MODIFIABLE</code></td><td></td><td>flags, see Section 6</td><td>v2 only</td></tr><tr><td><code>0xFB</code></td><td><code>VERSION</code></td><td></td><td>PSBT version</td><td>required in v2</td></tr><tr><td><code>0xFC</code></td><td><code>PROPRIETARY</code></td><td>identifier ‖ subtype ‖ data</td><td>anything</td><td></td></tr></tbody></table>
+        <p><strong>Input map</strong></p>
+        <table><thead><tr><th>Type</th><th>Name</th><th>Key data</th><th>Value</th><th>Versions</th></tr></thead><tbody><tr><td><code>0x00</code></td><td><code>NON_WITNESS_UTXO</code></td><td></td><td>the full previous transaction</td><td></td></tr><tr><td><code>0x01</code></td><td><code>WITNESS_UTXO</code></td><td></td><td>the spent output: amount ‖ scriptPubKey, for SegWit inputs</td><td></td></tr><tr><td><code>0x02</code></td><td><code>PARTIAL_SIG</code></td><td>public key</td><td>ECDSA signature as pushed: DER ‖ sighash byte</td><td></td></tr><tr><td><code>0x03</code></td><td><code>SIGHASH_TYPE</code></td><td></td><td>sighash type every signature must use</td><td></td></tr><tr><td><code>0x04</code></td><td><code>REDEEM_SCRIPT</code></td><td></td><td>P2SH redeem script</td><td></td></tr><tr><td><code>0x05</code></td><td><code>WITNESS_SCRIPT</code></td><td></td><td>P2WSH witness script</td><td></td></tr><tr><td><code>0x06</code></td><td><code>BIP32_DERIVATION</code></td><td>public key</td><td>master fingerprint ‖ derivation path</td><td></td></tr><tr><td><code>0x07</code></td><td><code>FINAL_SCRIPTSIG</code></td><td></td><td>complete scriptSig</td><td></td></tr><tr><td><code>0x08</code></td><td><code>FINAL_SCRIPTWITNESS</code></td><td></td><td>complete witness stack</td><td></td></tr><tr><td><code>0x0a</code>–<code>0x0d</code></td><td><code>RIPEMD160</code>, <code>SHA256</code>, <code>HASH160</code>, <code>HASH256</code></td><td>hash</td><td>preimage, for hashlocks</td><td></td></tr><tr><td><code>0x0e</code></td><td><code>PREVIOUS_TXID</code></td><td></td><td>txid of the coin being spent</td><td>v2 only, required</td></tr><tr><td><code>0x0f</code></td><td><code>OUTPUT_INDEX</code></td><td></td><td>its output index</td><td>v2 only, required</td></tr><tr><td><code>0x10</code></td><td><code>SEQUENCE</code></td><td></td><td>sequence number; <code>0xffffffff</code> if absent</td><td>v2 only</td></tr><tr><td><code>0x11</code></td><td><code>REQUIRED_TIME_LOCKTIME</code></td><td></td><td>minimum lock time as a timestamp, ≥ 500,000,000</td><td>v2 only</td></tr><tr><td><code>0x12</code></td><td><code>REQUIRED_HEIGHT_LOCKTIME</code></td><td></td><td>minimum lock time as a block height, 1 to 499,999,999</td><td>v2 only</td></tr></tbody></table>
+        <p><strong>Output map</strong></p>
+        <table><thead><tr><th>Type</th><th>Name</th><th>Key data</th><th>Value</th><th>Versions</th></tr></thead><tbody><tr><td><code>0x00</code></td><td><code>REDEEM_SCRIPT</code></td><td></td><td>redeem script, so a signer can verify change</td><td></td></tr><tr><td><code>0x01</code></td><td><code>WITNESS_SCRIPT</code></td><td></td><td>witness script</td><td></td></tr><tr><td><code>0x02</code></td><td><code>BIP32_DERIVATION</code></td><td>public key</td><td>master fingerprint ‖ derivation path</td><td></td></tr><tr><td><code>0x03</code></td><td><code>AMOUNT</code></td><td></td><td>amount in satoshis</td><td>v2 only, required</td></tr><tr><td><code>0x04</code></td><td><code>SCRIPT</code></td><td></td><td>scriptPubKey</td><td>v2 only, required</td></tr></tbody></table>
+        <p>The type registry next to BIP174 lists the rest. Besides Taproot and MuSig2 (Section 7), it includes fields for silent payments (BIP375 and BIP376, v2 only), pay-to-contract tweaks (BIP372) and proof-of-reserves commitments (BIP127).</p>
+        <h2>5. What each role does and checks</h2>
+        <h3>Creator and Updater</h3>
+        <p>The v0 Creator writes the unsigned transaction, with empty scriptSigs and witnesses, and one empty map per input and output. The Updater adds what it knows. It needs no private keys, so a watch-only wallet or a multisig coordinator can do this job:</p>
+        <ul><li>the coin each input spends,</li><li>the redeem and witness scripts behind P2SH and P2WSH hashes,</li><li>the derivation paths of every key that can sign an input or that an output pays to, and the global xpubs they come from,</li><li>optionally, a sighash type and hash preimages.</li></ul>
+        <p><strong>Which UTXO field.</strong> <code>NON_WITNESS_UTXO</code> (the whole previous transaction) is meant for legacy inputs and <code>WITNESS_UTXO</code> (only the spent output) for SegWit inputs, and an input may carry both. The full transaction is also the safer choice for SegWit v0 inputs, because of the 2020 fee attack. A BIP143 signature commits only to its own input's amount, so a malicious coordinator can request two signatures over the same transaction, understating a different input's value each time. Each session shows a sane fee, but combining one valid signature from each produces a transaction whose real fee is far larger. Hashing the full previous transaction proves the amount, which is why many hardware wallets now require it for SegWit v0 inputs. Taproot fixes the problem in the signature itself: a BIP341 signature commits to every input's amount and scriptPubKey, so <code>WITNESS_UTXO</code> is enough, provided the signer has it for <em>every</em> input.</p>
+        <h3>Signer</h3>
+        <p>BIP174's signer checklist:</p>
+        <ol><li>If <code>NON_WITNESS_UTXO</code> is present, its hash must equal the txid in the input's outpoint.</li><li>If <code>WITNESS_UTXO</code> is present, sign only with a SegWit signature hash, never a legacy one.</li><li>A <code>REDEEM_SCRIPT</code> must hash to the spent scriptPubKey, and a <code>WITNESS_SCRIPT</code> must hash to the scriptPubKey or to the redeem script.</li><li>If <code>SIGHASH_TYPE</code> is present, sign with that type if it is acceptable and refuse otherwise. If it is absent, use <code>SIGHASH_ALL</code> (or its Taproot equivalent, <code>SIGHASH_DEFAULT</code>).</li><li>Use only the UTXO data in the PSBT, add data but never remove any, and store each signature as a <code>PARTIAL_SIG</code> keyed by its public key.</li></ol>
+        <p>What to sign follows from the UTXO fields. With a <code>WITNESS_UTXO</code>, the script is the redeem script if there is one (P2SH-wrapped SegWit) and the scriptPubKey otherwise. P2WPKH then signs a BIP143 hash with the matching P2PKH script code, and P2WSH signs a BIP143 hash over the witness script. With only a <code>NON_WITNESS_UTXO</code>, the signer computes a legacy signature hash over the redeem script or the spent scriptPubKey. With neither, it cannot sign.</p>
+        <p>A good signer also shows the user what is being signed: destinations, amounts and fee. It can compute the fee because the PSBT carries every input's value.</p>
+        <p><strong>Change detection.</strong> To keep its own change out of that display, a signer checks each output's <code>BIP32_DERIVATION</code>. If the fingerprint is its own and deriving the path gives the output's key, the output is change. For multisig, it reconstructs the policy of the inputs it signs (which keys, in what order, how many are required), uses the derivation paths and global xpubs to find each cosigner's xpub, and treats as change only outputs with exactly the same policy. A PSBT comes from an untrusted host, so devices usually make the user register the wallet's descriptor or policy (BIP388) once, then check every PSBT against it.</p>
+        <h3>Combiner</h3>
+        <p>The Combiner takes several PSBTs for the same transaction and outputs one that contains every record from all of them, without duplicates. It needs no script knowledge. In v0, "the same transaction" means the same <code>UNSIGNED_TX</code>; Section 6 gives the v2 equivalent. If two PSBTs carry the same key with different values, the Combiner may keep either value or refuse to combine. BIP174 allows an arbitrary choice because an invalid value can only produce an invalid signature or transaction, and if both values are valid the choice doesn't matter. When participants add only distinct records, the order of combining doesn't matter: <code>Combine(fA(p), fB(p)) = fA(fB(p)) = fB(fA(p))</code>.</p>
+        <h3>Input Finalizer</h3>
+        <p>For each input that has enough data to satisfy its script, the Finalizer builds the complete scriptSig and witness and stores them as <code>FINAL_SCRIPTSIG</code> and <code>FINAL_SCRIPTWITNESS</code>, leaving either one unset if it would be empty. It then deletes every other record in that input's map except the UTXO fields and fields it doesn't understand. It must refuse to finalize an input whose signatures don't match a given <code>SIGHASH_TYPE</code>. This is the role that has to understand scripts: signature order, the dummy element that <code>OP_CHECKMULTISIG</code> consumes, and the redeem-script push that wraps P2SH-SegWit.</p>
+        <h3>Transaction Extractor</h3>
+        <p>If every input is final, the Extractor copies the final scriptSigs and witnesses into the transaction and serializes it; otherwise it leaves the PSBT alone. It may also validate the result, which is why the Finalizer keeps the UTXOs.</p>
+        <h3>One transaction through every role</h3>
+        <p>BIP174's test vectors take the transaction from Section 3 through every role. Input 0 spends a 0.5 BTC P2SH 2-of-2 multisig output and input 1 a 2 BTC P2SH-P2WSH 2-of-2. Signer A holds one key of each multisig and Signer B the other, and they sign copies of the same PSBT in parallel:</p>
+        <table><thead><tr><th>Step</th><th>Input 0 (P2SH 2-of-2)</th><th>Input 1 (P2SH-P2WSH 2-of-2)</th><th>Outputs</th><th>Size</th></tr></thead><tbody><tr><td>Creator</td><td>empty</td><td>empty</td><td>empty</td><td>167 B</td></tr><tr><td>Updater</td><td><code>NON_WITNESS_UTXO</code>, <code>REDEEM_SCRIPT</code>, 2 × <code>BIP32_DERIVATION</code></td><td><code>WITNESS_UTXO</code>, <code>REDEEM_SCRIPT</code>, <code>WITNESS_SCRIPT</code>, 2 × <code>BIP32_DERIVATION</code></td><td><code>BIP32_DERIVATION</code></td><td>889 B</td></tr><tr><td>Updater</td><td>+ <code>SIGHASH_TYPE</code></td><td>+ <code>SIGHASH_TYPE</code></td><td></td><td>903 B</td></tr><tr><td>Signer A, Signer B</td><td>+ one <code>PARTIAL_SIG</code> each</td><td>+ one <code>PARTIAL_SIG</code> each</td><td></td><td>1,117 B, 1,118 B</td></tr><tr><td>Combiner</td><td>2 × <code>PARTIAL_SIG</code></td><td>2 × <code>PARTIAL_SIG</code></td><td></td><td>1,332 B</td></tr><tr><td>Input Finalizer</td><td><code>NON_WITNESS_UTXO</code>, <code>FINAL_SCRIPTSIG</code></td><td><code>WITNESS_UTXO</code>, <code>FINAL_SCRIPTSIG</code>, <code>FINAL_SCRIPTWITNESS</code></td><td>unchanged</td><td>976 B</td></tr><tr><td>Transaction Extractor</td><td></td><td></td><td></td><td>628-byte transaction (463 vB)</td></tr></tbody></table>
+        <p>Finalizing shows how the two input types differ. Input 0's scriptSig becomes <code>OP_0 &lt;sig&gt; &lt;sig&gt; &lt;redeem script&gt;</code>. Input 1's scriptSig is only the 34-byte push of its redeem script (<code>0020</code> followed by a script hash), and its signatures move to the witness: <code>[&lt;empty&gt;, &lt;sig&gt;, &lt;sig&gt;, &lt;witness script&gt;]</code>. Before signing, either signer can compute the fee: 2.5 BTC in, 2.4999 BTC out, 10,000 sats. The vector predates the fee attack; today, many hardware wallets would refuse to sign input 1 without its full previous transaction.</p>
+        <h2>6. PSBT version 2 (BIP370)</h2>
+        <p><strong>The problem.</strong> In v0 the transaction is fixed at creation. <code>UNSIGNED_TX</code> is the PSBT's identity, so adding an input or output means building a new transaction and therefore a new PSBT; Bitcoin Core's <code>joinpsbts</code> merges PSBTs exactly this way. Nothing in v0 records which changes existing signatures would survive. Protocols that build a transaction together, such as coinjoins, payjoins, dual-funded Lightning channels and swaps, need to add inputs and outputs to a PSBT that others have already seen, and sometimes already signed with <code>ANYONECANPAY</code>.</p>
+        <p><strong>The change.</strong> v2 removes <code>UNSIGNED_TX</code> and stores each part of the transaction in the map it belongs to. The version, fallback lock time and counts go in the global map; the outpoint, sequence and lock-time requirements in each input map; the amount and script in each output map. As a side effect, everything about an input or output now lives in one place. <code>PSBT_GLOBAL_VERSION</code> must be 2, v0 must not contain v2 fields, and v2 must not contain <code>UNSIGNED_TX</code>, so neither version can be mistaken for the other. (There is no version 1: v0 had been informally called "v1", so the BIP skipped the number.)</p>
+        <p>The smallest valid v2 PSBT in BIP370's test vectors, 145 bytes:</p>
+        <pre><code>70 73 62 74 ff                  magic
+01 02 | 04 02000000             TX_VERSION = 2
+01 04 | 01 01                   INPUT_COUNT = 1
+01 05 | 01 02                   OUTPUT_COUNT = 2
+01 fb | 04 02000000             VERSION = 2
+00
+01 0e | 20 0b0ad921…84815fc8    PREVIOUS_TXID
+01 0f | 04 00000000             OUTPUT_INDEX = 0
+00                              (no SEQUENCE, so 0xffffffff)
+01 03 | 08 0008af2f00000000     AMOUNT = 8.00000000 BTC
+01 04 | 16 0014c430…9926272c    SCRIPT (P2WPKH)
+00
+01 03 | 08 8bbdeb0b00000000     AMOUNT = 1.99998859 BTC
+01 04 | 16 00144dd1…474f8513    SCRIPT (P2WPKH)
+00</code></pre>
+        <h3>The Constructor and <code>TX_MODIFIABLE</code></h3>
+        <p>A v2 Creator starts with zero inputs and outputs, sets <code>PSBT_GLOBAL_VERSION</code> to 2 and the transaction version, and should set the fallback lock time. If others will add to the transaction, it must also set <code>TX_MODIFIABLE</code> and a transaction version of at least 2, so that features such as <code>OP_CHECKSEQUENCEVERIFY</code> work for every input without negotiation. Constructors then add inputs (each with <code>PREVIOUS_TXID</code>, <code>OUTPUT_INDEX</code> and any lock-time requirement) and outputs (with <code>AMOUNT</code> and <code>SCRIPT</code>), and update the counts.</p>
+        <p><code>TX_MODIFIABLE</code> holds three flags:</p>
+        <table><thead><tr><th>Bit</th><th>Flag</th><th>Meaning</th></tr></thead><tbody><tr><td>0</td><td>Inputs Modifiable</td><td>inputs may be added or removed</td></tr><tr><td>1</td><td>Outputs Modifiable</td><td>outputs may be added or removed</td></tr><tr><td>2</td><td>Has SIGHASH_SINGLE</td><td>a signature pairs an input with the output at the same index</td></tr></tbody></table>
+        <p>The flags track what existing signatures still allow. After signing, a Signer must clear bit 0 if its signature doesn't use <code>ANYONECANPAY</code>, clear bit 1 unless it used <code>SIGHASH_NONE</code>, and set bit 2 if it used <code>SIGHASH_SINGLE</code>. A Constructor must check the flags before adding anything. It must refuse an input whose lock-time type is incompatible with the existing inputs, or one that would change the lock time once signatures exist. When bit 2 is set, it must keep each <code>SIGHASH_SINGLE</code> input at the same index as its output, so anything inserted before such an input needs a matching output inserted before its output. A Constructor closes the transaction by clearing the flags or removing the field.</p>
+        <h3>Lock time</h3>
+        <p>In v2, inputs state requirements instead of the transaction carrying a single lock time. <code>REQUIRED_HEIGHT_LOCKTIME</code> and <code>REQUIRED_TIME_LOCKTIME</code> give the minimum block height or timestamp an input needs; an input that works with either can set both. The transaction's lock time is then derived:</p>
+        <pre><code>def determine_locktime(fallback, inputs):
+    """inputs: one (required_time, required_height) pair per input, None where absent."""
+    constrained = [i for i in inputs if i != (None, None)]
+    if not constrained:
+        return fallback or 0
+    if all(h is not None for t, h in constrained):    # height wins a tie
+        return max(h for t, h in constrained)
+    if all(t is not None for t, h in constrained):
+        return max(t for t, h in constrained)
+    return None                                        # no common type: invalid</code></pre>
+        <p>This function gives the expected result for all ten lock-time test vectors in BIP370. Heights are preferred when both types are possible because every signer must agree on one value: their signatures commit to the lock time.</p>
+        <h3>Identity, finalizing and compatibility</h3>
+        <ul><li><strong>Identity.</strong> A v2 PSBT is identified by the txid of the transaction its fields describe, with every sequence number set to 0 (Updaters and Combiners may change sequences) and the lock time computed as above. It plays the role <code>UNSIGNED_TX</code> played in v0.</li><li><strong>Finalizing.</strong> When the Input Finalizer clears an input, it must keep <code>PREVIOUS_TXID</code>, <code>OUTPUT_INDEX</code>, <code>SEQUENCE</code> and the lock-time fields, because the Extractor builds the transaction from them.</li><li><strong>Compatibility.</strong> v0 and v2 share the framing, so a v0 parser only needs the new fields to read v2. Converting is mechanical in both directions: build the unsigned transaction from v2's fields, or split v0's unsigned transaction into them.</li></ul>
+        <p><strong>Adoption.</strong> Ledger's Bitcoin app has used v2 since version 2.0.0 (2021), because a device can then read individual fields without parsing the whole transaction. Core Lightning uses v2 internally. Sending silent payments with PSBTs (BIP375) requires v2, because a silent-payment output's script cannot be computed until the inputs are known. Bitcoin Core merged v2 support in 2026. In version 32.0, which is in release candidates as of October 2026, <code>createpsbt</code>, <code>walletcreatefundedpsbt</code>, <code>converttopsbt</code> and <code>psbtbumpfee</code> produce v2 by default, and a new <code>psbt_version</code> argument asks for v0.</p>
+        <h2>7. Taproot and MuSig2 fields</h2>
+        <p>BIP371 adds the fields that Taproot signing needs. All of them are allowed in both v0 and v2.</p>
+        <table><thead><tr><th>Name</th><th>Type</th><th>Key data</th><th>Value</th></tr></thead><tbody><tr><td><code>IN_TAP_KEY_SIG</code></td><td>input <code>0x13</code></td><td></td><td>key-path signature, 64 or 65 bytes</td></tr><tr><td><code>IN_TAP_SCRIPT_SIG</code></td><td>input <code>0x14</code></td><td>x-only key ‖ leaf hash</td><td>script-path signature</td></tr><tr><td><code>IN_TAP_LEAF_SCRIPT</code></td><td>input <code>0x15</code></td><td>control block</td><td>script ‖ leaf version</td></tr><tr><td><code>IN_TAP_BIP32_DERIVATION</code>, <code>OUT_TAP_BIP32_DERIVATION</code></td><td>input <code>0x16</code>, output <code>0x07</code></td><td>x-only key</td><td>hashes of the leaves the key appears in ‖ fingerprint ‖ path</td></tr><tr><td><code>IN_TAP_INTERNAL_KEY</code>, <code>OUT_TAP_INTERNAL_KEY</code></td><td>input <code>0x17</code>, output <code>0x05</code></td><td></td><td>x-only internal key</td></tr><tr><td><code>IN_TAP_MERKLE_ROOT</code></td><td>input <code>0x18</code></td><td></td><td>Merkle root of the script tree</td></tr><tr><td><code>OUT_TAP_TREE</code></td><td>output <code>0x06</code></td><td></td><td>every leaf as depth ‖ leaf version ‖ script</td></tr></tbody></table>
+        <p>What changes for each role:</p>
+        <ul><li><strong>UTXOs.</strong> <code>WITNESS_UTXO</code> is enough for Taproot inputs, but to compute any Taproot signature hash (other than with <code>ANYONECANPAY</code>) the signer needs the UTXO of every input in the transaction, Taproot or not.</li><li><strong>Key path.</strong> The signer tweaks its key with the internal key and, if the output has a script tree, the Merkle root. It should check that the two reproduce the output key before signing.</li><li><strong>Script path.</strong> A Tapscript signature commits to its leaf, so script-path signatures are keyed by key and leaf hash, and derivation records list the leaves each key appears in. The Finalizer builds the witness from the signatures, the leaf script and its control block.</li><li><strong>Outputs.</strong> An internal key, tree and derivation paths on an output let a signer verify Taproot change the same way as before.</li></ul>
+        <p>MuSig2 (BIP373) adds <code>MUSIG2_PARTICIPANT_PUBKEYS</code> (input <code>0x1a</code>, output <code>0x08</code>, listing an aggregate key's participants), <code>MUSIG2_PUB_NONCE</code> (input <code>0x1b</code>) and <code>MUSIG2_PARTIAL_SIG</code> (input <code>0x1c</code>). The last two are keyed by participant key ‖ aggregate key, plus a leaf hash for script-path spends. Signing takes two passes over the PSBT: every signer first adds a 66-byte public nonce, then, once all nonces are present, a 32-byte partial signature. Whoever holds all the partial signatures aggregates them into an ordinary <code>TAP_KEY_SIG</code> or <code>TAP_SCRIPT_SIG</code>. Secret nonces never enter the PSBT; they stay in the signer and must never be reused.</p>
+        <h2>8. Implementer checklist</h2>
+        <ul><li><strong>Treat every field as an untrusted claim and recompute it</strong>: the txid of a <code>NON_WITNESS_UTXO</code>, the hashes of redeem and witness scripts, the Taproot output key from the internal key and Merkle root, every control block.</li><li><strong>Require the full previous transaction for SegWit v0 inputs</strong>, and the UTXOs of all inputs whenever one input is Taproot.</li><li><strong>Show destinations, amounts and fee</strong>, and treat an output as change only if you can derive its key and it matches the registered wallet policy.</li><li><strong>Refuse unexpected sighash types</strong>, and make anything other than <code>ALL</code> or <code>DEFAULT</code> visible to the user.</li><li><strong>Pass unknown and proprietary records through unchanged</strong>, and stop on an unknown <code>PSBT_GLOBAL_VERSION</code>.</li><li><strong>Support v2</strong>, since Bitcoin Core switches to it by default in version 32.0.</li><li><strong>Strip private data before a PSBT leaves your wallet.</strong> Xpubs, derivation paths and full previous transactions reveal your wallet's structure to coinjoin and payjoin counterparties.</li></ul>
+        <hr />
+        <h3>References</h3>
+        <ul><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki" target="_blank" rel="noopener noreferrer">BIP174: Partially Signed Bitcoin Transaction Format</a> and the <a href="https://github.com/bitcoin/bips/blob/master/bip-0174/type-registry.mediawiki" target="_blank" rel="noopener noreferrer">PSBT type registry</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki" target="_blank" rel="noopener noreferrer">BIP370: PSBT Version 2</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0371.mediawiki" target="_blank" rel="noopener noreferrer">BIP371: Taproot Fields for PSBT</a>, <a href="https://github.com/bitcoin/bips/blob/master/bip-0373.mediawiki" target="_blank" rel="noopener noreferrer">BIP373: MuSig2 PSBT Fields</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0375.mediawiki" target="_blank" rel="noopener noreferrer">BIP375: Sending Silent Payments with PSBTs</a>, <a href="https://github.com/bitcoin/bips/blob/master/bip-0376.mediawiki" target="_blank" rel="noopener noreferrer">BIP376: Spending Silent Payment outputs with PSBTs</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki" target="_blank" rel="noopener noreferrer">BIP143</a> and <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank" rel="noopener noreferrer">BIP341</a> (signature hashes), <a href="https://github.com/bitcoin/bips/blob/master/bip-0388.mediawiki" target="_blank" rel="noopener noreferrer">BIP388: Wallet Policies</a></li><li>Bitcoin Optech, <a href="https://bitcoinops.org/en/topics/psbt/" target="_blank" rel="noopener noreferrer">PSBT topic page</a> and <a href="https://bitcoinops.org/en/newsletters/2026/05/08/" target="_blank" rel="noopener noreferrer">newsletter of 8 May 2026</a> (Bitcoin Core #21283, PSBTv2)</li><li><a href="https://github.com/bitcoin-core/bitcoin-devwiki/wiki/32.0-Release-Notes-Draft" target="_blank" rel="noopener noreferrer">Bitcoin Core 32.0 release notes draft</a></li><li>bitcoindev, <a href="https://groups.google.com/g/bitcoindev/c/OPx9qvmr5Nc/m/yKW8NfnNBQAJ" target="_blank" rel="noopener noreferrer">"Who uses or wants to use PSBTv2 (BIP370)"</a>, January 2025</li></ul>
+      </div>
+
+      <a class="back-link" href="/notes/blockchain/" style="margin-top: var(--space-lg);">← Back to Blockchain notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
