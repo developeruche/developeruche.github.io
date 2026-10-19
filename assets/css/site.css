@@ -669,3 +669,36 @@ body::before {
   .note-cat, .note-cat-meta span { transition: none; }
   .note-cat:hover { transform: none; }
 }
+
+/* ── 404 page ──────────────────────────────────────────────────────────── */
+.notfound { min-height: 70vh; display: flex; align-items: center; }
+.notfound .container { width: 100%; }
+.notfound-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-8);
+  margin-top: var(--space-md);
+  padding: var(--space-12) var(--space-15);
+  max-width: var(--container-narrow);
+  border: var(--border-1) dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-transform: none;
+}
+.notfound-prompt { color: var(--color-accent); font-weight: var(--font-weight-bold); }
+.notfound-path code {
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.notfound-status {
+  margin-left: auto;
+  color: var(--color-accent);
+  font-size: var(--text-xs);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}

@@ -12,7 +12,8 @@ extensionless, so previewing locally needs the same resolution order Pages uses:
                  -> path/index.html     (directory index)
                  -> path.html           (extensionless page)
 
-Anything still unresolved falls through to the normal 404.
+Anything still unresolved gets 404.html with a 404 status, as on Pages (falling
+back to the stock error page if 404.html is absent).
 """
 import http.server
 import os
@@ -47,6 +48,22 @@ class PagesHandler(http.server.SimpleHTTPRequestHandler):
             if os.path.isfile(candidate):
                 return candidate
         return local
+
+    def send_error(self, code, message=None, explain=None):
+        # Pages answers a miss with the repo's 404.html and a real 404 status.
+        if code == 404:
+            page = os.path.join(os.getcwd(), "404.html")
+            if os.path.isfile(page):
+                with open(page, "rb") as f:
+                    body = f.read()
+                self.send_response(404)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                if self.command != "HEAD":
+                    self.wfile.write(body)
+                return
+        super().send_error(code, message, explain)
 
     def list_directory(self, path):
         # Pages serves no directory indexes; a directory without index.html

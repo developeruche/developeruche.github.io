@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found — Developer Uche</title>
+  <meta name="description" content="This page doesn't exist. Head back to the Developer Uche homepage, blog, projects, or notes." />
+  <!-- Pages serves this with a real 404 status; noindex is belt and braces. No canonical: it's served at every missing URL. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Root-absolute on purpose: GitHub Pages serves this file at the missing URL's own depth. -->
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="404">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero notfound">
+      <div class="container">
+        <span class="section-label">// ERROR 404</span>
+        <h1 class="hero-title">PAGE <span class="text-gradient">NOT FOUND</span></h1>
+        <p class="subline">Nothing lives at this address. The link may be old, the page may have moved, or the URL may have a typo.</p>
+
+        <p class="notfound-path" aria-live="polite">
+          <span class="notfound-prompt" aria-hidden="true">&gt;</span>
+          GET <code id="notfound-url">…</code>
+          <span class="notfound-status">404 NOT FOUND</span>
+        </p>
+
+        <div class="hero-cta">
+          <a class="btn-primary" href="/">Back home <span aria-hidden="true">→</span></a>
+          <a class="btn-secondary" href="/blog">Blog</a>
+          <a class="btn-secondary" href="/projects">Projects</a>
+          <a class="btn-secondary" href="/publications">Publications</a>
+          <a class="btn-secondary" href="/notes">Notes</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <script>
+    // Echo the path that missed. textContent only: the URL is untrusted input.
+    document.getElementById('notfound-url').textContent = location.pathname + location.search;
+  </script>
+</body>
+</html>

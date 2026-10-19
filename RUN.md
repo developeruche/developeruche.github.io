@@ -44,6 +44,7 @@ Install the **Live Server** extension, then right-click `index.html` →
 | `/notes` | `notes.html` | Study-notes index: three category cards |
 | `/notes/<category>/` | `notes/<category>/index.html` | Notes in one category, filterable |
 | `/blog-post` | `blog-post.html` | Dummy post detail template (not yet linked) |
+| *(any missing URL)* | `404.html` | Custom not-found page. Pages serves it automatically; `serve.py` does too. `noindex`, not in the sitemap |
 | `/cv` | `cv/index.html` | Downloads the CV PDF (auto-starts on load) |
 | `/publications/<slug>/` | `publications/<slug>/index.html` | Paper detail page: metadata + in-page PDF reader |
 | `/papers/preview.html` | `papers/preview.html` | Live paper preview — dev only, `noindex` |
