@@ -1,5 +1,21 @@
 [
   {
+    "title": "Rapidly Verifiable XMSS Signatures",
+    "slug": "rapidly-verifiable-xmss",
+    "category": "cryptography-zkp",
+    "date": "2026-10-20",
+    "excerpt": "How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices.",
+    "tags": [
+      "Post-Quantum Cryptography",
+      "Hash-Based Signatures",
+      "XMSS",
+      "WOTS+"
+    ],
+    "link": "/notes/cryptography-zkp/rapidly-verifiable-xmss/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370",
     "slug": "psbt-bip174-bip370",
     "category": "blockchain",

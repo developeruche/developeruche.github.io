@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rapidly Verifiable XMSS Signatures — Developer Uche</title>
+  <meta name="description" content="How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Rapidly Verifiable XMSS Signatures — Developer Uche" />
+  <meta property="og:description" content="How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/" />
+  <meta property="og:image" content="https://developeruche.com/assets/notes/cryptography-zkp.png" />
+  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="article:published_time" content="2026-10-20" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Rapidly Verifiable XMSS Signatures — Developer Uche" />
+  <meta name="twitter:description" content="How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/notes/cryptography-zkp.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Rapidly Verifiable XMSS Signatures",
+  "description": "How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44\u00d7 faster on embedded devices.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/",
+  "datePublished": "2026-10-20",
+  "inLanguage": "en",
+  "keywords": "Post-Quantum Cryptography, Hash-Based Signatures, XMSS, WOTS+",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Cryptography & ZKP Notes",
+    "url": "https://developeruche.com/notes/cryptography-zkp/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/">← Back to Cryptography &amp; ZKP notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · CRYPTOGRAPHY &amp; ZKP</span>
+        <h1 class="post-title">Rapidly Verifiable XMSS Signatures</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-10-20">2026-10-20</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Post-Quantum Cryptography</span>
+          <span>Hash-Based Signatures</span>
+          <span>XMSS</span>
+          <span>WOTS+</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<blockquote><strong>Also on HackMD.</strong> This note was first published on HackMD. If you would rather read it there, it is at <a href="https://hackmd.io/@0xdeveloperuche/Hyls3QgP-e" target="_blank" rel="noopener noreferrer">hackmd.io/@0xdeveloperuche/Hyls3QgP-e</a>.</blockquote>
+        <h2>XMSS (Extended Merkle Signature Scheme)</h2>
+        <h3>Hash-Based Cryptography Context</h3>
+        <p>Hash-based cryptography provides a secure and reliable way of encrypting, decrypting, and verifying digital signatures, offering cryptographic solutions that can withstand attacks from quantum computers.</p>
+        <ul><li><strong>Foundation:</strong> It relies on the cryptographic strength of hash functions and pseudo-random functions, which are well-understood and not known to be broken by quantum computers.</li><li><strong>Mechanism:</strong><ul><li>Establishes a mutual secret key using a key agreement protocol relying on hash functions.</li><li>Uses a Merkle signature scheme to sign and verify messages using the shared secret key.</li><li>The Merkle signature scheme uses a hash tree to generate a signature secure against both classical and quantum attacks.</li></ul></li></ul>
+        <h3>Stateful vs. Stateless</h3>
+        <p>Hash-based signatures are divided into two categories:</p>
+        <ul><li><strong>Stateless:</strong> (e.g., SPHINCS) Do not require keeping track of state but often have larger signature sizes.</li><li><strong>Stateful:</strong> (e.g., XMSS) Requires the storage of a secret-key state; the signing key changes after every signature.<ul><li><strong>Crucial Constraint:</strong> If an attacker obtains signatures of two different messages created using the same One-Time Signature (OTS) key, it becomes computationally feasible to create forgeries. Therefore, the state must be updated (index incremented) after every signature.</li></ul></li></ul>
+        <h3>Structure of XMSS</h3>
+        <p>XMSS combines the Winternitz One-Time Signature (WOTS+) with a Merkle Tree structure.</p>
+        <ul><li><strong>Merkle Tree:</strong> A binary hash tree of height $h$. The root node is the public key, and the leaves are the OTS key pairs.</li><li><strong>WOTS+ (Winternitz One-Time Signature Plus):</strong><ul><li>Used for the leaves of the tree to sign the actual messages.</li><li>Parameters:<ul><li>$n$: Security parameter (message digest length).</li><li>$w$: Winternitz parameter (trade-off between speed and size).</li><li>$l$: The total number of blocks in a signature ($l_1$ message chains + $l_2$ checksum chains).</li></ul></li></ul></li></ul>
+        <h3>Evolution: From Classical WOTS to WOTS+</h3>
+        <p>Classical WOTS hash chains were deterministic and unkeyed, introducing several security issues:</p>
+        <ol><li><strong>Chain Splicing / Multi-target Attacks:</strong><ul><li>If an attacker observes multiple signatures, they may collect partial hash chains.</li><li>Because chains are not randomized, these partial chains can sometimes be combined.</li><li>This weakens security in multi-signature or adaptive settings.</li></ul></li><li><strong>Unsustainability for Tree-based Schemes:</strong><ul><li>When WOTS is used as a leaf signature in a Merkle tree, an attacker sees many WOTS public keys and signatures.</li><li>The lack of per-step domain separation becomes exploitable.</li></ul></li></ol>
+        <p><strong>The WOTS+ Solution:</strong> WOTS+ fixes these problems by introducing randomness to every step of the hash chain.</p>
+        <ul><li><strong>Keyed Hashing:</strong> Instead of hashing directly $x \to H(x)$, WOTS+ hashes using a bitwise XOR with a random value $r$ (and domain separators): $x \to H(x \oplus r)$.</li><li><strong>Role of $r$:</strong> $r$ is a public, deterministic random value unique to each chain index and step index. This ensures domain separation and mitigates multi-target attacks.</li></ul>
+        <h2>Optimize XMSS Verification</h2>
+        <h3>The Core Goal</h3>
+        <p>The primary question addressed is: <em>"How can we maximize the verification speed of XMSS on embedded devices?"</em></p>
+        <ul><li><strong>Context:</strong> In IoT and embedded applications (e.g., vehicle-to-vehicle communication, secure boot), verification happens much more frequently than signing.</li><li><strong>Resource Constraints:</strong> Embedded devices (like ARM Cortex-M4) are constrained in memory and computing power, making verification efficiency critical.</li></ul>
+        <h3>PZMCM / Winternitz Tuning</h3>
+        <p>The optimization relies on a technique proposed by PZMCM (Perin et al.), which exploits the probabilistic nature of WOTS+ chain lengths.</p>
+        <ul><li><strong>Cost Analysis:</strong> The cost of verifying a WOTS+ signature is largely determined by the values of the $l_1$ integers $h_1, \dots, h_{l_1}$ derived from the message digest.<ul><li>Verification requires completing the hash chains.</li><li>The number of hash computations is $\sum (w - 1 - h_i)$.</li><li><strong>Key Insight:</strong> As $h_i$ increases (the value in the signature is higher), the work remaining for the verifier <em>decreases</em>.</li></ul></li><li><strong>The Trade-off:</strong><ul><li>We can loop over $T$ counters and append them to the message: $M_{ctr} = H_{msg}(ctr, message)$.</li><li>We search for the counter that maximizes the cumulative chain length (sum of $h_i$).</li><li>This reduces the number of steps the verification would take, <strong>hence reducing the verification time</strong>.</li><li><em>Note:</em> There are about a factor of 10 fewer checksum chains than message chains, so optimizing message chains yields significant gains.</li></ul></li></ul>
+        <h3>Rapidly Verifiable XMSS Algorithm</h3>
+        <p>To implement this efficiently without exploding the signing time, the algorithm uses an iterative approach that stores the internal state of the hash function.</p>
+        <p><strong>Algorithm Logic:</strong> Instead of re-hashing the entire message for every counter attempt ($T$ times), we:</p>
+        <ol><li>Compute the hash state for the static part of the message (Prefix + Message Body).</li><li>Store this <code>intermediate_state</code>.</li><li>Only process the final block (containing the counter) $T$ times.</li></ol>
+        <p>This makes the added signing cost independent of the message length.</p>
+        <h3>Python Implementation</h3>
+        <blockquote><em>This implementation replaces the standard signing routine to include the iterative counter search. This is the core innovation presented by the paper.</em></blockquote>
+        <pre><code>import math
+
+def XMSS_sign_iterative(M, SK, t, n=32):
+    """
+    Generates an XMSS signature optimized for verification speed using 
+    an iterative counter search.
+
+    Parameters:
+    M (bytes): The message to be signed.
+    SK (object): The XMSS private key structure.
+    t (int): The exponent for the number of counters to test (Total T = 2^t).
+    n (int): Security parameter (byte length of message digest, e.g., 32 for SHA-256).
+
+    Returns:
+    tuple: (Updated SK, Signature Sig, best_counter ctr)
+    """
+
+    # 1. Retrieve and update the signature index from the secret key
+    idx_sig = getIdx(SK)              
+    setIdx(SK, idx_sig + 1)           
+    # 2. Initialize Address structure (set to zero)
+    ADRS = toByte(0, 32)              
+
+    # 3. Generate randomness 'r' using a PRF
+    # Derived from part of the SK and the current index
+    sk_prf = getSKPRF(SK)
+    r = PRF(sk_prf, toByte(idx_sig, 32))  
+
+    # 4. Optimization Setup: Pre-calculate Hash State
+    best_length = -1
+    
+    # Calculate number of full 512-bit (64-byte) blocks to process once.
+    # Formula: 2 (header blocks) + floor(ceil(len(M))/64)
+    # Note: The '2' covers the prefix data (r, Root, idx)
+    msg_len_bytes = len(M) # equivalent to ceil(log2(M)/8)
+    num_blocks = 2 + math.floor(msg_len_bytes / 64) 
+
+    # Construct the input prefix: r || Root || index || Message
+    # This input is static except for the final block containing the counter
+    input_stream = (
+        r + 
+        getRoot(SK) + 
+        toByte(idx_sig, n) + 
+        M
+    ) 
+
+    # Compute and store the intermediate SHA-256 state
+    # This avoids re-hashing the large message body for every counter iteration
+    intermediate_state = sha256_inc_blocks(input_stream, num_blocks) 
+
+    # 5. Iterative Search for Best Counter
+    # Loop through 2^t possible counters to find the one producing the fastest-to-verify hash
+    best_ctr = 0
+    final_h = None
+
+    for i in range(0, 2**t): 
+        # Preserve the pre-calculated state before modifying it
+        temp_state = intermediate_state.copy()
+
+        # Prepare the final input block: Last part of Message || counter i
+        current_input_block = last_block(M + toByte(i, 8))
+
+        # Finalize the hash computation using the preserved state
+        # h is the candidate message digest
+        h = sha256_inc_finalize(temp_state, current_input_block, 1)
+
+        # Calculate the "length" (cost) of verifying this specific hash
+        # Higher length = faster verification (less hashing required for WOTS+)
+        new_length = wots_getlengths(h)
+
+        # If this hash is faster to verify than previous best, keep it
+        if new_length &gt; best_length:
+            best_length = new_length
+            best_ctr = i
+            final_h = h
+            M_prime = h # The message digest to sign is the best hash found
+
+    # 6. Generate the standard XMSS signature using the optimized message digest
+    # treeSig generates the WOTS+ signature and authentication path
+    signature_body = treeSig(M_prime, SK, idx_sig, ADRS) 
+
+    # Construct the final signature bundle: index || randomness || signature
+    Sig = toByte(idx_sig, n) + r + signature_body
+
+    # Return updated key, signature, and the optimized counter
+    return (SK, Sig, best_ctr)</code></pre>
+        <h3>RFC Compatibility</h3>
+        <ul><li>To maintain compatibility with RFC 8391, the counter <code>ctr</code> is appended to the message input rather than altering the internal hash structure.</li><li>The modified line in the signing algorithm becomes <code>byte[n] M' &lt;- Hmsg(r || getRoot(SK) || toByte(idx_sig, n), (M || ctr))</code>.</li></ul>
+        <p><strong>Benefit:</strong> A standard RFC-compliant verifier can verify the signature as long as they are aware the message has an appended counter (which can be handled via a wrapper function).</p>
+        <h3>Performance Analysis</h3>
+        <p><strong>Signing Time:</strong> By storing the hash state, the time added to signing is independent of message size. For a 100KB message, signing time drops from over 3 hours (without this optimization) to just 14 seconds.</p>
+        <p><strong>Verification Speed:</strong></p>
+        <ul><li>Using a modest number of counters yields a ~20% speedup.</li><li>A larger counter search (approx. 1 minute of signing time) creates signatures that are verified 1.44 times faster than standard signatures.</li><li>Combining this with Time-Memory Trade-Off (TMTO) optimizations on an ARM Cortex-M4 reduces verification cycles from 13.85 million to 6.56 million (over a factor of 2 reduction).</li></ul>
+        <h3>Security</h3>
+        <ul><li>The PZMCM technique (searching for a specific hash) might introduce bias, but formal analysis proves that as long as the hash function behaves like a random function, security does not significantly degrade.</li><li>The parameters listed in the RFC still achieve the same level of security with this tuning applied.</li></ul>
+        <p><strong>Rust Implementation:</strong> <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/digitial-signatures/xmss-sha256" target="_blank" rel="noopener noreferrer">developeruche/cryptography-n-zk-research — digitial-signatures/xmss-sha256</a></p>
+      </div>
+
+      <a class="back-link" href="/notes/cryptography-zkp/" style="margin-top: var(--space-lg);">← Back to Cryptography &amp; ZKP notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
