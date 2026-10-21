@@ -8,6 +8,7 @@ const SOCIALS = {
   github: 'https://github.com/developeruche',
   x: 'https://x.com/developeruche',
   linkedin: 'https://www.linkedin.com/in/developeruche',
+  hackmd: 'https://hackmd.io/@0xdeveloperuche',
 };
 
 // Root-absolute hrefs so the shared header/footer work at any URL depth
@@ -59,6 +60,7 @@ function renderFooter() {
             <a href="${SOCIALS.github}" target="_blank" rel="noopener noreferrer">GitHub →</a>
             <a href="${SOCIALS.x}" target="_blank" rel="noopener noreferrer">X →</a>
             <a href="${SOCIALS.linkedin}" target="_blank" rel="noopener noreferrer">LinkedIn →</a>
+            <a href="${SOCIALS.hackmd}" target="_blank" rel="noopener noreferrer">HackMD →</a>
           </div>
           <div class="footer-col">
             <h4>// Pages</h4>
