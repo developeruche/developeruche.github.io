@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ethereum Protocol Fellowship Development Log: Project Summary — Developer Uche</title>
-  <meta name="description" content="EPF Development Log: Project Summary Developer: Developeruche Program: Ethereum Protocol Fellowship (EPF) Core Focus: zkVM Performance, Precompile…" />
+  <title>Ethereum Protocol Fellowship Dev Log: zkVM Performance</title>
+  <meta name="description" content="My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/epf-dev-log/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Ethereum Protocol Fellowship Development Log: Project Summary — Developer Uche" />
-  <meta property="og:description" content="EPF Development Log: Project Summary Developer: Developeruche Program: Ethereum Protocol Fellowship (EPF) Core Focus: zkVM Performance, Precompile…" />
+  <meta property="og:title" content="Ethereum Protocol Fellowship Dev Log: zkVM Performance" />
+  <meta property="og:description" content="My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation." />
   <meta property="og:url" content="https://developeruche.com/blog/epf-dev-log/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/epf-dev-log.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/epf-dev-log.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Ethereum Protocol Fellowship Development Log: Project Summary — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -25,16 +27,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Ethereum Protocol Fellowship Development Log: Project Summary — Developer Uche" />
-  <meta name="twitter:description" content="EPF Development Log: Project Summary Developer: Developeruche Program: Ethereum Protocol Fellowship (EPF) Core Focus: zkVM Performance, Precompile…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/epf-dev-log.webp" />
+  <meta name="twitter:title" content="Ethereum Protocol Fellowship Dev Log: zkVM Performance" />
+  <meta name="twitter:description" content="My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/epf-dev-log.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "Ethereum Protocol Fellowship Development Log: Project Summary",
-  "description": "EPF Development Log: Project Summary Developer: Developeruche Program: Ethereum Protocol Fellowship (EPF) Core Focus: zkVM Performance, Precompile…",
+  "description": "My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation.",
   "image": [
     "https://developeruche.com/assets/blogs/epf-dev-log.webp"
   ],
@@ -96,6 +98,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -106,7 +109,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">Ethereum Protocol Fellowship Development Log: Project Summary</h1>
-        <img class="post-hero-img" src="/assets/blogs/epf-dev-log.webp" alt="Ethereum Protocol Fellowship Development Log: Project Summary — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/epf-dev-log.webp" alt="Ethereum Protocol Fellowship Development Log: Project Summary — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 5 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>protocol</span>
@@ -167,6 +170,16 @@
         <p><strong>Focus:</strong> Integrating zkEVM proofs into Prysm (Consensus Client).</p>
         <ul><li><strong>Prototype:</strong> Started work on "Stateless Attestors"—allowing CL nodes to verify execution payloads via proofs without a full EL.</li><li><strong>Architecture:</strong> Implemented a "Proof Chain" structure to track proven blocks parallel to fork choice (avoiding direct fork choice modification for now).</li><li><strong>Status:</strong> Prototype PR created to map architectural changes in Prysm, this is still incompelete and I intend to follow on with this after the EPF program.</li><li><strong>Link:</strong> <a href="https://hackmd.io/@0xdeveloperuche/S1EkgLYg-l" target="_blank" rel="noopener noreferrer">Full Log</a></li></ul>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/eip2771-gasless-relayer/">Building an EIP-2771 Gasless Relayer</a><span>Designing a scalable, fault-tolerant EIP-2771 relayer for gasless meta-transactions: system goals, high-level architecture, security and future work.</span></li>
+          <li><a href="/blog/eip-4337-account-abstraction/">EIP-4337 Account Abstraction Wallets: A Deep Dive</a><span>How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle.</span></li>
+          <li><a href="/blog/eip7928-block-access-lists/">EIP-7928 Block-Level Access Lists Explained</a><span>EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

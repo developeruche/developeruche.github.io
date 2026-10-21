@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370 — Developer Uche</title>
-  <meta name="description" content="The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors." />
+  <title>PSBT Explained: A Deep Dive into BIP174 and BIP370</title>
+  <meta name="description" content="Partially Signed Bitcoin Transactions byte by byte: the roles, every field, what signers must verify, PSBT v2 (BIP370), and Taproot and MuSig2 fields." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/notes/blockchain/psbt-bip174-bip370/" />
@@ -12,26 +12,28 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370 — Developer Uche" />
-  <meta property="og:description" content="The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors." />
+  <meta property="og:title" content="PSBT Explained: A Deep Dive into BIP174 and BIP370" />
+  <meta property="og:description" content="Partially Signed Bitcoin Transactions byte by byte: the roles, every field, what signers must verify, PSBT v2 (BIP370), and Taproot and MuSig2 fields." />
   <meta property="og:url" content="https://developeruche.com/notes/blockchain/psbt-bip174-bip370/" />
-  <meta property="og:image" content="https://developeruche.com/assets/notes/blockchain.png" />
-  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/blockchain.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of a block header chain and Merkle tree" />
   <meta property="article:published_time" content="2026-10-19" />
   <meta property="article:author" content="https://developeruche.com" />
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370 — Developer Uche" />
-  <meta name="twitter:description" content="The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions — checked against the BIP test vectors." />
-  <meta name="twitter:image" content="https://developeruche.com/assets/notes/blockchain.png" />
+  <meta name="twitter:title" content="PSBT Explained: A Deep Dive into BIP174 and BIP370" />
+  <meta name="twitter:description" content="Partially Signed Bitcoin Transactions byte by byte: the roles, every field, what signers must verify, PSBT v2 (BIP370), and Taproot and MuSig2 fields." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/blockchain.jpg" />
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370",
-  "description": "The PSBT format byte by byte: the roles, every field, what each signer must verify, what version 2 changed, and the Taproot and MuSig2 extensions \u2014 checked against the BIP test vectors.",
+  "description": "Partially Signed Bitcoin Transactions byte by byte: the roles, every field, what signers must verify, PSBT v2 (BIP370), and Taproot and MuSig2 fields.",
   "url": "https://developeruche.com/notes/blockchain/psbt-bip174-bip370/",
   "datePublished": "2026-10-19",
   "inLanguage": "en",
@@ -39,12 +41,31 @@
   "author": {
     "@type": "Person",
     "name": "Developer Uche",
-    "url": "https://developeruche.com/"
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
   },
   "isPartOf": {
     "@type": "CollectionPage",
     "name": "Blockchain Notes",
     "url": "https://developeruche.com/notes/blockchain/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/blockchain.jpg"
+  ],
+  "dateModified": "2026-10-19",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/blockchain/psbt-bip174-bip370/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
   }
 }
   </script>
@@ -54,6 +75,39 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Blockchain Notes",
+      "item": "https://developeruche.com/notes/blockchain/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Partially Signed Bitcoin Transactions (PSBT): BIP174 and BIP370",
+      "item": "https://developeruche.com/notes/blockchain/psbt-bip174-bip370/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="notes">
   <div id="site-header"></div>
@@ -205,6 +259,14 @@ input 1:
         <h3>References</h3>
         <ul><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki" target="_blank" rel="noopener noreferrer">BIP174: Partially Signed Bitcoin Transaction Format</a> and the <a href="https://github.com/bitcoin/bips/blob/master/bip-0174/type-registry.mediawiki" target="_blank" rel="noopener noreferrer">PSBT type registry</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki" target="_blank" rel="noopener noreferrer">BIP370: PSBT Version 2</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0371.mediawiki" target="_blank" rel="noopener noreferrer">BIP371: Taproot Fields for PSBT</a>, <a href="https://github.com/bitcoin/bips/blob/master/bip-0373.mediawiki" target="_blank" rel="noopener noreferrer">BIP373: MuSig2 PSBT Fields</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0375.mediawiki" target="_blank" rel="noopener noreferrer">BIP375: Sending Silent Payments with PSBTs</a>, <a href="https://github.com/bitcoin/bips/blob/master/bip-0376.mediawiki" target="_blank" rel="noopener noreferrer">BIP376: Spending Silent Payment outputs with PSBTs</a></li><li><a href="https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki" target="_blank" rel="noopener noreferrer">BIP143</a> and <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank" rel="noopener noreferrer">BIP341</a> (signature hashes), <a href="https://github.com/bitcoin/bips/blob/master/bip-0388.mediawiki" target="_blank" rel="noopener noreferrer">BIP388: Wallet Policies</a></li><li>Bitcoin Optech, <a href="https://bitcoinops.org/en/topics/psbt/" target="_blank" rel="noopener noreferrer">PSBT topic page</a> and <a href="https://bitcoinops.org/en/newsletters/2026/05/08/" target="_blank" rel="noopener noreferrer">newsletter of 8 May 2026</a> (Bitcoin Core #21283, PSBTv2)</li><li><a href="https://github.com/bitcoin-core/bitcoin-devwiki/wiki/32.0-Release-Notes-Draft" target="_blank" rel="noopener noreferrer">Bitcoin Core 32.0 release notes draft</a></li><li>bitcoindev, <a href="https://groups.google.com/g/bitcoindev/c/OPx9qvmr5Nc/m/yKW8NfnNBQAJ" target="_blank" rel="noopener noreferrer">"Who uses or wants to use PSBTv2 (BIP370)"</a>, January 2025</li></ul>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/blockchain/bitcoin-script-for-ethereum-developers/">Bitcoin Script for Ethereum Developers</a><span>Bitcoin for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit, Taproot and five generations of multisig, from P2SH to MuSig2.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/notes/blockchain/" style="margin-top: var(--space-lg);">← Back to Blockchain notes</a>
     </article>

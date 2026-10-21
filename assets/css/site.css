@@ -702,3 +702,17 @@ body::before {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
+/* ── Related reading + crawlable listing fallbacks (tools/seo_build.py) ── */
+.related { margin-top: var(--space-lg); padding-top: var(--space-md); border-top: var(--border-1) dashed var(--color-border); }
+.related-list, .seo-fallback { list-style: none; padding: 0; margin: var(--space-sm) 0 0; display: grid; gap: var(--space-sm); }
+.related-list a, .seo-fallback a {
+  font-family: var(--font-ui); font-size: var(--text-md); color: var(--color-text);
+  text-decoration: none; transition: color var(--motion-fast), text-shadow var(--motion-fast);
+}
+.related-list a::after, .seo-fallback a::after { content: " →"; color: var(--color-accent); }
+.related-list a:hover, .seo-fallback a:hover { color: var(--color-accent); text-shadow: var(--glow-accent-md); }
+.related-list span, .seo-fallback span {
+  display: block; margin-top: var(--space-2); color: var(--color-text-muted);
+  font-size: var(--text-sm); text-transform: none; letter-spacing: var(--tracking-tight); max-width: var(--container-prose);
+}

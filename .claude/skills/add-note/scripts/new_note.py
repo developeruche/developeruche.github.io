@@ -133,6 +133,9 @@ def main():
         sm.write_text(s)
         print("✓ sitemap.xml")
 
+    # --- site-wide SEO pass (titles, related reading, listings, feed) ------
+    subprocess.run([sys.executable, str(ROOT / "tools/seo_build.py")], check=True)
+
 
 if __name__ == "__main__":
     main()

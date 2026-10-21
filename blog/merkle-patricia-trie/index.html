@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Merkle Patricia Trie — Developer Uche</title>
-  <meta name="description" content="Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…" />
+  <title>Merkle Patricia Trie Explained (with Rust) — Developer Uche</title>
+  <meta name="description" content="How Ethereum&#x27;s Merkle Patricia Trie works: leaf, extension and branch nodes, nibble paths and hashing, with a Rust implementation." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/merkle-patricia-trie/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Merkle Patricia Trie — Developer Uche" />
-  <meta property="og:description" content="Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…" />
+  <meta property="og:title" content="Merkle Patricia Trie Explained (with Rust)" />
+  <meta property="og:description" content="How Ethereum&#x27;s Merkle Patricia Trie works: leaf, extension and branch nodes, nibble paths and hashing, with a Rust implementation." />
   <meta property="og:url" content="https://developeruche.com/blog/merkle-patricia-trie/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/merkle-patricia-trie.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/merkle-patricia-trie.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Merkle Patricia Trie — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -26,16 +28,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Merkle Patricia Trie — Developer Uche" />
-  <meta name="twitter:description" content="Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/merkle-patricia-trie.webp" />
+  <meta name="twitter:title" content="Merkle Patricia Trie Explained (with Rust)" />
+  <meta name="twitter:description" content="How Ethereum&#x27;s Merkle Patricia Trie works: leaf, extension and branch nodes, nibble paths and hashing, with a Rust implementation." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/merkle-patricia-trie.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "Merkle Patricia Trie",
-  "description": "Merkle Patricia Trie rust-implementation What is a Merkle Patricia Trie? At its core, a Merkle Patricia Trie is a specialized tree-like data structure…",
+  "description": "How Ethereum's Merkle Patricia Trie works: leaf, extension and branch nodes, nibble paths and hashing, with a Rust implementation.",
   "image": [
     "https://developeruche.com/assets/blogs/merkle-patricia-trie.webp"
   ],
@@ -97,6 +99,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -107,7 +110,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">Merkle Patricia Trie</h1>
-        <img class="post-hero-img" src="/assets/blogs/merkle-patricia-trie.webp" alt="Merkle Patricia Trie — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/merkle-patricia-trie.webp" alt="Merkle Patricia Trie — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 8 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>blockchain</span>
@@ -133,6 +136,16 @@
         <ol><li><strong><code>trie.put(b"dog", b"puppy")</code></strong>: <code>dog</code> -&gt; <code>[6,4,6,f,6,7]</code>. Trie is likely empty. Creates a <code>Leaf</code> node, stores it, updates <code>root_hash</code>.</li><li><strong><code>trie.put(b"doge", b"coin")</code></strong>: <code>doge</code> -&gt; <code>[6,4,6,f,6,7,6,5]</code>.<ul><li>Traverses to the <code>Leaf</code> for "dog".</li><li>Finds common prefix <code>[6,4,6,f,6,7]</code>.</li><li>Replaces the <code>Leaf</code> node:<ul><li>A new <code>Branch</code> node is created.</li><li>The <code>Branch</code> gets the value <code>"puppy"</code> (since "dog" terminates here).</li><li>The <code>children[6]</code> slot (for the 'e' nibble) points to a <em>new</em> <code>Leaf { path: [5], value: "coin" }</code>.</li></ul></li><li>If the original "dog" Leaf wasn't the direct root, an <code>Extension</code> node might be created/updated to point to this new <code>Branch</code>.</li><li>New nodes are stored, hashes propagate up, <code>root_hash</code> changes.</li></ul></li><li><strong><code>trie.put(b"do", b"verb")</code></strong>: <code>do</code> -&gt; <code>[6,4,6,f]</code>.<ul><li>Traverses the trie. Let's assume it encounters an <code>Extension</code> node with path <code>[6,4,6,f,6,7]</code> (leading to the "dog"/"doge" structure).</li><li>The path "do" (<code>[6,4,6,f]</code>) diverges <em>within</em> this extension path.</li><li>The <code>Extension</code> is split:<ul><li>A new <code>Branch</code> node is created representing the divergence point after <code>[6,4,6,f]</code>.</li><li>This <code>Branch</code> gets the value <code>Some("verb")</code> (since "do" terminates here).</li><li>Its <code>children[6]</code> slot (for the next nibble 'g' in "dog") points to a <em>new</em> node (likely another Extension or Branch) representing the rest of the original "dog"/"doge" structure (e.g., <code>Extension { path: [7], next_node_hash: HASH_OF_DOG_BRANCH }</code>).</li></ul></li><li>If the original split Extension wasn't the root, a <em>new</em> <code>Extension</code> node might be created with path <code>[6,4,6,f]</code> pointing to the new <code>Branch</code>.</li><li>Again, new nodes, new hashes, new <code>root_hash</code>.</li></ul></li></ol>
         <p>This process of node creation, splitting, and hash propagation ensures the trie remains consistent and the <code>root_hash</code> accurately reflects its entire state after each modification.</p>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/zcash-deep-dive/">Exploring Zcash: Encrypted Money from First Principles</a><span>Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end.</span></li>
+          <li><a href="/blog/zero-knowledge-proof-building-blocks/">Building Blocks of Modern Zero-Knowledge Proofs</a><span>An engineer&#x27;s guide to the core protocols behind modern zero-knowledge proofs: the sum-check, zero-check, product-check and permutation-check IOPs.</span></li>
+          <li><a href="/blog/kademlia-dht/">Building a Kademlia Distributed Hash Table (DHT)</a><span>How the Kademlia DHT works and how to build one: XOR distance, k-buckets, node lookups and storing key-value pairs in a peer-to-peer network.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

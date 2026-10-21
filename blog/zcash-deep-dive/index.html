@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exploring Zcash: Encrypted Money from First Principles — Developer Uche</title>
+  <title>Exploring Zcash: Encrypted Money from First Principles</title>
   <meta name="description" content="Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Exploring Zcash: Encrypted Money from First Principles — Developer Uche" />
+  <meta property="og:title" content="Exploring Zcash: Encrypted Money from First Principles" />
   <meta property="og:description" content="Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end." />
   <meta property="og:url" content="https://developeruche.com/blog/zcash-deep-dive/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/zcash-deep-dive-cover.png" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/zcash-deep-dive-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Exploring Zcash: Encrypted Money from First Principles — thumbnail" />
   <meta property="article:published_time" content="2026-09-22" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -27,9 +29,9 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Exploring Zcash: Encrypted Money from First Principles — Developer Uche" />
+  <meta name="twitter:title" content="Exploring Zcash: Encrypted Money from First Principles" />
   <meta name="twitter:description" content="Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end." />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/zcash-deep-dive-cover.png" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/zcash-deep-dive-cover.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
@@ -101,17 +103,18 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
 
   <main id="main">
     <article class="post container">
-      <a class="back-link" href="/blog.html">← Back to blogs</a>
+      <a class="back-link" href="/blog">← Back to blogs</a>
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">Exploring Zcash: Encrypted Money from First Principles</h1>
-        <img class="post-hero-img" src="/assets/blogs/zcash-deep-dive-cover.webp" width="1600" height="900" decoding="async" alt="Exploring Zcash: Encrypted Money from First Principles — thumbnail" />
+        <img fetchpriority="high" decoding="async" class="post-hero-img" src="/assets/blogs/zcash-deep-dive-cover.webp" width="1600" height="900" decoding="async" alt="Exploring Zcash: Encrypted Money from First Principles — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-09-22">2026-09-22</time> · 74 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>zero knowledge</span>
@@ -893,8 +896,18 @@ Spend #3:  …</code></pre>
         <p>Zcash's answer to that price is not to claim the cryptography is infallible. It is to bound what a failure can cost. The turnstile is a plaintext accounting rule sitting underneath the encryption, and when the cryptography did fail, that rule was the difference between a bad quarter and a dead protocol. Ironwood is the same instinct applied a second time: when you cannot prove the past was clean, build a present that provably is, and gate the door between them.</p>
         <p>That is the engineering lesson worth more than the formulas. Encryption buys you privacy that does not decay. Plaintext invariants buy you damage bounds that do not depend on the encryption being right. A system that wants to last needs both.</p>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/zero-knowledge-proof-building-blocks/">Building Blocks of Modern Zero-Knowledge Proofs</a><span>An engineer&#x27;s guide to the core protocols behind modern zero-knowledge proofs: the sum-check, zero-check, product-check and permutation-check IOPs.</span></li>
+          <li><a href="/blog/kzg-polynomial-commitment-part-1/">KZG Polynomial Commitments via Airdrops (Part 1)</a><span>Part 1: how token airdrops work today with Merkle proofs, using Optimism&#x27;s airdrop, as the starting point for replacing them with KZG commitments.</span></li>
+          <li><a href="/blog/kzg-polynomial-commitment-part-2/">KZG Polynomial Commitments via Airdrops (Part 2)</a><span>Part 2: implementing an airdrop with KZG polynomial commitments: committing to the claims, generating proofs, and verifying them in a smart contract.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
-      <a class="back-link" href="/blog.html" style="margin-top: var(--space-lg);">← Back to blogs</a>
+      <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>
   </main>
 

@@ -81,3 +81,18 @@ Open `/notes/<category>/<slug>/` and check:
 
 - Excerpts are for the card, not the page; write one or two sentences that say what the note covers.
 - Don't repeat the category in the title. The page already labels itself `// STUDY NOTE · <CATEGORY>`, so "Linear Regression" beats "Linear Regression — Lesson Note", which also yields a double-dash browser title.
+
+## SEO pass (required last step)
+
+Every article must go through the site-wide SEO pass once its body is in place:
+
+1. Add an entry to `data/seo.json`, keyed by the page path (e.g. `"/blog/<slug>/"`):
+   - `title` — keyword-first, **≤ 60 characters** (the H1 can stay longer).
+   - `description` — **≤ 155 characters**, written by hand, and only claiming
+     what the article actually covers (it is the snippet Google shows).
+2. Run `python3 tools/seo_build.py` from the site root. It is idempotent and
+   applies the title/description everywhere (title, meta, OG, Twitter, JSON-LD),
+   adds "Related reading" links, refreshes the crawlable listing fallbacks,
+   social cards (`assets/og/`), `feed.xml` and sitemap `lastmod`.
+
+(The add-note script runs step 2 automatically; still do step 1.)

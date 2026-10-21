@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rapidly Verifiable XMSS Signatures — Developer Uche</title>
-  <meta name="description" content="How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
+  <meta name="description" content="How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/" />
@@ -12,26 +12,28 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Rapidly Verifiable XMSS Signatures — Developer Uche" />
-  <meta property="og:description" content="How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
+  <meta property="og:title" content="Rapidly Verifiable XMSS Signatures" />
+  <meta property="og:description" content="How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
   <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/" />
-  <meta property="og:image" content="https://developeruche.com/assets/notes/cryptography-zkp.png" />
-  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
   <meta property="article:published_time" content="2026-10-20" />
   <meta property="article:author" content="https://developeruche.com" />
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Rapidly Verifiable XMSS Signatures — Developer Uche" />
-  <meta name="twitter:description" content="How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
-  <meta name="twitter:image" content="https://developeruche.com/assets/notes/cryptography-zkp.png" />
+  <meta name="twitter:title" content="Rapidly Verifiable XMSS Signatures" />
+  <meta name="twitter:description" content="How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "Rapidly Verifiable XMSS Signatures",
-  "description": "How XMSS and WOTS+ work, and how searching over a message counter at signing time makes hash-based signatures verify up to 1.44\u00d7 faster on embedded devices.",
+  "description": "How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices.",
   "url": "https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/",
   "datePublished": "2026-10-20",
   "inLanguage": "en",
@@ -39,12 +41,31 @@
   "author": {
     "@type": "Person",
     "name": "Developer Uche",
-    "url": "https://developeruche.com/"
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
   },
   "isPartOf": {
     "@type": "CollectionPage",
     "name": "Cryptography & ZKP Notes",
     "url": "https://developeruche.com/notes/cryptography-zkp/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-10-20",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
   }
 }
   </script>
@@ -54,6 +75,39 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Rapidly Verifiable XMSS Signatures",
+      "item": "https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="notes">
   <div id="site-header"></div>
@@ -201,6 +255,14 @@ def XMSS_sign_iterative(M, SK, t, n=32):
         <ul><li>The PZMCM technique (searching for a specific hash) might introduce bias, but formal analysis proves that as long as the hash function behaves like a random function, security does not significantly degrade.</li><li>The parameters listed in the RFC still achieve the same level of security with this tuning applied.</li></ul>
         <p><strong>Rust Implementation:</strong> <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/digitial-signatures/xmss-sha256" target="_blank" rel="noopener noreferrer">developeruche/cryptography-n-zk-research — digitial-signatures/xmss-sha256</a></p>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/notes/cryptography-zkp/" style="margin-top: var(--space-lg);">← Back to Cryptography &amp; ZKP notes</a>
     </article>

@@ -1,0 +1,146 @@
+{
+  "/blog/chronicle-rust-blockchain-indexer/": {
+    "title": "Chronicle: A Blazing-Fast Blockchain Indexer in Rust",
+    "description": "An introduction to building a blockchain indexer in Rust with Chronicle: parsing transactions, smart contract events and parachain events at speed."
+  },
+  "/blog/eip-4337-account-abstraction/": {
+    "title": "EIP-4337 Account Abstraction Wallets: A Deep Dive",
+    "description": "How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle."
+  },
+  "/blog/eip2771-gasless-relayer/": {
+    "title": "Building an EIP-2771 Gasless Relayer",
+    "description": "Designing a scalable, fault-tolerant EIP-2771 relayer for gasless meta-transactions: system goals, high-level architecture, security and future work."
+  },
+  "/blog/eip7928-block-access-lists/": {
+    "title": "EIP-7928 Block-Level Access Lists Explained",
+    "description": "EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving."
+  },
+  "/blog/eof-deep-dive/": {
+    "title": "EVM Object Format (EOF) Explained: A Deep Dive",
+    "description": "What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation."
+  },
+  "/blog/epf-dev-log/": {
+    "title": "Ethereum Protocol Fellowship Dev Log: zkVM Performance",
+    "description": "My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation."
+  },
+  "/blog/evm-jumpdest/": {
+    "title": "What Does the EVM JUMPDEST Opcode Do?",
+    "description": "The EVM JUMPDEST opcode (0x5b) explained: how it marks valid targets for JUMP and JUMPI, how jump destination analysis works, and why it matters."
+  },
+  "/blog/fields-extension-fields/": {
+    "title": "Fields and Extension Fields in Cryptography",
+    "description": "Lecture notes on finite fields and extension fields for cryptography: prime fields, GF(p^n) built from irreducible polynomials, and field arithmetic."
+  },
+  "/blog/groth16/": {
+    "title": "The Groth16 zk-SNARK Protocol Explained",
+    "description": "A walkthrough of the Groth16 zk-SNARK: bilinear pairings, QAPs, the powers of tau trusted setup, and how the prover and verifier work."
+  },
+  "/blog/hybrid-ethereum-riscv/": {
+    "title": "Hybrid Ethereum: A RISC-V Execution Engine Experiment",
+    "description": "An experiment replacing Ethereum's EVM sandbox with a RISC-V execution engine: the design, new node components and backward compatibility with the EVM."
+  },
+  "/blog/jagged-mle/": {
+    "title": "Jagged (Stacked) Multilinear Extensions for zkVMs",
+    "description": "Jagged multilinear extensions: committing to many tables of different heights as one stacked MLE so zkVM provers avoid wasteful padding."
+  },
+  "/blog/kademlia-dht/": {
+    "title": "Building a Kademlia Distributed Hash Table (DHT)",
+    "description": "How the Kademlia DHT works and how to build one: XOR distance, k-buckets, node lookups and storing key-value pairs in a peer-to-peer network."
+  },
+  "/blog/kzg-polynomial-commitment-part-1/": {
+    "title": "KZG Polynomial Commitments via Airdrops (Part 1)",
+    "description": "Part 1: how token airdrops work today with Merkle proofs, using Optimism's airdrop, as the starting point for replacing them with KZG commitments."
+  },
+  "/blog/kzg-polynomial-commitment-part-2/": {
+    "title": "KZG Polynomial Commitments via Airdrops (Part 2)",
+    "description": "Part 2: implementing an airdrop with KZG polynomial commitments: committing to the claims, generating proofs, and verifying them in a smart contract."
+  },
+  "/blog/matryoshka-mle/": {
+    "title": "The Matryoshka Algorithm for Fast MLE Evaluation",
+    "description": "The Matryoshka algorithm for computing the multilinear extension of a Boolean function efficiently, as used in GKR-style succinct proof systems."
+  },
+  "/blog/merkle-patricia-trie/": {
+    "title": "Merkle Patricia Trie Explained (with Rust)",
+    "description": "How Ethereum's Merkle Patricia Trie works: leaf, extension and branch nodes, nibble paths and hashing, with a Rust implementation."
+  },
+  "/blog/merkle-tree-blockchain/": {
+    "title": "Merkle Trees and the Blockchain",
+    "description": "What a Merkle tree is and why blockchains depend on it: hashing transactions into a single root, Merkle proofs, and efficient verification."
+  },
+  "/blog/mle-direct-evaluation/": {
+    "title": "Multilinear Extensions and Direct Evaluation",
+    "description": "Multilinear polynomial extensions explained: interpolating a function over the Boolean hypercube and evaluating the MLE directly with the eq polynomial."
+  },
+  "/blog/multiset-check-iop/": {
+    "title": "The Multiset Check IOP in Zero-Knowledge Proofs",
+    "description": "The multiset check IOP: proving two multisets are equal by encoding them as polynomials and testing at a random challenge, and its role in PLONK."
+  },
+  "/blog/permutation-check-iop/": {
+    "title": "The Permutation Check Polynomial IOP (PLONK)",
+    "description": "The permutation check PIOP through the lens of PLONK: proving one vector is a permutation of another with a grand product argument."
+  },
+  "/blog/product-check-iop/": {
+    "title": "The ProductCheck Polynomial IOP Explained",
+    "description": "The ProductCheck PIOP for univariate and multilinear polynomials: proving a product relation over a domain via ZeroCheck and a random linear combination."
+  },
+  "/blog/r1cs-to-qap/": {
+    "title": "From R1CS to QAP: Arithmetic Circuits for SNARKs",
+    "description": "How an arithmetic circuit becomes a rank-1 constraint system (R1CS) and then a quadratic arithmetic program (QAP), worked through on a small example."
+  },
+  "/blog/ron-mle-optimization/": {
+    "title": "Ron Rothblum's Optimization for MLE Evaluation",
+    "description": "Faster multilinear extension evaluation: Ron Rothblum's optimization over naive direct evaluation, and the cost analysis behind it."
+  },
+  "/blog/state-read-write-opcodes/": {
+    "title": "How Blockchains Read and Write State in WASM and RISC-V",
+    "description": "State reads and writes aren't native WASM or RISC-V instructions. How blockchain VMs expose storage to contracts through host functions and syscalls."
+  },
+  "/blog/sumcheck-polynomial-iop/": {
+    "title": "The Sum-Check Protocol Explained (with Rust)",
+    "description": "The sum-check protocol from first principles: proving a polynomial's sum over the Boolean hypercube round by round, with a Rust prover and verifier."
+  },
+  "/blog/winternitz-one-time-signature/": {
+    "title": "Winternitz One-Time Signatures (WOTS) Explained",
+    "description": "How the Winternitz one-time signature (WOTS) scheme works: hash chains, key generation, signing and verification, with a full Rust implementation."
+  },
+  "/blog/zcash-deep-dive/": {
+    "title": "Exploring Zcash: Encrypted Money from First Principles",
+    "description": "Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end."
+  },
+  "/blog/zero-knowledge-proof-building-blocks/": {
+    "title": "Building Blocks of Modern Zero-Knowledge Proofs",
+    "description": "An engineer's guide to the core protocols behind modern zero-knowledge proofs: the sum-check, zero-check, product-check and permutation-check IOPs."
+  },
+  "/blog/zerocheck-polynomial-iop/": {
+    "title": "The ZeroCheck Polynomial IOP Explained",
+    "description": "The ZeroCheck PIOP: proving a polynomial vanishes on a domain, for univariate polynomials via the vanishing polynomial and multilinear ones via sum-check."
+  },
+  "/blog/zisk-zkvm-trace-generation/": {
+    "title": "ZisK zkVM: How It Reaches 1.5 GHz Trace Generation",
+    "description": "How the ZisK zkVM reaches 1.5 GHz trace generation: fast emulation, minimal traces and parallel witness generation, and what it means for real-time proving."
+  },
+  "/blog/zk-rollups-eip4844-blobs/": {
+    "title": "ZK-Rollups After EIP-4844: From Calldata to Blobs",
+    "description": "How ZK-rollups post data after EIP-4844 (proto-danksharding): blob transactions, KZG commitments, the point evaluation precompile, and cheaper data."
+  },
+  "/notes/artificial-intelligence/evolutionary-algorithms/": {
+    "title": "Evolutionary Algorithms: Genetic Algorithms Explained",
+    "description": "Genetic algorithms from first principles: encoding a function as a binary chromosome, the selection-crossover-mutation loop, and tuning it to converge."
+  },
+  "/notes/artificial-intelligence/linear-regression/": {
+    "title": "Linear Regression Explained: Loss and Gradient Descent",
+    "description": "Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs."
+  },
+  "/notes/blockchain/bitcoin-script-for-ethereum-developers/": {
+    "title": "Bitcoin Script for Ethereum Developers",
+    "description": "Bitcoin for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit, Taproot and five generations of multisig, from P2SH to MuSig2."
+  },
+  "/notes/blockchain/psbt-bip174-bip370/": {
+    "title": "PSBT Explained: A Deep Dive into BIP174 and BIP370",
+    "description": "Partially Signed Bitcoin Transactions byte by byte: the roles, every field, what signers must verify, PSBT v2 (BIP370), and Taproot and MuSig2 fields."
+  },
+  "/notes/cryptography-zkp/rapidly-verifiable-xmss/": {
+    "title": "Rapidly Verifiable XMSS Signatures",
+    "description": "How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices."
+  }
+}

@@ -47,6 +47,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/site.css" />
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="notes" data-category="artificial-intelligence">
   <div id="site-header"></div>
@@ -64,7 +65,15 @@
     <section class="section">
       <div class="container">
         <div id="filter-host"></div>
-        <div class="card-grid card-grid--list" id="notes-grid"></div>
+        <div class="card-grid card-grid--list" id="notes-grid">
+        <!-- SEO:FALLBACK -->
+        <ul class="seo-fallback">
+          <li><a href="/notes/artificial-intelligence/evolutionary-algorithms/">Evolutionary Algorithms: Genetic Algorithms Explained</a><span>Genetic algorithms from first principles: encoding a function as a binary chromosome, the selection-crossover-mutation loop, and tuning it to converge.</span></li>
+          <li><a href="/notes/artificial-intelligence/linear-regression/">Linear Regression Explained: Loss and Gradient Descent</a><span>Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs.</span></li>
+          <li><a href="/notes/artificial-intelligence/intelligence-from-first-principles/">Intelligence from First Principles</a><span>A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured.</span></li>
+        </ul>
+        <!-- /SEO:FALLBACK -->
+      </div>
       </div>
     </section>
   </main>

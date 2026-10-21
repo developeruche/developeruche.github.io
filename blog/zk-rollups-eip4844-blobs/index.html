@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How ZK-Rollups Work After EIP-4844: From calldata to Blobs — Developer Uche</title>
-  <meta name="description" content="How ZK-Rollups Work After EIP-4844: From calldata to Blobs The Ethereum Dencun upgrade, powered by EIP-4844 (Proto-Danksharding) , marks a fundamental…" />
+  <title>ZK-Rollups After EIP-4844: From Calldata to Blobs</title>
+  <meta name="description" content="How ZK-rollups post data after EIP-4844 (proto-danksharding): blob transactions, KZG commitments, the point evaluation precompile, and cheaper data." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/zk-rollups-eip4844-blobs/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="How ZK-Rollups Work After EIP-4844: From calldata to Blobs — Developer Uche" />
-  <meta property="og:description" content="How ZK-Rollups Work After EIP-4844: From calldata to Blobs The Ethereum Dencun upgrade, powered by EIP-4844 (Proto-Danksharding) , marks a fundamental…" />
+  <meta property="og:title" content="ZK-Rollups After EIP-4844: From Calldata to Blobs" />
+  <meta property="og:description" content="How ZK-rollups post data after EIP-4844 (proto-danksharding): blob transactions, KZG commitments, the point evaluation precompile, and cheaper data." />
   <meta property="og:url" content="https://developeruche.com/blog/zk-rollups-eip4844-blobs/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/zk-rollups-eip4844-blobs.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/zk-rollups-eip4844-blobs.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="How ZK-Rollups Work After EIP-4844: From calldata to Blobs — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -26,16 +28,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="How ZK-Rollups Work After EIP-4844: From calldata to Blobs — Developer Uche" />
-  <meta name="twitter:description" content="How ZK-Rollups Work After EIP-4844: From calldata to Blobs The Ethereum Dencun upgrade, powered by EIP-4844 (Proto-Danksharding) , marks a fundamental…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/zk-rollups-eip4844-blobs.webp" />
+  <meta name="twitter:title" content="ZK-Rollups After EIP-4844: From Calldata to Blobs" />
+  <meta name="twitter:description" content="How ZK-rollups post data after EIP-4844 (proto-danksharding): blob transactions, KZG commitments, the point evaluation precompile, and cheaper data." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/zk-rollups-eip4844-blobs.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "How ZK-Rollups Work After EIP-4844: From calldata to Blobs",
-  "description": "How ZK-Rollups Work After EIP-4844: From calldata to Blobs The Ethereum Dencun upgrade, powered by EIP-4844 (Proto-Danksharding) , marks a fundamental…",
+  "description": "How ZK-rollups post data after EIP-4844 (proto-danksharding): blob transactions, KZG commitments, the point evaluation precompile, and cheaper data.",
   "image": [
     "https://developeruche.com/assets/blogs/zk-rollups-eip4844-blobs.webp"
   ],
@@ -97,6 +99,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -107,7 +110,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">How ZK-Rollups Work After EIP-4844: From calldata to Blobs</h1>
-        <img class="post-hero-img" src="/assets/blogs/zk-rollups-eip4844-blobs.webp" alt="How ZK-Rollups Work After EIP-4844: From calldata to Blobs — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/zk-rollups-eip4844-blobs.webp" alt="How ZK-Rollups Work After EIP-4844: From calldata to Blobs — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 5 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>blockchain</span>
@@ -153,6 +156,16 @@
         <p>EIP-4844 is more than just "cheaper data." It fundamentally re-architects the data layer of Ethereum. For ZK-Rollups, this required moving away from simple hashing to a more complex system of polynomial equivalence.</p>
         <p>By combining blob transactions, KZG commitments, the new <code>point_evaluation_precompile</code>, and advanced in-circuit non-native field arithmetic, ZK-Rollups can securely and verifiably use this new, ultra-cheap data source, paving the way for the next wave of L2 scalability.</p>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/eip7928-block-access-lists/">EIP-7928 Block-Level Access Lists Explained</a><span>EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving.</span></li>
+          <li><a href="/blog/eof-deep-dive/">EVM Object Format (EOF) Explained: A Deep Dive</a><span>What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation.</span></li>
+          <li><a href="/blog/zcash-deep-dive/">Exploring Zcash: Encrypted Money from First Principles</a><span>Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

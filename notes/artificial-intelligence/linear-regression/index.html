@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linear Regression — Developer Uche</title>
+  <title>Linear Regression Explained: Loss and Gradient Descent</title>
   <meta name="description" content="Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Linear Regression — Developer Uche" />
+  <meta property="og:title" content="Linear Regression Explained: Loss and Gradient Descent" />
   <meta property="og:description" content="Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs." />
   <meta property="og:url" content="https://developeruche.com/notes/artificial-intelligence/linear-regression/" />
-  <meta property="og:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/artificial-intelligence.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
   <meta property="article:published_time" content="2026-09-01" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -23,9 +25,9 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Linear Regression — Developer Uche" />
+  <meta name="twitter:title" content="Linear Regression Explained: Loss and Gradient Descent" />
   <meta name="twitter:description" content="Linear regression explained: the model equation, L1 vs L2 loss and MAE/MSE/RMSE, gradient descent, and the learning rate, batch size and epoch tradeoffs." />
-  <meta name="twitter:image" content="https://developeruche.com/assets/notes/artificial-intelligence.png" />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/artificial-intelligence.jpg" />
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -39,12 +41,31 @@
   "author": {
     "@type": "Person",
     "name": "Developer Uche",
-    "url": "https://developeruche.com/"
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
   },
   "isPartOf": {
     "@type": "CollectionPage",
     "name": "Artificial Intelligence Notes",
     "url": "https://developeruche.com/notes/artificial-intelligence/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/artificial-intelligence.jpg"
+  ],
+  "dateModified": "2026-09-01",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/artificial-intelligence/linear-regression/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
   }
 }
   </script>
@@ -54,6 +75,39 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Artificial Intelligence Notes",
+      "item": "https://developeruche.com/notes/artificial-intelligence/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Linear Regression",
+      "item": "https://developeruche.com/notes/artificial-intelligence/linear-regression/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="notes">
   <div id="site-header"></div>
@@ -129,6 +183,15 @@
         <h2>6. Summary</h2>
         <table><thead><tr><th>Concept</th><th>One-line definition</th></tr></thead><tbody><tr><td>Linear regression</td><td>Fits a straight line describing the relationship between features and a label</td></tr><tr><td>Bias ($b$)</td><td>Learned y-intercept</td></tr><tr><td>Weight ($w$)</td><td>Learned slope, one per feature</td></tr><tr><td>Loss</td><td>How wrong the predictions are</td></tr><tr><td>Gradient descent</td><td>Iterative method for finding the $w$ and $b$ with the lowest loss</td></tr><tr><td>Learning rate</td><td>How big each gradient descent step is</td></tr><tr><td>Batch size</td><td>How many examples before each update</td></tr><tr><td>Epoch</td><td>One full pass over the training set</td></tr></tbody></table>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/artificial-intelligence/evolutionary-algorithms/">Evolutionary Algorithms: Genetic Algorithms Explained</a><span>Genetic algorithms from first principles: encoding a function as a binary chromosome, the selection-crossover-mutation loop, and tuning it to converge.</span></li>
+          <li><a href="/notes/artificial-intelligence/intelligence-from-first-principles/">Intelligence from First Principles</a><span>A dense reference: the conditions under which the concept is defined, the single mechanism by which it is acquired, and how a unit of it is measured.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/notes/artificial-intelligence/" style="margin-top: var(--space-lg);">← Back to Artificial Intelligence notes</a>
     </article>

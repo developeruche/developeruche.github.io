@@ -40,6 +40,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="assets/css/tokens.css" />
   <link rel="stylesheet" href="assets/css/site.css" />
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -56,7 +57,43 @@
     <section class="section">
       <div class="container">
         <div id="filter-host"></div>
-        <div class="blog-list" id="blog-grid"></div>
+        <div class="blog-list" id="blog-grid">
+        <!-- SEO:FALLBACK -->
+        <ul class="seo-fallback">
+          <li><a href="/blog/zcash-deep-dive/">Exploring Zcash: Encrypted Money from First Principles</a><span>Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end.</span></li>
+          <li><a href="/blog/zisk-zkvm-trace-generation/">ZisK zkVM: How It Reaches 1.5 GHz Trace Generation</a><span>How the ZisK zkVM reaches 1.5 GHz trace generation: fast emulation, minimal traces and parallel witness generation, and what it means for real-time proving.</span></li>
+          <li><a href="/blog/epf-dev-log/">Ethereum Protocol Fellowship Dev Log: zkVM Performance</a><span>My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation.</span></li>
+          <li><a href="/blog/hybrid-ethereum-riscv/">Hybrid Ethereum: A RISC-V Execution Engine Experiment</a><span>An experiment replacing Ethereum&#x27;s EVM sandbox with a RISC-V execution engine: the design, new node components and backward compatibility with the EVM.</span></li>
+          <li><a href="/blog/eip-4337-account-abstraction/">EIP-4337 Account Abstraction Wallets: A Deep Dive</a><span>How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle.</span></li>
+          <li><a href="/blog/zk-rollups-eip4844-blobs/">ZK-Rollups After EIP-4844: From Calldata to Blobs</a><span>How ZK-rollups post data after EIP-4844 (proto-danksharding): blob transactions, KZG commitments, the point evaluation precompile, and cheaper data.</span></li>
+          <li><a href="/blog/eip7928-block-access-lists/">EIP-7928 Block-Level Access Lists Explained</a><span>EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving.</span></li>
+          <li><a href="/blog/chronicle-rust-blockchain-indexer/">Chronicle: A Blazing-Fast Blockchain Indexer in Rust</a><span>An introduction to building a blockchain indexer in Rust with Chronicle: parsing transactions, smart contract events and parachain events at speed.</span></li>
+          <li><a href="/blog/eip2771-gasless-relayer/">Building an EIP-2771 Gasless Relayer</a><span>Designing a scalable, fault-tolerant EIP-2771 relayer for gasless meta-transactions: system goals, high-level architecture, security and future work.</span></li>
+          <li><a href="/blog/eof-deep-dive/">EVM Object Format (EOF) Explained: A Deep Dive</a><span>What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation.</span></li>
+          <li><a href="/blog/evm-jumpdest/">What Does the EVM JUMPDEST Opcode Do?</a><span>The EVM JUMPDEST opcode (0x5b) explained: how it marks valid targets for JUMP and JUMPI, how jump destination analysis works, and why it matters.</span></li>
+          <li><a href="/blog/state-read-write-opcodes/">How Blockchains Read and Write State in WASM and RISC-V</a><span>State reads and writes aren&#x27;t native WASM or RISC-V instructions. How blockchain VMs expose storage to contracts through host functions and syscalls.</span></li>
+          <li><a href="/blog/zero-knowledge-proof-building-blocks/">Building Blocks of Modern Zero-Knowledge Proofs</a><span>An engineer&#x27;s guide to the core protocols behind modern zero-knowledge proofs: the sum-check, zero-check, product-check and permutation-check IOPs.</span></li>
+          <li><a href="/blog/kzg-polynomial-commitment-part-1/">KZG Polynomial Commitments via Airdrops (Part 1)</a><span>Part 1: how token airdrops work today with Merkle proofs, using Optimism&#x27;s airdrop, as the starting point for replacing them with KZG commitments.</span></li>
+          <li><a href="/blog/kzg-polynomial-commitment-part-2/">KZG Polynomial Commitments via Airdrops (Part 2)</a><span>Part 2: implementing an airdrop with KZG polynomial commitments: committing to the claims, generating proofs, and verifying them in a smart contract.</span></li>
+          <li><a href="/blog/winternitz-one-time-signature/">Winternitz One-Time Signatures (WOTS) Explained</a><span>How the Winternitz one-time signature (WOTS) scheme works: hash chains, key generation, signing and verification, with a full Rust implementation.</span></li>
+          <li><a href="/blog/groth16/">The Groth16 zk-SNARK Protocol Explained</a><span>A walkthrough of the Groth16 zk-SNARK: bilinear pairings, QAPs, the powers of tau trusted setup, and how the prover and verifier work.</span></li>
+          <li><a href="/blog/r1cs-to-qap/">From R1CS to QAP: Arithmetic Circuits for SNARKs</a><span>How an arithmetic circuit becomes a rank-1 constraint system (R1CS) and then a quadratic arithmetic program (QAP), worked through on a small example.</span></li>
+          <li><a href="/blog/permutation-check-iop/">The Permutation Check Polynomial IOP (PLONK)</a><span>The permutation check PIOP through the lens of PLONK: proving one vector is a permutation of another with a grand product argument.</span></li>
+          <li><a href="/blog/product-check-iop/">The ProductCheck Polynomial IOP Explained</a><span>The ProductCheck PIOP for univariate and multilinear polynomials: proving a product relation over a domain via ZeroCheck and a random linear combination.</span></li>
+          <li><a href="/blog/sumcheck-polynomial-iop/">The Sum-Check Protocol Explained (with Rust)</a><span>The sum-check protocol from first principles: proving a polynomial&#x27;s sum over the Boolean hypercube round by round, with a Rust prover and verifier.</span></li>
+          <li><a href="/blog/zerocheck-polynomial-iop/">The ZeroCheck Polynomial IOP Explained</a><span>The ZeroCheck PIOP: proving a polynomial vanishes on a domain, for univariate polynomials via the vanishing polynomial and multilinear ones via sum-check.</span></li>
+          <li><a href="/blog/multiset-check-iop/">The Multiset Check IOP in Zero-Knowledge Proofs</a><span>The multiset check IOP: proving two multisets are equal by encoding them as polynomials and testing at a random challenge, and its role in PLONK.</span></li>
+          <li><a href="/blog/merkle-patricia-trie/">Merkle Patricia Trie Explained (with Rust)</a><span>How Ethereum&#x27;s Merkle Patricia Trie works: leaf, extension and branch nodes, nibble paths and hashing, with a Rust implementation.</span></li>
+          <li><a href="/blog/merkle-tree-blockchain/">Merkle Trees and the Blockchain</a><span>What a Merkle tree is and why blockchains depend on it: hashing transactions into a single root, Merkle proofs, and efficient verification.</span></li>
+          <li><a href="/blog/kademlia-dht/">Building a Kademlia Distributed Hash Table (DHT)</a><span>How the Kademlia DHT works and how to build one: XOR distance, k-buckets, node lookups and storing key-value pairs in a peer-to-peer network.</span></li>
+          <li><a href="/blog/fields-extension-fields/">Fields and Extension Fields in Cryptography</a><span>Lecture notes on finite fields and extension fields for cryptography: prime fields, GF(p^n) built from irreducible polynomials, and field arithmetic.</span></li>
+          <li><a href="/blog/matryoshka-mle/">The Matryoshka Algorithm for Fast MLE Evaluation</a><span>The Matryoshka algorithm for computing the multilinear extension of a Boolean function efficiently, as used in GKR-style succinct proof systems.</span></li>
+          <li><a href="/blog/jagged-mle/">Jagged (Stacked) Multilinear Extensions for zkVMs</a><span>Jagged multilinear extensions: committing to many tables of different heights as one stacked MLE so zkVM provers avoid wasteful padding.</span></li>
+          <li><a href="/blog/ron-mle-optimization/">Ron Rothblum&#x27;s Optimization for MLE Evaluation</a><span>Faster multilinear extension evaluation: Ron Rothblum&#x27;s optimization over naive direct evaluation, and the cost analysis behind it.</span></li>
+          <li><a href="/blog/mle-direct-evaluation/">Multilinear Extensions and Direct Evaluation</a><span>Multilinear polynomial extensions explained: interpolating a function over the Boolean hypercube and evaluating the MLE directly with the eq polynomial.</span></li>
+        </ul>
+        <!-- /SEO:FALLBACK -->
+      </div>
       </div>
     </section>
   </main>

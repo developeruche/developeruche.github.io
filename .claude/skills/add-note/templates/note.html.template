@@ -16,7 +16,7 @@
   <meta property="og:description" content="{{DESCRIPTION}}" />
   <meta property="og:url" content="{{URL}}" />
   <meta property="og:image" content="https://developeruche.com/assets/notes/{{CAT}}.png" />
-  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="og:image:alt" content="{{CAT_DISPLAY}} study notes — Developer Uche" />
   <meta property="article:published_time" content="{{DATE}}" />
   <meta property="article:author" content="https://developeruche.com" />
   <!-- Twitter -->

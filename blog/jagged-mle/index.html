@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jagged Multilinear Extension (Stacked MLE) — Developer Uche</title>
-  <meta name="description" content="Jagged Multilinear Extension (Stacked MLE) In the quest to make Zero-Knowledge Virtual Machines (zkVMs) performant enough for real-time applications…" />
+  <title>Jagged (Stacked) Multilinear Extensions for zkVMs</title>
+  <meta name="description" content="Jagged multilinear extensions: committing to many tables of different heights as one stacked MLE so zkVM provers avoid wasteful padding." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/jagged-mle/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Jagged Multilinear Extension (Stacked MLE) — Developer Uche" />
-  <meta property="og:description" content="Jagged Multilinear Extension (Stacked MLE) In the quest to make Zero-Knowledge Virtual Machines (zkVMs) performant enough for real-time applications…" />
+  <meta property="og:title" content="Jagged (Stacked) Multilinear Extensions for zkVMs" />
+  <meta property="og:description" content="Jagged multilinear extensions: committing to many tables of different heights as one stacked MLE so zkVM provers avoid wasteful padding." />
   <meta property="og:url" content="https://developeruche.com/blog/jagged-mle/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/jagged-mle.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/jagged-mle.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Jagged Multilinear Extension (Stacked MLE) — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -25,16 +27,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Jagged Multilinear Extension (Stacked MLE) — Developer Uche" />
-  <meta name="twitter:description" content="Jagged Multilinear Extension (Stacked MLE) In the quest to make Zero-Knowledge Virtual Machines (zkVMs) performant enough for real-time applications…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/jagged-mle.webp" />
+  <meta name="twitter:title" content="Jagged (Stacked) Multilinear Extensions for zkVMs" />
+  <meta name="twitter:description" content="Jagged multilinear extensions: committing to many tables of different heights as one stacked MLE so zkVM provers avoid wasteful padding." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/jagged-mle.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "Jagged Multilinear Extension (Stacked MLE)",
-  "description": "Jagged Multilinear Extension (Stacked MLE) In the quest to make Zero-Knowledge Virtual Machines (zkVMs) performant enough for real-time applications…",
+  "description": "Jagged multilinear extensions: committing to many tables of different heights as one stacked MLE so zkVM provers avoid wasteful padding.",
   "image": [
     "https://developeruche.com/assets/blogs/jagged-mle.webp"
   ],
@@ -96,6 +98,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -106,7 +109,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">Jagged Multilinear Extension (Stacked MLE)</h1>
-        <img class="post-hero-img" src="/assets/blogs/jagged-mle.webp" alt="Jagged Multilinear Extension (Stacked MLE) — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/jagged-mle.webp" alt="Jagged Multilinear Extension (Stacked MLE) — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 11 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>zero knowledge</span>
@@ -390,6 +393,16 @@ pub fn generate_hypercube_vec(m: usize) -&gt; Vec&lt;Vec&lt;u8&gt;&gt; {
         <h2>References</h2>
         <ul><li><strong><a href="https://eprint.iacr.org/2025/917.pdf" target="_blank" rel="noopener noreferrer">Jagged Polynomial Commitments (or: How to Stack Multilinears)</a></strong> – <em>Succinct Labs (2025)</em></li><li><strong><a href="https://people.cs.georgetown.edu/jthaler/ProofsArgsAndZK.pdf" target="_blank" rel="noopener noreferrer">Proofs, Arguments, and Zero-Knowledge</a></strong> – <em>Justin Thaler</em></li><li><strong><a href="https://github.com/arkworks-rs/" target="_blank" rel="noopener noreferrer">Arkworks Rust Ecosystem</a></strong> – <em>Arkworks Contributors</em></li><li><strong><a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/primitives/polynomial/src/stacked_mle.rs" target="_blank" rel="noopener noreferrer">Complete Jagged MLE Implementation</a></strong> – <em>Source Code</em></li></ul>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/mle-direct-evaluation/">Multilinear Extensions and Direct Evaluation</a><span>Multilinear polynomial extensions explained: interpolating a function over the Boolean hypercube and evaluating the MLE directly with the eq polynomial.</span></li>
+          <li><a href="/blog/ron-mle-optimization/">Ron Rothblum&#x27;s Optimization for MLE Evaluation</a><span>Faster multilinear extension evaluation: Ron Rothblum&#x27;s optimization over naive direct evaluation, and the cost analysis behind it.</span></li>
+          <li><a href="/blog/matryoshka-mle/">The Matryoshka Algorithm for Fast MLE Evaluation</a><span>The Matryoshka algorithm for computing the multilinear extension of a Boolean function efficiently, as used in GKR-style succinct proof systems.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

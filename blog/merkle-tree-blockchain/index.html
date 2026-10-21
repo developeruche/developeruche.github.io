@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Merkle Tree and the Blockchain — Developer Uche</title>
-  <meta name="description" content="Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…" />
+  <title>Merkle Trees and the Blockchain — Developer Uche</title>
+  <meta name="description" content="What a Merkle tree is and why blockchains depend on it: hashing transactions into a single root, Merkle proofs, and efficient verification." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/merkle-tree-blockchain/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Merkle Tree and the Blockchain — Developer Uche" />
-  <meta property="og:description" content="Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…" />
+  <meta property="og:title" content="Merkle Trees and the Blockchain" />
+  <meta property="og:description" content="What a Merkle tree is and why blockchains depend on it: hashing transactions into a single root, Merkle proofs, and efficient verification." />
   <meta property="og:url" content="https://developeruche.com/blog/merkle-tree-blockchain/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/ethereum-state-trie.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/ethereum-state-trie.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Merkle Tree and the Blockchain — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -25,16 +27,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Merkle Tree and the Blockchain — Developer Uche" />
-  <meta name="twitter:description" content="Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/ethereum-state-trie.webp" />
+  <meta name="twitter:title" content="Merkle Trees and the Blockchain" />
+  <meta name="twitter:description" content="What a Merkle tree is and why blockchains depend on it: hashing transactions into a single root, Merkle proofs, and efficient verification." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/ethereum-state-trie.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "Merkle Tree and the Blockchain",
-  "description": "Merkle Tree and the Blockchain The Merkle tree is an important component of the blockchain that makes it work and perform efficiently. A Merkle tree…",
+  "description": "What a Merkle tree is and why blockchains depend on it: hashing transactions into a single root, Merkle proofs, and efficient verification.",
   "image": [
     "https://developeruche.com/assets/blogs/ethereum-state-trie.webp"
   ],
@@ -96,6 +98,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -106,7 +109,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">Merkle Tree and the Blockchain</h1>
-        <img class="post-hero-img" src="/assets/blogs/ethereum-state-trie.webp" alt="Merkle Tree and the Blockchain — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/ethereum-state-trie.webp" alt="Merkle Tree and the Blockchain — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 1 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>evm</span>
@@ -144,6 +147,16 @@
           <li>Without it, verifying that a transaction was mined in a block would be very time-consuming and computationally costly.</li>
         </ol>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/eip7928-block-access-lists/">EIP-7928 Block-Level Access Lists Explained</a><span>EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving.</span></li>
+          <li><a href="/blog/eof-deep-dive/">EVM Object Format (EOF) Explained: A Deep Dive</a><span>What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation.</span></li>
+          <li><a href="/blog/state-read-write-opcodes/">How Blockchains Read and Write State in WASM and RISC-V</a><span>State reads and writes aren&#x27;t native WASM or RISC-V instructions. How blockchain VMs expose storage to contracts through host functions and syscalls.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

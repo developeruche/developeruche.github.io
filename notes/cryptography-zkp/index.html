@@ -47,6 +47,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/site.css" />
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="notes" data-category="cryptography-zkp">
   <div id="site-header"></div>
@@ -64,7 +65,13 @@
     <section class="section">
       <div class="container">
         <div id="filter-host"></div>
-        <div class="card-grid card-grid--list" id="notes-grid"></div>
+        <div class="card-grid card-grid--list" id="notes-grid">
+        <!-- SEO:FALLBACK -->
+        <ul class="seo-fallback">
+          <li><a href="/notes/cryptography-zkp/rapidly-verifiable-xmss/">Rapidly Verifiable XMSS Signatures</a><span>How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices.</span></li>
+        </ul>
+        <!-- /SEO:FALLBACK -->
+      </div>
       </div>
     </section>
   </main>

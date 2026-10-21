@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deep Dive into Abstract Account Wallet EIP-4337 — Developer Uche</title>
-  <meta name="description" content="Deep Dive into Abstract Account Wallet EIP-4337 Account Abstraction draws a distinction between Keys and Accounts, abstracting the authentication…" />
+  <title>EIP-4337 Account Abstraction Wallets: A Deep Dive</title>
+  <meta name="description" content="How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/eip-4337-account-abstraction/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Deep Dive into Abstract Account Wallet EIP-4337 — Developer Uche" />
-  <meta property="og:description" content="Deep Dive into Abstract Account Wallet EIP-4337 Account Abstraction draws a distinction between Keys and Accounts, abstracting the authentication…" />
+  <meta property="og:title" content="EIP-4337 Account Abstraction Wallets: A Deep Dive" />
+  <meta property="og:description" content="How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle." />
   <meta property="og:url" content="https://developeruche.com/blog/eip-4337-account-abstraction/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/eip4337-account-abstraction.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/eip4337-account-abstraction.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Deep Dive into Abstract Account Wallet EIP-4337 — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -26,16 +28,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Deep Dive into Abstract Account Wallet EIP-4337 — Developer Uche" />
-  <meta name="twitter:description" content="Deep Dive into Abstract Account Wallet EIP-4337 Account Abstraction draws a distinction between Keys and Accounts, abstracting the authentication…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/eip4337-account-abstraction.webp" />
+  <meta name="twitter:title" content="EIP-4337 Account Abstraction Wallets: A Deep Dive" />
+  <meta name="twitter:description" content="How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/eip4337-account-abstraction.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "Deep Dive into Abstract Account Wallet EIP-4337",
-  "description": "Deep Dive into Abstract Account Wallet EIP-4337 Account Abstraction draws a distinction between Keys and Accounts, abstracting the authentication…",
+  "description": "How EIP-4337 account abstraction separates keys from accounts: bundlers, the entry point contract, paymasters and the user operation lifecycle.",
   "image": [
     "https://developeruche.com/assets/blogs/eip4337-account-abstraction.webp"
   ],
@@ -97,6 +99,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -107,7 +110,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">Deep Dive into Abstract Account Wallet EIP-4337</h1>
-        <img class="post-hero-img" src="/assets/blogs/eip4337-account-abstraction.webp" alt="Deep Dive into Abstract Account Wallet EIP-4337 — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/eip4337-account-abstraction.webp" alt="Deep Dive into Abstract Account Wallet EIP-4337 — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 2 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>smart contract</span>
@@ -281,6 +284,16 @@
         </ul>
         <p>Overall, EIP-4337 holds significant potential for simplifying user onboarding and unlocking new possibilities in the Web3 space. As the technology matures and user-friendly interfaces evolve, it can play a key role in attracting mainstream adoption and fostering a more secure and accessible blockchain experience.</p>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/eip2771-gasless-relayer/">Building an EIP-2771 Gasless Relayer</a><span>Designing a scalable, fault-tolerant EIP-2771 relayer for gasless meta-transactions: system goals, high-level architecture, security and future work.</span></li>
+          <li><a href="/blog/eip7928-block-access-lists/">EIP-7928 Block-Level Access Lists Explained</a><span>EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving.</span></li>
+          <li><a href="/blog/epf-dev-log/">Ethereum Protocol Fellowship Dev Log: zkVM Performance</a><span>My Ethereum Protocol Fellowship project summary: zkVM performance and precompile benchmarks, AOT compilation and stateless block validation.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

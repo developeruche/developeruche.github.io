@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EVM Object Format (EOF) Deep Dive — Developer Uche</title>
-  <meta name="description" content="EVM Object Format deep dive This is a significant upcoming change for Ethereum, designed to improve the structure, validation, and evolution of smart…" />
+  <title>EVM Object Format (EOF) Explained: A Deep Dive — Developer Uche</title>
+  <meta name="description" content="What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/blog/eof-deep-dive/" />
@@ -12,10 +12,12 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="EVM Object Format (EOF) Deep Dive — Developer Uche" />
-  <meta property="og:description" content="EVM Object Format deep dive This is a significant upcoming change for Ethereum, designed to improve the structure, validation, and evolution of smart…" />
+  <meta property="og:title" content="EVM Object Format (EOF) Explained: A Deep Dive" />
+  <meta property="og:description" content="What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation." />
   <meta property="og:url" content="https://developeruche.com/blog/eof-deep-dive/" />
-  <meta property="og:image" content="https://developeruche.com/assets/blogs/eof-deep-dive.webp" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/eof-deep-dive.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="EVM Object Format (EOF) Deep Dive — thumbnail" />
   <meta property="article:published_time" content="2026-06-26" />
   <meta property="article:author" content="https://developeruche.com" />
@@ -25,16 +27,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="EVM Object Format (EOF) Deep Dive — Developer Uche" />
-  <meta name="twitter:description" content="EVM Object Format deep dive This is a significant upcoming change for Ethereum, designed to improve the structure, validation, and evolution of smart…" />
-  <meta name="twitter:image" content="https://developeruche.com/assets/blogs/eof-deep-dive.webp" />
+  <meta name="twitter:title" content="EVM Object Format (EOF) Explained: A Deep Dive" />
+  <meta name="twitter:description" content="What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/eof-deep-dive.jpg" />
   <!-- Structured data (schema.org BlogPosting) -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "EVM Object Format (EOF) Deep Dive",
-  "description": "EVM Object Format deep dive This is a significant upcoming change for Ethereum, designed to improve the structure, validation, and evolution of smart…",
+  "description": "What the EVM Object Format (EOF) changes for Ethereum smart contracts: the container format, code and data sections, and deploy-time validation.",
   "image": [
     "https://developeruche.com/assets/blogs/eof-deep-dive.webp"
   ],
@@ -96,6 +98,7 @@
   ]
 }
   </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="blog">
   <div id="site-header"></div>
@@ -106,7 +109,7 @@
       <header>
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">EVM Object Format (EOF) Deep Dive</h1>
-        <img class="post-hero-img" src="/assets/blogs/eof-deep-dive.webp" alt="EVM Object Format (EOF) Deep Dive — thumbnail" />
+        <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/eof-deep-dive.webp" alt="EVM Object Format (EOF) Deep Dive — thumbnail" />
         <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 6 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>evm</span>
@@ -138,6 +141,16 @@
         <p>Currently the EOF proposal is a combinantion of 12 EIPs;</p>
         <ul><li>📃<a href="https://eips.ethereum.org/EIPS/eip-3540" target="<em>blank" rel="noopener noreferrer">EIP-3540</a>: EOF - EVM Object Format v1 <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-3540.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-3670" target="<em>blank" rel="noopener noreferrer">EIP-3670</a>: EOF - Code Validation <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-3670.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-4200" target="<em>blank" rel="noopener noreferrer">EIP-4200</a>: EOF - Static relative jumps <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-4200.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-4750" target="<em>blank" rel="noopener noreferrer">EIP-4750</a>: EOF - Functions <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-4750.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-5450" target="<em>blank" rel="noopener noreferrer">EIP-5450</a>: EOF - Stack Validation <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-5450.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-6206" target="<em>blank" rel="noopener noreferrer">EIP-6206</a>: EOF - JUMPF instruction <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-6026.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-7480" target="<em>blank" rel="noopener noreferrer">EIP-7480</a>: EOF - Data section access instructions <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-7480.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-663" target="<em>blank" rel="noopener noreferrer">EIP-663</a>: Unlimited SWAP and DUP instructions <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-663.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-7069" target="<em>blank" rel="noopener noreferrer">EIP-7069</a>: Revamped CALL instructions (<em>does not require EOF</em>) <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-7069.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-7620" target="<em>blank" rel="noopener noreferrer">EIP-7620</a>: EOF - Contract Creation Instructions <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-7620.md" target="_blank" rel="noopener noreferrer">_history</em></a></li><li>📃<a href="https://eips.ethereum.org/EIPS/eip-7873" target="<em>blank" rel="noopener noreferrer">EIP-7873</a>: EOF - TXCREATE and InitcodeTransaction type <a href="https://github.com/ethereum/EIPs/commits/master/EIPS/eip-7873.md" target="_blank" rel="noopener noreferrer">_history</em></a></li></ul>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/eip7928-block-access-lists/">EIP-7928 Block-Level Access Lists Explained</a><span>EIP-7928 block-level access lists: how recording every state access and diff per block enables parallel disk I/O, parallel EVM execution and ZK proving.</span></li>
+          <li><a href="/blog/state-read-write-opcodes/">How Blockchains Read and Write State in WASM and RISC-V</a><span>State reads and writes aren&#x27;t native WASM or RISC-V instructions. How blockchain VMs expose storage to contracts through host functions and syscalls.</span></li>
+          <li><a href="/blog/hybrid-ethereum-riscv/">Hybrid Ethereum: A RISC-V Execution Engine Experiment</a><span>An experiment replacing Ethereum&#x27;s EVM sandbox with a RISC-V execution engine: the design, new node components and backward compatibility with the EVM.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/blog" style="margin-top: var(--space-lg);">← Back to blogs</a>
     </article>

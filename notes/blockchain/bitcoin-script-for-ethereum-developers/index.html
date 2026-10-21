@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig — Developer Uche</title>
-  <meta name="description" content="A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte." />
+  <title>Bitcoin Script for Ethereum Developers — Developer Uche</title>
+  <meta name="description" content="Bitcoin for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit, Taproot and five generations of multisig, from P2SH to MuSig2." />
   <meta name="author" content="Developer Uche" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/" />
@@ -12,26 +12,28 @@
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Developer Uche" />
-  <meta property="og:title" content="Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig — Developer Uche" />
-  <meta property="og:description" content="A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte." />
+  <meta property="og:title" content="Bitcoin Script for Ethereum Developers" />
+  <meta property="og:description" content="Bitcoin for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit, Taproot and five generations of multisig, from P2SH to MuSig2." />
   <meta property="og:url" content="https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/" />
-  <meta property="og:image" content="https://developeruche.com/assets/notes/blockchain.png" />
-  <meta property="og:image:alt" content="Blueprint diagram of a transformer block" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/blockchain.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of a block header chain and Merkle tree" />
   <meta property="article:published_time" content="2026-10-14" />
   <meta property="article:author" content="https://developeruche.com" />
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@developeruche" />
   <meta name="twitter:creator" content="@developeruche" />
-  <meta name="twitter:title" content="Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig — Developer Uche" />
-  <meta name="twitter:description" content="A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte." />
-  <meta name="twitter:image" content="https://developeruche.com/assets/notes/blockchain.png" />
+  <meta name="twitter:title" content="Bitcoin Script for Ethereum Developers" />
+  <meta name="twitter:description" content="Bitcoin for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit, Taproot and five generations of multisig, from P2SH to MuSig2." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/blockchain.jpg" />
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig",
-  "description": "A study of Bitcoin from the inside for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit and Taproot, and five generations of multisig compared byte for byte.",
+  "description": "Bitcoin for EVM engineers: the UTXO model, transactions byte by byte, Script, SegWit, Taproot and five generations of multisig, from P2SH to MuSig2.",
   "url": "https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/",
   "datePublished": "2026-10-14",
   "inLanguage": "en",
@@ -39,12 +41,31 @@
   "author": {
     "@type": "Person",
     "name": "Developer Uche",
-    "url": "https://developeruche.com/"
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
   },
   "isPartOf": {
     "@type": "CollectionPage",
     "name": "Blockchain Notes",
     "url": "https://developeruche.com/notes/blockchain/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/blockchain.jpg"
+  ],
+  "dateModified": "2026-10-14",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
   }
 }
   </script>
@@ -54,6 +75,39 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Blockchain Notes",
+      "item": "https://developeruche.com/notes/blockchain/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Bitcoin Script for Ethereum Developers: SegWit, Taproot, Multisig",
+      "item": "https://developeruche.com/notes/blockchain/bitcoin-script-for-ethereum-developers/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
 </head>
 <body data-page="notes">
   <div id="site-header"></div>
@@ -1034,6 +1088,14 @@ OP_ENDIF</code></pre>
         <p><strong>Sizes</strong></p>
         <table><thead><tr><th>Item</th><th>Size</th></tr></thead><tbody><tr><td>ECDSA signature (DER + sighash byte)</td><td>71–73 B</td></tr><tr><td>Schnorr signature</td><td>64 B (65 with an explicit sighash byte)</td></tr><tr><td>Public key</td><td>65 B uncompressed, 33 B compressed, 32 B x-only</td></tr><tr><td>Taproot control block</td><td>33 + 32·depth B</td></tr><tr><td>Outputs</td><td>P2PKH 34, P2SH 32, P2WPKH 31, P2WSH 43, P2TR 43, P2A 13 B</td></tr><tr><td>Inputs (single signature)</td><td>P2PKH 148, P2SH-P2WPKH 91, P2WPKH 68, P2TR key path 57.5 vB</td></tr><tr><td>Transaction overhead</td><td>10 B, plus 0.5 vB for the SegWit marker and flag</td></tr><tr><td>Block</td><td>4,000,000 WU; 80-byte header</td></tr></tbody></table>
       </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/blockchain/psbt-bip174-bip370/">PSBT Explained: A Deep Dive into BIP174 and BIP370</a><span>Partially Signed Bitcoin Transactions byte by byte: the roles, every field, what signers must verify, PSBT v2 (BIP370), and Taproot and MuSig2 fields.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
 
       <a class="back-link" href="/notes/blockchain/" style="margin-top: var(--space-lg);">← Back to Blockchain notes</a>
     </article>
