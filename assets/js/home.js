@@ -5,11 +5,12 @@ mountLayout();
 
 // Render a highlight section grid into a host element.
 async function renderHighlights(host, path, opts = {}) {
-  const { filter, hrefField, cardFn, count = 4 } = opts;
+  const { filter, sort, hrefField, cardFn, count = 4 } = opts;
   try {
     stateMessage(host, 'loading', '// Loading…');
     let items = await fetchJSON(path);
     if (filter) items = items.filter(filter);
+    if (sort) items = [...items].sort(sort);
     const picks = highlights(items, count);
     host.innerHTML = '';
     if (!picks.length) { stateMessage(host, 'empty', '// Nothing here yet.'); return; }
@@ -52,11 +53,13 @@ renderHighlights(document.getElementById('pub-grid'), 'data/publications.json', 
 renderHighlights(document.getElementById('blog-grid'), 'data/blog.json', { cardFn: blogCard, count: 6 });
 renderHighlights(document.getElementById('os-grid'), 'data/os-n-projects.json', { filter: (p) => p.type === 'contribution', cardFn: projCard, count: 6 });
 renderHighlights(document.getElementById('proj-grid'), 'data/os-n-projects.json', { filter: (p) => p.type === 'personal', cardFn: projCard, count: 6 });
-// The home page surfaces notes from these categories only. AI notes are
-// published under /notes but deliberately kept off the landing page.
+// The home page shows only the 4 most recent notes from these categories;
+// "View all notes" leads to /notes for the rest. AI notes are published under
+// /notes but deliberately kept off the landing page. Undated entries sort last.
 const HOME_NOTE_CATEGORIES = new Set(['cryptography-zkp', 'blockchain']);
 renderHighlights(document.getElementById('notes-grid'), 'data/notes.json', {
   filter: (n) => HOME_NOTE_CATEGORIES.has(n.category),
+  sort: (a, b) => (b.date || '').localeCompare(a.date || ''),
   cardFn: noteCard,
   count: 4,
 });
