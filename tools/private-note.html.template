@@ -57,7 +57,12 @@
   <script>
     (function () {
       const P = JSON.parse(document.getElementById('payload').textContent);
-      const STORE = 'private-note-key:' + P.id;
+      // All private pages share one key: unlocking one unlocks the rest for
+      // this tab session, or on this device when "Remember" is ticked.
+      const STORE = 'private-notes-key';
+      const get = (s) => { try { return s.getItem(STORE); } catch (e) { return null; } };
+      const put = (s, v) => { try { s.setItem(STORE, v); } catch (e) {} };
+      const drop = () => { try { localStorage.removeItem(STORE); sessionStorage.removeItem(STORE); } catch (e) {} };
       const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
       const form = document.getElementById('unlock');
       const err = document.getElementById('unlock-error');
@@ -77,11 +82,8 @@
         article.innerHTML = doc.html;
         const lock = document.createElement('div');
         lock.className = 'lock-actions';
-        lock.innerHTML = '<button type="button">Lock this note</button>';
-        lock.querySelector('button').addEventListener('click', () => {
-          try { localStorage.removeItem(STORE); } catch (e) {}
-          location.reload();
-        });
+        lock.innerHTML = '<button type="button">Lock private notes</button>';
+        lock.querySelector('button').addEventListener('click', () => { drop(); location.reload(); });
         article.appendChild(lock);
       }
 
@@ -93,22 +95,20 @@
         try {
           const key = await deriveKey(document.getElementById('pass').value);
           await open(key);
-          if (remember) {
-            const raw = new Uint8Array(await crypto.subtle.exportKey('raw', key));
-            try { localStorage.setItem(STORE, btoa(String.fromCharCode(...raw))); } catch (e) {}
-          }
+          const raw = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey('raw', key))));
+          put(sessionStorage, raw);
+          if (remember) put(localStorage, raw);
         } catch (e) {
           err.textContent = 'Wrong passphrase.';
         }
       });
 
-      // A key remembered on this device unlocks without prompting.
-      let saved = null;
-      try { saved = localStorage.getItem(STORE); } catch (e) {}
+      // A key kept from an earlier unlock opens the page without prompting.
+      const saved = get(localStorage) || get(sessionStorage);
       if (saved) {
         crypto.subtle.importKey('raw', b64(saved), 'AES-GCM', false, ['decrypt'])
           .then(open)
-          .catch(() => { try { localStorage.removeItem(STORE); } catch (e) {} });
+          .catch(drop);
       }
     })();
   </script>

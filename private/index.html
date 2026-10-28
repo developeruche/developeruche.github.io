@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private note — Developer Uche</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <style>
+    .unlock { max-width: 460px; margin-top: var(--space-lg); padding: var(--space-lg); border: 1px solid var(--color-border); background: var(--color-surface); }
+    .unlock p { color: var(--color-text-muted); font-size: var(--text-sm); text-transform: none; margin-bottom: var(--space-md); line-height: 1.6; }
+    .unlock input[type="password"] { width: 100%; box-sizing: border-box; padding: 10px 12px; font: inherit; text-transform: none; color: var(--color-text); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0; }
+    .unlock input[type="password"]:focus { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+    .unlock-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); margin-top: var(--space-md); flex-wrap: wrap; }
+    .unlock label.remember { font-size: var(--text-sm); color: var(--color-text-muted); display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+    .unlock-error { color: #9B1C1C; font-size: var(--text-sm); margin-top: var(--space-sm); min-height: 1.4em; text-transform: none; }
+    .lock-actions { margin-top: var(--space-lg); }
+    .lock-actions button { background: none; border: 0; padding: 0; font: inherit; color: var(--color-text-muted); cursor: pointer; text-decoration: underline; }
+    .post-body input[type="checkbox"] { margin-right: 6px; vertical-align: -1px; }
+  </style>
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container" id="private-note">
+      <header>
+        <span class="section-label">// PRIVATE NOTE</span>
+        <h1 class="post-title">Locked</h1>
+        <p class="post-meta">// This note is encrypted. Enter the passphrase to read it.</p>
+      </header>
+
+      <form class="unlock" id="unlock" autocomplete="off">
+        <p>Decryption happens in your browser. The passphrase is never sent anywhere.</p>
+        <input type="password" id="pass" aria-label="Passphrase" placeholder="Passphrase" autocomplete="current-password" required autofocus />
+        <div class="unlock-row">
+          <label class="remember"><input type="checkbox" id="remember" /> Remember on this device</label>
+          <button class="btn-primary" type="submit">Unlock <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="unlock-error" id="unlock-error" role="alert"></div>
+      </form>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- Ciphertext: AES-256-GCM over the article HTML; key = PBKDF2-SHA256(passphrase, salt). -->
+  <script type="application/json" id="payload">{"v": 2, "id": "index", "iter": 600000, "salt": "ZGV2ZWxvcGVydWNoZS5jb20vcHJpdmF0ZS92MQ==", "iv": "zFyKInvtdHcbJanr", "ct": "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"}</script>
+  <script>
+    (function () {
+      const P = JSON.parse(document.getElementById('payload').textContent);
+      // All private pages share one key: unlocking one unlocks the rest for
+      // this tab session, or on this device when "Remember" is ticked.
+      const STORE = 'private-notes-key';
+      const get = (s) => { try { return s.getItem(STORE); } catch (e) { return null; } };
+      const put = (s, v) => { try { s.setItem(STORE, v); } catch (e) {} };
+      const drop = () => { try { localStorage.removeItem(STORE); sessionStorage.removeItem(STORE); } catch (e) {} };
+      const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+      const form = document.getElementById('unlock');
+      const err = document.getElementById('unlock-error');
+
+      async function deriveKey(pass) {
+        const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', hash: 'SHA-256', salt: b64(P.salt), iterations: P.iter },
+          base, { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+      }
+
+      async function open(key) {
+        const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(P.iv) }, key, b64(P.ct));
+        const doc = JSON.parse(new TextDecoder().decode(plain));
+        document.title = doc.title + ' — Developer Uche';
+        const article = document.getElementById('private-note');
+        article.innerHTML = doc.html;
+        const lock = document.createElement('div');
+        lock.className = 'lock-actions';
+        lock.innerHTML = '<button type="button">Lock private notes</button>';
+        lock.querySelector('button').addEventListener('click', () => { drop(); location.reload(); });
+        article.appendChild(lock);
+      }
+
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        err.textContent = 'Decrypting…';
+        // Read the form before open() replaces it.
+        const remember = document.getElementById('remember').checked;
+        try {
+          const key = await deriveKey(document.getElementById('pass').value);
+          await open(key);
+          const raw = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey('raw', key))));
+          put(sessionStorage, raw);
+          if (remember) put(localStorage, raw);
+        } catch (e) {
+          err.textContent = 'Wrong passphrase.';
+        }
+      });
+
+      // A key kept from an earlier unlock opens the page without prompting.
+      const saved = get(localStorage) || get(sessionStorage);
+      if (saved) {
+        crypto.subtle.importKey('raw', b64(saved), 'AES-GCM', false, ['decrypt'])
+          .then(open)
+          .catch(drop);
+      }
+    })();
+  </script>
+</body>
+</html>
