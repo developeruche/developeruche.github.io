@@ -57,7 +57,13 @@ def render_list(lines, inline):
     tag = "ol" if ordered else "ul"
     out = [f"<{tag}>"]
     for text, children in items:
-        content = inline(text.strip())
+        # GitHub task-list items: "[ ] todo" / "[x] done"
+        task = re.match(r"\[([ xX])\]\s+", text.strip())
+        if task:
+            box = '<input type="checkbox" disabled%s /> ' % (" checked" if task.group(1) != " " else "")
+            content = box + inline(text.strip()[task.end():])
+        else:
+            content = inline(text.strip())
         if children:
             content += _render_children(children, inline)
         out.append(f"<li>{content}</li>")
@@ -153,6 +159,8 @@ def convert(md):
         s = re.sub(r"\$(?!\$)((?:\\.|[^$\\])+?)\$", lambda m: stash("$" + m.group(1) + "$"), s)
         s = re.sub(r"\\\((.+?)\\\)", lambda m: stash("\\(" + m.group(1) + "\\)"), s)
         s = re.sub(r"`([^`]+?)`", lambda m: stash("<code>" + esc(m.group(1)) + "</code>"), s)
+        # markdown backslash escapes (\~ \* \_ ...) -> the literal character
+        s = re.sub(r"\\([\\`*_{}\[\]()#+\-.!|~>])", lambda m: stash(esc(m.group(1))), s)
         # escape stray html
         s = esc(s)
         # images (root-absolute src so posts work from /blog/<slug>/ depth)

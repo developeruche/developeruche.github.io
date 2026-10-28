@@ -96,3 +96,21 @@ Every article must go through the site-wide SEO pass once its body is in place:
    social cards (`assets/og/`), `feed.xml` and sitemap `lastmod`.
 
 (The add-note script runs step 2 automatically; still do step 1.)
+
+## Private notes (passphrase-protected)
+
+For notes that must not be public (e.g. AI summaries of private calls), don't use
+`new_note.py`. The repo is public, so a private note is **encrypted**, not hidden:
+
+```bash
+# source stays local — data/private-md/ is gitignored
+python3 tools/private_note.py --md data/private-md/<slug>.md --slug <slug> \
+  --title "..." --tags "A, B" [--date YYYY-MM-DD]
+```
+
+It prompts for the passphrase (or reads `$PRIVATE_NOTE_PASSPHRASE`) and writes
+`private/<slug>/index.html`: AES-256-GCM ciphertext (PBKDF2-SHA256, 600k
+iterations) plus an unlock form that decrypts in the browser. The title is
+encrypted too. The page is `noindex`, has no canonical, and gets **no**
+notes.json, sitemap, feed or SEO entry — skip the SEO pass. Strip the H1 first,
+as for any note. Re-run the script to edit the note or change the passphrase.

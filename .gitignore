@@ -16,3 +16,6 @@ cv/.build-status.json
 # Paper build artifacts — the published PDFs in assets/papers/ ARE committed
 papers/*/.build/
 papers/*/.build-status.json
+
+# Private note sources — only the encrypted page in private/ is published
+data/private-md/
