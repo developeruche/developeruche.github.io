@@ -19,3 +19,4 @@ papers/*/.build-status.json
 
 # Private note sources — only the encrypted page in private/ is published
 data/private-md/
+.private-note-passphrase

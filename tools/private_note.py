@@ -5,7 +5,8 @@ Publish a passphrase-protected note: markdown -> encrypted page at /private/<slu
     python3 tools/private_note.py --md data/private-md/<slug>.md \
         --slug <slug> --title "..." [--tags "A, B"] [--date YYYY-MM-DD]
 
-The passphrase comes from $PRIVATE_NOTE_PASSPHRASE, or is prompted for (twice).
+The passphrase comes from $PRIVATE_NOTE_PASSPHRASE, else the gitignored file
+.private-note-passphrase at the site root, else a prompt (asked twice).
 
 The repo is public and GitHub Pages serves every file, so the only thing that
 keeps a note private is encryption. The rendered article (title included) is
@@ -32,12 +33,15 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 ROOT = Path(__file__).resolve().parents[1]
 CONVERTER = ROOT / ".claude/skills/add-blog/scripts/md_to_body.py"
 TEMPLATE = ROOT / "tools/private-note.html.template"
+PASSPHRASE_FILE = ROOT / ".private-note-passphrase"  # gitignored
 ITERATIONS = 600_000  # OWASP 2023 guidance for PBKDF2-HMAC-SHA256
 MIN_PASSPHRASE = 12
 
 
 def read_passphrase():
     p = os.environ.get("PRIVATE_NOTE_PASSPHRASE")
+    if p is None and PASSPHRASE_FILE.is_file():
+        p = PASSPHRASE_FILE.read_text().strip()
     if p is None:
         p = getpass.getpass("Passphrase: ")
         if getpass.getpass("Repeat passphrase: ") != p:
