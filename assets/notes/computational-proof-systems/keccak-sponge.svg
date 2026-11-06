@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300" width="700" height="300" role="img" aria-labelledby="t d" font-family="'Share Tech Mono', ui-monospace, monospace" font-size="15" fill="#0B1A2E">
+  <title id="t">The Keccak sponge construction</title>
+  <desc id="d">The state has a rate part r and a capacity part c. Message blocks are XORed into the rate, with permutation f between them, and outputs are read from the rate.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1B3A6B"/></marker>
+    <style>.w{fill:none;stroke:#1B3A6B;stroke-width:1.6;marker-end:url(#a)}.f{fill:#E7EAF0;stroke:#1B3A6B;stroke-width:1.6}.l{font-size:13px;fill:#54627A}.d{stroke:#54627A;stroke-width:1.2;stroke-dasharray:5 5}</style>
+  </defs>
+  <rect width="700" height="300" fill="#F4F2EC"/>
+  <text x="20" y="128">r</text><text x="20" y="208">c</text>
+  <text x="200" y="28" text-anchor="middle" class="l">absorbing</text><text x="560" y="28" text-anchor="middle" class="l">squeezing</text>
+  <line class="d" x1="430" y1="20" x2="430" y2="280"/>
+  <path class="w" d="M38 123H82"/><path class="w" d="M38 203H100"/>
+  <path class="w" d="M90 56V108"/><text x="90" y="48" text-anchor="middle">P0</text>
+  <circle cx="90" cy="123" r="9" fill="#FCFBF8" stroke="#1B3A6B" stroke-width="1.6"/><path d="M81 123h18M90 114v18" stroke="#1B3A6B" stroke-width="1.4"/>
+  <path class="w" d="M99 123H118"/>
+  <rect class="f" x="120" y="100" width="44" height="125" rx="10"/><text x="142" y="168" text-anchor="middle">f</text>
+  <path class="w" d="M164 123H212"/><path class="w" d="M164 203H230"/>
+  <path class="w" d="M220 56V108"/><text x="220" y="48" text-anchor="middle">P1</text>
+  <circle cx="220" cy="123" r="9" fill="#FCFBF8" stroke="#1B3A6B" stroke-width="1.6"/><path d="M211 123h18M220 114v18" stroke="#1B3A6B" stroke-width="1.4"/>
+  <path class="w" d="M229 123H248"/>
+  <rect class="f" x="250" y="100" width="44" height="125" rx="10"/><text x="272" y="168" text-anchor="middle">f</text>
+  <text x="318" y="168" text-anchor="middle">...</text>
+  <path class="w" d="M340 123H360"/><path class="w" d="M340 203H360"/>
+  <rect class="f" x="362" y="100" width="44" height="125" rx="10"/><text x="384" y="168" text-anchor="middle">f</text>
+  <path class="w" d="M406 123H488"/><path class="w" d="M406 203H488"/>
+  <path class="w" d="M462 123V66"/><text x="462" y="52" text-anchor="middle">Z0</text>
+  <rect class="f" x="490" y="100" width="44" height="125" rx="10"/><text x="512" y="168" text-anchor="middle">f</text>
+  <path class="w" d="M534 123H618"/><path class="w" d="M534 203H618"/>
+  <path class="w" d="M586 123V66"/><text x="586" y="52" text-anchor="middle">Z1</text>
+  <text x="648" y="168" text-anchor="middle">...</text>
+</svg>

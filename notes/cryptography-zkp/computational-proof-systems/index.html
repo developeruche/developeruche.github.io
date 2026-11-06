@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Computational Proof Systems — Developer Uche</title>
+  <meta name="description" content="A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Computational Proof Systems" />
+  <meta property="og:description" content="A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Computational Proof Systems" />
+  <meta name="twitter:description" content="A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Computational Proof Systems",
+  "description": "A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Cryptography",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Computational Proof Systems",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/">← Back to Cryptography &amp; ZKP notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTES · CRYPTOGRAPHY &amp; ZKP</span>
+        <h1 class="post-title">Computational Proof Systems</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>A rough documentation of the protocols and primitives I explored during my ZK quest, from circuits and polynomials to sum-check, GKR, Groth16 and PLONK. Rust implementations of these protocols are in the <a href="https://github.com/developeruche/cryptography-n-zk-research" target="_blank" rel="noopener noreferrer">cryptography-n-zk-research</a> repository.</p>
+<h2>Chapter One: ZK Fundamentals</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/">Overview of Computation in Zero-Knowledge Proofs</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/">Arithmetic Circuits in Rust</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/polynomials/">Polynomials</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/">R1CS to QAP</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/">Univariate Polynomial Multiplication Using FFT</a></li></ul>
+<h2>Chapter Two: Interactive and Non-Interactive Proofs</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/">Interactive and Non-Interactive Zero-Knowledge Proof Systems</a></li></ul>
+<h2>Chapter Three: Polynomial Commitment Schemes</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/polynomial-commitment-schemes/">Polynomial Commitment Schemes</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/">KZG Polynomial Commitment Scheme</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/">Univariate KZG Polynomial Commitment Scheme</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG Polynomial Commitment Scheme</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch Univariate KZG Polynomial Commitment Scheme</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/">FRI Polynomial Commitment Scheme</a></li></ul>
+<h2>Chapter Four: Sum-Check Protocol</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/">The Sum-Check Protocol</a></li></ul>
+<h2>Chapter Five: GKR Protocol</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/gkr-protocol/">The GKR Protocol</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/succinct-gkr-protocol/">Succinct GKR Protocol</a></li></ul>
+<h2>Chapter Six: Groth16 Protocol</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/">The Groth16 Protocol</a></li></ul>
+<h2>Chapter Seven: PLONK Protocol</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/">The PLONK Protocol</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/">PLONK Introduction and the KZG Universal Setup</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/">Plonkish Arithmetization</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-prover/">The PLONK Prover</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/">The PLONK Verifier</a></li></ul>
+<h2>Chapter Eight: PLONK Protocol Extensions</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/turboplonk/">TurboPLONK</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/">Lookup Arguments and PlonKup</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/plookup/">Plookup</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/">Halo2 Lookup Protocol</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/">HyperPlonk</a></li></ul>
+<h2>Miscellaneous</h2>
+<ul class="book-toc"><li><a href="/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/">Sumcheck 201 Paper Note</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/">Keccak Hash Function</a></li></ul>
+      </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/blog/groth16/">The Groth16 zk-SNARK Protocol Explained</a><span>A walkthrough of the Groth16 zk-SNARK: bilinear pairings, QAPs, the powers of tau trusted setup, and how the prover and verifier work.</span></li>
+          <li><a href="/blog/zero-knowledge-proof-building-blocks/">Building Blocks of Modern Zero-Knowledge Proofs</a><span>An engineer&#x27;s guide to the core protocols behind modern zero-knowledge proofs: the sum-check, zero-check, product-check and permutation-check IOPs.</span></li>
+          <li><a href="/blog/zcash-deep-dive/">Exploring Zcash: Encrypted Money from First Principles</a><span>Zcash from first principles: shielded pools, note commitments, nullifiers and zk-SNARKs, with a transparent and a shielded transaction walked end to end.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+
+      <a class="back-link" href="/notes/cryptography-zkp/" style="margin-top: var(--space-lg);">← Back to Cryptography &amp; ZKP notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

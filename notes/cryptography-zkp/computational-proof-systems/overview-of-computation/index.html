@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>From Problem to SNARK: Computation in ZK Proofs</title>
+  <meta name="description" content="How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="From Problem to SNARK: Computation in ZK Proofs" />
+  <meta property="og:description" content="How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="From Problem to SNARK: Computation in ZK Proofs" />
+  <meta name="twitter:description" content="How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Overview of Computation in Zero-Knowledge Proofs",
+  "description": "How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Arithmetization, Circom",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Overview of Computation in Zero-Knowledge Proofs",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER ONE</span>
+        <h1 class="post-title">Overview of Computation in Zero-Knowledge Proofs</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>The category of cryptographic proof system this book focuses on is the <code>Zero Knowledge</code> proof system. A zero-knowledge proof system is a cryptographic protocol that allows one party, known as the prover, to convince another party, known as the verifier, that a particular statement is true without revealing any information beyond the validity of the statement itself. This remarkable concept ensures that the verifier gains no additional knowledge about the prover's secret or the underlying data beyond the fact that the statement is correct.</p>
+        <p>Going into the protocol, the <code>Prover</code> usually has a <code>Problem</code> it claims to have a solution to, and the <code>Verifier</code> expects a <code>Proof</code> that the <code>Prover</code> has a valid <code>Solution</code> to the <code>Problem</code>.</p>
+        <p>Most zero-knowledge proof systems follow this process:</p>
+        <p><img src="/assets/notes/computational-proof-systems/problem-to-snark.png" alt="From a problem to a SNARK: problem, computation, algebraic circuit, arithmetization, quadratic arithmetic program, SNARK" loading="lazy" /></p>
+        <p>This chapter focuses on navigating from <code>Problem</code> → <code>Computation</code> → <code>Algebraic Circuit</code> → <code>Arithmetization</code> → <code>Quadratic Arithmetic Program</code>.</p>
+        <h3>Problem</h3>
+        <p>This is the computable problem, expressible mathematically, that the <code>Prover</code> can compute the solution to. The example we will play with is the <code>IsZero</code> problem.</p>
+        <p>The <code>IsZero</code> problem, in the context of zero-knowledge proofs and circuit-based proving systems like Circom, is the challenge of checking whether a given value is zero inside an arithmetic circuit. A circuit can only add and multiply, so "is this value equal to zero?" has no direct gate. The usual solution has the prover supply the inverse of the value as an extra witness, and then uses constraints to check it.</p>
+        <p>This problem can be expressed as a Circom circuit this way:</p>
+        <pre><code>pragma circom 2.0.0;
+
+template IsZero() {
+    signal input in;
+    signal output out;
+    signal inv;
+
+    // Witness hint: the prover computes inv. `&lt;--` adds NO constraint.
+    inv &lt;-- in != 0 ? 1 / in : 0;
+
+    // Constraint 1: defines out
+    out &lt;== 1 - in * inv;
+
+    // Constraint 2: without this one, the circuit is unsound
+    in * out === 0;
+}
+
+component main = IsZero();</code></pre>
+        <p>Both constraints matter, because <code>inv</code> is only a hint and the prover can set it to anything:</p>
+        <ul><li>If <code>in</code> is not zero, constraint 2 forces <code>out = 0</code>, and constraint 1 then forces <code>inv</code> to be the true inverse.</li><li>If <code>in</code> is zero, constraint 1 gives <code>out = 1</code> whatever <code>inv</code> is.</li></ul>
+        <p>Without constraint 2, a cheating prover could take a non-zero <code>in</code>, set <code>inv = 0</code>, and get <code>out = 1</code>, claiming that a non-zero value is zero.</p>
+        <p>Now that we've declared this problem as a Circom circuit, the next step is to represent it as an <code>Algebraic Circuit</code>.</p>
+        <h3>Algebraic Circuit</h3>
+        <p>An algebraic circuit is a mathematical representation used to perform computations over a field by composing basic arithmetic operations (addition and multiplication) and constants. These circuits are integral to the design and analysis of cryptographic proof systems, especially zero-knowledge proofs. Algebraic circuits help convert computational problems into polynomial forms, which are then used to construct proofs that verify the correctness of computations without revealing the inputs.</p>
+        <p><strong>Components of an Algebraic Circuit</strong></p>
+        <ol><li><strong>Inputs</strong>: The variables or elements from a finite field that serve as the starting values for the circuit.</li><li><strong>Gates</strong>: <strong>Addition gates</strong> sum two inputs from the field, and <strong>multiplication gates</strong> multiply two inputs from the field.</li><li><strong>Constants</strong>: Fixed elements from the field used in operations.</li><li><strong>Outputs</strong>: The results of the computations, which are also elements of the field.</li></ol>
+        <p><strong>Structure of an Algebraic Circuit</strong></p>
+        <p>An algebraic circuit can be visualized as a directed acyclic graph (DAG), where nodes represent inputs, gates and outputs, and edges represent the flow of data from one operation to another.</p>
+        <p>Recall the <code>IsZero</code> problem we are playing with. This is how it is expressed as an <code>Algebraic Circuit</code>. Gates 0 to 2 compute <code>out = 1 - in * inv</code>, and gate 3 computes <code>in * out</code>, whose result the circuit constrains to be zero:</p>
+        <p><img src="/assets/notes/computational-proof-systems/is-zero-circuit.svg" alt="The IsZero algebraic circuit: in times minus one, times inv, plus one gives out; in times out must equal zero" loading="lazy" /></p>
+        <p>After obtaining the algebraic circuit, the next step is to represent it in an <code>Intermediate Representation</code> like <code>R1CS</code>, <code>Plonkish</code>, <code>AIR</code> and so on. This is done by <code>Arithmetization</code>.</p>
+        <h3>Arithmetization</h3>
+        <p>Arithmetization is the process of taking a circuit description via a programming language and turning it into a system of mathematical constraints that enable fast verification. With this set of mathematical constraints, a verifier can run a small number of algebraic checks to show with high probability that the prover is not lying.</p>
+        <p>I got this definition from <a href="https://medium.com/@yujiangtham/lets-dissect-a-zksnark-part-2-5f92f1d7d2e9" target="_blank" rel="noopener noreferrer">this</a> blog.</p>
+        <p><strong>Arithmetization Techniques</strong></p>
+        <p>These are the most common arithmetization techniques. This book works with R1CS and Plonkish; AIR and CCS are listed for completeness.</p>
+        <ol><li>R1CS</li><li>Plonkish</li><li>AIR</li><li>CCS</li></ol>
+        <p>In summary, the journey from a computable problem to a verifiable proof involves several crucial steps: expressing the problem as an algebraic (arithmetic) circuit, and then arithmetizing that circuit into mathematical constraints suitable for efficient verification. Breaking these steps down gives a deeper understanding of how zero-knowledge proofs ensure privacy and integrity, and sets the stage for the specific techniques explored in the rest of this book.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <span></span>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/"><span>Next →</span>Arithmetic Circuits</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/">Plonkish Arithmetization and Copy Constraints</a><span>Plonkish arithmetization by example: the gate equation, selector and witness polynomials, copy constraints, and the permutation argument behind them.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

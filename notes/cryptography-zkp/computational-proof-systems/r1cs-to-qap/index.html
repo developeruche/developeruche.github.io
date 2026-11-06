@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R1CS to QAP: A Complete Worked Example — Developer Uche</title>
+  <meta name="description" content="A complete worked example from R1CS to a QAP: the matrices, interpolating each column, combining with the witness, and the final divisibility check." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="R1CS to QAP: A Complete Worked Example" />
+  <meta property="og:description" content="A complete worked example from R1CS to a QAP: the matrices, interpolating each column, combining with the witness, and the final divisibility check." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="R1CS to QAP: A Complete Worked Example" />
+  <meta name="twitter:description" content="A complete worked example from R1CS to a QAP: the matrices, interpolating each column, combining with the witness, and the final divisibility check." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "R1CS to QAP",
+  "description": "A complete worked example from R1CS to a QAP: the matrices, interpolating each column, combining with the witness, and the final divisibility check.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, R1CS, QAP, SNARKs",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "R1CS to QAP",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER ONE</span>
+        <h1 class="post-title">R1CS to QAP</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>This section dives into how a problem represented in <code>R1CS</code> can be transformed into a <code>QAP</code>.</p>
+        <p>Explore these chapters of the RareSkills book:</p>
+        <ol><li><a href="https://www.rareskills.io/post/rank-1-constraint-system" target="_blank" rel="noopener noreferrer">R1CS</a></li><li><a href="https://www.rareskills.io/post/quadratic-arithmetic-program" target="_blank" rel="noopener noreferrer">QAP</a></li><li><a href="https://rareskills.io/post/r1cs-to-qap" target="_blank" rel="noopener noreferrer">R1CS to QAP</a></li></ol>
+        <p>Let's play with a quick example of transforming R1CS to QAP.</p>
+        <p>The rank-one constraint system is a very flexible way to represent an arithmetic circuit, and for many proving systems, R1CS is the data structure in which the computation is presented to the proving system.</p>
+        <h3>The example</h3>
+        <p>We will go from this equation, with the solution $x = 2$, to a QAP:</p>
+        <p>$$x^3 \cdot x + 5 = 21$$</p>
+        <p><em>Reducing this equation to a form that fits R1CS, where each line has one multiplication:</em></p>
+        <p>$$a = x \cdot x$$</p>
+        <p>$$b = a \cdot x$$</p>
+        <p>$$out - 5 = b \cdot x$$</p>
+        <p><em>This is what the witness looks like:</em></p>
+        <p>$$w = [1, x, a, b, out] = [1, 2, 4, 8, 21]$$</p>
+        <h3>R1CS</h3>
+        <p>Recall the R1CS format, where $\circ$ is element-wise multiplication:</p>
+        <p>$$Cw = Aw \circ Bw$$</p>
+        <p>Each constraint is one row. $C$ encodes the left-hand sides $[a,\ b,\ out - 5]$, $A$ encodes the first factors $[x,\ a,\ b]$, and $B$ encodes the second factors $[x,\ x,\ x]$:</p>
+        <p>$$
+C =
+\begin{pmatrix}
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 \\
+-5 & 0 & 0 & 0 & 1
+\end{pmatrix}
+\quad
+A =
+\begin{pmatrix}
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0
+\end{pmatrix}
+\quad
+B =
+\begin{pmatrix}
+0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0
+\end{pmatrix}
+$$</p>
+        <p>Multiplying each matrix by $w$ gives $Cw = [4, 8, 16]$, $Aw = [2, 4, 8]$ and $Bw = [2, 2, 2]$, and indeed $4 = 2 \cdot 2$, $8 = 4 \cdot 2$ and $16 = 8 \cdot 2$.</p>
+        <p>Note that $out = 21$ is a <em>public input</em>. These three constraints hold for any $x$ with $out = x^4 + 5$ (for example $x = 3$, $out = 86$). What pins the statement to 21 is that the verifier supplies that value itself.</p>
+        <h3>From R1CS to QAP</h3>
+        <p>In a QAP, we represent the R1CS structure using polynomials that implement exactly the same logic.</p>
+        <p>The number of polynomials and their degree depend on the length of the witness and the number of constraints. The witness has 5 elements, so each matrix gives 5 polynomials, one per column. Each constraint contributes 1 point to each polynomial. We have 3 constraints, so we get 3 points per polynomial, which define a polynomial of degree at most 2. We choose the evaluation points $x = 1, 2, 3$, one per constraint.</p>
+        <p>Starting with $C$, we interpolate each column:</p>
+        <p>For the 1st column of $C$, $y = [0, 0, -5]$ at $x = [1, 2, 3]$:</p>
+        <p>$$c_0(x) = -\frac{5}{2}(x-1)(x-2) = -\frac{5}{2}x^2 + \frac{15}{2}x - 5$$</p>
+        <p>For the 2nd column, all values are zero, so $c_1(x) = 0$.</p>
+        <p>For the 3rd column, $y = [1, 0, 0]$:</p>
+        <p>$$c_2(x) = \frac{1}{2}(x-2)(x-3) = \frac{1}{2}x^2 - \frac{5}{2}x + 3$$</p>
+        <p>For the 4th column, $y = [0, 1, 0]$:</p>
+        <p>$$c_3(x) = -(x-1)(x-3) = -x^2 + 4x - 3$$</p>
+        <p>For the 5th column, $y = [0, 0, 1]$:</p>
+        <p>$$c_4(x) = \frac{1}{2}(x-1)(x-2) = \frac{1}{2}x^2 - \frac{3}{2}x + 1$$</p>
+        <p>Writing the coefficients as a matrix, one row per polynomial, with columns for $1$, $x$ and $x^2$:</p>
+        <p>$$
+C_{\text{poly}} =
+\begin{pmatrix}
+-5 & \frac{15}{2} & -\frac{5}{2} \\
+0 & 0 & 0 \\
+3 & -\frac{5}{2} & \frac{1}{2} \\
+-3 & 4 & -1 \\
+1 & -\frac{3}{2} & \frac{1}{2}
+\end{pmatrix}
+$$</p>
+        <p>There is one more step: combining these polynomials with the witness. $w^T$ has dimension $1 \times 5$ and $C_{\text{poly}}$ has dimension $5 \times 3$, so $w^T C_{\text{poly}}$ has dimension $1 \times 3$. That row holds the coefficients of a single polynomial, $C(x) = \sum_i w_i\, c_i(x)$:</p>
+        <p>$$C(x) = 1 \cdot c_0(x) + 2 \cdot c_1(x) + 4 \cdot c_2(x) + 8 \cdot c_3(x) + 21 \cdot c_4(x) = 2x^2 - 2x + 4$$</p>
+        <p>As a check, this passes through the entries of $Cw$: $C(1) = 4$, $C(2) = 8$, $C(3) = 16$.</p>
+        <p>Doing the same for the other two matrices gives:</p>
+        <p>$$A(x) = x^2 - x + 2 \qquad B(x) = 2$$</p>
+        <p>Again, $A(1), A(2), A(3) = 2, 4, 8$ and $B$ is $2$ everywhere, matching $Aw$ and $Bw$.</p>
+        <h3>The QAP check</h3>
+        <p>All three constraints hold exactly when $A(x)B(x) - C(x)$ is zero at $x = 1, 2, 3$, which means it is divisible by the target polynomial $t(x) = (x-1)(x-2)(x-3)$. So the whole R1CS collapses into one polynomial identity:</p>
+        <p>$$A(x)B(x) - C(x) = h(x)\,t(x)$$</p>
+        <p>In this example $A(x)B(x) = 2x^2 - 2x + 4 = C(x)$, so the left side is exactly zero and $h(x) = 0$. That is special to this small example: $B(x)$ happens to be a constant, so the product stays at degree 2. In general the left side is a non-zero polynomial and $h(x)$ is non-zero.</p>
+        <p>A wrong witness breaks the identity. Take $out = 22$ with everything else unchanged, so $w = [1, 2, 4, 8, 22]$. Then $C(x)$ becomes $\frac{5}{2}x^2 - \frac{7}{2}x + 5$, and $A(x)B(x) - C(x)$ equals $-1$ at $x = 3$. It does not vanish at all three points, so no $h(x)$ exists.</p>
+        <p>It is truly epic seeing these huge matrices reduced to a single polynomial identity!</p>
+        <p>In a real proof system all of this happens over a finite field, so a fraction like $\frac{5}{2}$ means $5$ times the field inverse of $2$.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/polynomials/"><span>← Previous</span>Polynomials</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/"><span>Next →</span>Univariate Polynomial Multiplication Using FFT</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/">The Groth16 Protocol: Setup, Proving and Verifying</a><span>Groth16 from R1CS and QAP to its trusted setup, the proving key, the three-element proof and the single pairing check that verifies it.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/">The PLONK Protocol: A Guided Walkthrough</a><span>A guided path through PLONK: the universal setup, Plonkish arithmetization, the prover&#x27;s five rounds and the verifier&#x27;s single pairing check.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

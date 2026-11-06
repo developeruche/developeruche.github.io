@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLONK and the KZG Universal Trusted Setup — Developer Uche</title>
+  <meta name="description" content="An introduction to PLONK and its notation, and how the universal KZG trusted setup works, including which points the structured reference string holds." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="PLONK and the KZG Universal Trusted Setup" />
+  <meta property="og:description" content="An introduction to PLONK and its notation, and how the universal KZG trusted setup works, including which points the structured reference string holds." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="PLONK and the KZG Universal Trusted Setup" />
+  <meta name="twitter:description" content="An introduction to PLONK and its notation, and how the universal KZG trusted setup works, including which points the structured reference string holds." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "PLONK Introduction and the KZG Universal Setup",
+  "description": "An introduction to PLONK and its notation, and how the universal KZG trusted setup works, including which points the structured reference string holds.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, PLONK, KZG",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "PLONK Introduction and the KZG Universal Setup",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER SEVEN</span>
+        <h1 class="post-title">PLONK Introduction and the KZG Universal Setup</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>PLONK (Permutations over Lagrange-bases for Oecumenical Noninteractive arguments of Knowledge) is a zero-knowledge proving system designed for scalability and efficiency in blockchain and cryptographic applications. Its modularity and simplicity make it a favored choice for developers and researchers working on zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge).</p>
+        <p>Introduced in 2019, PLONK addressed a key limitation of earlier protocols such as Groth16: the need for a new trusted setup for each circuit. PLONK uses one universal trusted setup, and builds on polynomial commitment schemes to achieve succinct, efficiently verifiable proofs.</p>
+        <p>This part takes a deep technical dive into the mechanics of the protocol, breaking down its components, theory and implementation.</p>
+        <p>Like a good number of zkSNARK protocols, its life cycle can be described as follows:</p>
+        <ol><li>Computation</li><li>Algebraic circuit</li><li>Intermediate representation (for example, R1CS or Plonkish)</li><li>Polynomial structure (for example, QAP in the Groth16 protocol)</li><li>Interactive oracle proof, an information-theoretic protocol</li><li>SNARK, by compiling the protocol with a polynomial commitment scheme and Fiat-Shamir</li></ol>
+        <h3>Protocol Overview</h3>
+        <p>This is just a trailer of what will be explored:</p>
+        <ul><li>Universal trusted setup</li><li>Expressing the computation as a circuit, and circuit compilation</li><li>Witness generation and proof generation</li><li>Verification</li></ul>
+        <p><strong>Notation</strong></p>
+        <ul><li>$\mathbb{F}$: A finite field.</li><li>$\omega$: A primitive $n$-th root of unity in $\mathbb{F}$, meaning $\omega^n = 1$ and $\omega^k \neq 1$ for $0 < k < n$.</li><li>All polynomials have coefficients in $\mathbb{F}$, and the variable is usually denoted by $X$. We denote this set as $\mathbb{F}[X]$.</li><li>We represent polynomials by single letters like $p, a, b, z$.</li><li>$L_i$: A Lagrange basis polynomial.</li><li>$M$: A matrix.</li><li>$G$: A group generator.</li><li>$[x]_1$: The element $x \cdot G_1$ of group 1.</li><li>$[x]_2$: The element $x \cdot G_2$ of group 2.</li></ul>
+        <h3>PLONK: Universal Trusted Setup</h3>
+        <p>A trusted setup is needed because of the polynomial commitment scheme, which in this case is KZG. It needs a <strong>one-time</strong> universal trusted setup. It is called universal because the same setup can be used across many circuits, up to a maximum size, which reduces the amount of trust that needs to be established. Should the setup be compromised, however, invalid proofs can be generated.</p>
+        <blockquote>A polynomial commitment scheme is a cryptographic protocol that allows someone to commit to a polynomial, and later prove evaluations of the polynomial at specific points. It's like making a secure promise about a polynomial without sending all of it.</blockquote>
+        <p>These are the steps involved in the <a href="/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/">KZG scheme</a>:</p>
+        <ol><li>Setup</li><li>Commit to a polynomial</li><li>Prove an evaluation</li><li>Verify an evaluation proof</li></ol>
+        <p>We only look at the <code>setup</code> stage here, which is the same setup needed in the PLONK protocol.</p>
+        <p><strong>Setup</strong></p>
+        <p>The first step is a one-time trusted setup. Once it is completed, the other steps can be repeated to commit to and reveal various polynomials.</p>
+        <ul><li>Let $G_1$ and $G_2$ be generators of the two groups of a pairing-friendly elliptic curve.</li><li>Let $l$ be the maximum degree of the polynomials we want to commit to. For a PLONK circuit with $n$ gates, the blinded polynomials require $l = n + 5$.</li><li>Pick a random field element $\tau \in \mathbb{F}_p$.</li><li>Compute and publish $(G_1, \tau G_1, \tau^2 G_1, \ldots, \tau^l G_1)$ and $(G_2, \tau G_2)$.</li></ul>
+        <blockquote>Note that $\tau$ must not be revealed. It is a secret parameter of the setup, and must be discarded after the setup ceremony so that nobody can figure out its value.</blockquote>
+        <p>These published points are the Structured Reference String (SRS), which is used at the other stages of the commitment scheme.</p>
+        <p>This is all that is needed for the setup phase of the protocol.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/"><span>← Previous</span>The PLONK Protocol</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/"><span>Next →</span>Plonkish Arithmetization</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/">HyperPlonk: PLONK Without FFTs on the Hypercube</a><span>A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/">Lookup Arguments in Zero-Knowledge Proofs</a><span>What lookup arguments are, why they replace many gates with one table check, what they do and don&#x27;t hide, and how they connect to PLONK.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

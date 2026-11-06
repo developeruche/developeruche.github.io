@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HyperPlonk: PLONK Without FFTs on the Hypercube</title>
+  <meta name="description" content="A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/hyperplonk/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="HyperPlonk: PLONK Without FFTs on the Hypercube" />
+  <meta property="og:description" content="A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/hyperplonk/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="HyperPlonk: PLONK Without FFTs on the Hypercube" />
+  <meta name="twitter:description" content="A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "HyperPlonk",
+  "description": "A study companion to HyperPlonk: replacing Plonk's FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/hyperplonk/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, PLONK, HyperPlonk, Sum-Check",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/hyperplonk/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "HyperPlonk",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/hyperplonk/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER EIGHT</span>
+        <h1 class="post-title">HyperPlonk</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Understanding PLONK when expressed over multilinear polynomials. See this as a study companion while reading the HyperPlonk paper.</p>
+        <p>Proof systems have long been a fascinating cornerstone of cryptography and theoretical computer science, offering ways to verify complex computations without redoing the heavy lifting. In recent years, <strong>SNARKs</strong> (Succinct Non-Interactive Arguments of Knowledge) have captured the spotlight. They allow someone to prove they've correctly solved a problem, with a proof that's tiny and quick to check. Zero-knowledge SNARKs can also keep the solution secret. This has sparked a wave of real-world applications, from scaling blockchains to securing sensitive data.</p>
+        <p>Among the SNARK family, <strong>Plonk</strong> has risen as a fan favorite. Its proofs are compact (just a few hundred bytes) and can be verified quickly. Plonk's flexibility shines through its support for custom gates. But there's a hitch: when circuits get massive, with millions or billions of gates, the prover starts to sweat. The culprit is <strong>fast Fourier transforms (FFTs)</strong>, which Plonk relies on to handle its univariate polynomials. These scale quasi-linearly with circuit size, at $O(s \log s)$, turning proof generation into a bottleneck for large-scale tasks.</p>
+        <p>The FFT algorithm is quite fascinating, but it introduces significant overhead in the PLONK PIOP when building the polynomials representing the circuit trace. The goal of HyperPlonk is to eliminate the FFT from this flow.</p>
+        <p>In <a href="https://eprint.iacr.org/2022/1355" target="_blank" rel="noopener noreferrer">HyperPlonk: Plonk with Linear-Time Prover and High-Degree Custom Gates</a>, Binyi Chen, Benedikt Bünz, Dan Boneh and Zhenfei Zhang introduce an adaptation of the Plonk Interactive Oracle Proof (IOP). Unlike Plonk, HyperPlonk operates over the <strong>Boolean hypercube</strong>, denoted $B_\mu := \{0,1\}^\mu$, the space of binary strings of length $\mu$. This redefines it as a <strong>multilinear IOP</strong>, which can be compiled with a suitable multilinear commitment scheme. The result is a SNARK (or a zkSNARK) with a highly efficient prover.</p>
+        <p>HyperPlonk inherits Plonk's flexibility, but it brings some serious upgrades:</p>
+        <ul><li>It removes the need for FFTs during proof generation, relying on the classic <a href="/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/">sum-check protocol</a> instead. This takes the prover's runtime from $O_\lambda(s \log s)$ to $O_\lambda(s)$.</li><li>It supports custom gates of much higher degree without harming the prover's running time.</li></ul>
+        <h3>Technical Overview</h3>
+        <p>To express PLONK over the Boolean hypercube, we break PLONK down into its elementary sub-protocols, make each of them work on multilinear polynomials, and then trust the compounding effect.</p>
+        <h3>Recap on PLONK</h3>
+        <p>If you don't know how PLONK works, you shouldn't be here!! Start with <a href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/">this part of the book</a>.</p>
+        <p><strong>1. What's a circuit?</strong></p>
+        <ul><li>A <strong>circuit</strong> is a math flowchart with steps called <strong>gates</strong>.</li><li>Each gate takes two inputs and does one operation: add, multiply, or something custom.</li><li>It has <strong>n public inputs</strong> (starting numbers) and <strong>s gates</strong> (steps).</li></ul>
+        <p><strong>2. Turning the circuit into a table</strong></p>
+        <ul><li>Plonk builds a table <strong>M</strong> with three columns: <strong>Left (L)</strong>, <strong>Right (R)</strong> and <strong>Output (O)</strong>.</li><li>The table has <strong>n + s + 1 rows</strong>:<ul><li><strong>First n rows:</strong> Public inputs.</li><li><strong>Next s rows:</strong> Gate inputs and outputs.</li><li><strong>Last row:</strong> A check, set to zero, to confirm the final output.</li></ul></li></ul>
+        <p><strong>3. Encoding the table into a polynomial</strong></p>
+        <ul><li>This formulation uses a <strong>cyclic subgroup Ω</strong> with $3(n + s + 1)$ elements.</li><li>It creates a polynomial $M(X)$ that encodes the table: $M(\omega^0) = L_0$, $M(\omega^1) = R_0$, $M(\omega^2) = O_0$, and so on for each row.</li></ul>
+        <p><strong>4. Committing to the polynomial</strong></p>
+        <ul><li>The prover "locks" $M(X)$ in a commitment, like a sealed envelope.</li><li>The verifier can ask questions about it without seeing the polynomial.</li></ul>
+        <p><strong>5. Proving it's correct</strong></p>
+        <ul><li>The prover shows:<ul><li>Each gate's output fits its operation (e.g., $O = L \cdot R$ for multiplication).</li><li>Inputs and outputs connect properly between gates.</li><li>The final row confirms the output is correct (zero).</li></ul></li><li>This is done in a short proof through a back-and-forth process.</li></ul>
+        <h3>From Roots of Unity to the Hypercube</h3>
+        <p>HyperPlonk keeps these same three checks, but replaces each tool that requires an FFT:</p>
+        <table><thead><tr><th>Plonk</th><th>HyperPlonk</th></tr></thead><tbody><tr><td>Table encoded over a subgroup of roots of unity</td><td>Table encoded as a multilinear polynomial over $B_\mu$</td></tr><tr><td>Gates checked by dividing by $Z_H$</td><td>Gates checked by a <strong>zero check</strong></td></tr><tr><td>Wiring checked by a running product $z(X)$, shifted with $\omega X$</td><td>Wiring checked by a <strong>permutation check</strong>, built on a <strong>product check</strong></td></tr><tr><td>Univariate commitment, such as KZG</td><td>Multilinear commitment</td></tr></tbody></table>
+        <p><strong>Gates: the zero check.</strong> The gate identity must hold at every point of the hypercube. Over the hypercube there's no $Z_H$ to divide by, so the check is turned into a sum. The verifier picks a random $r$, and the prover runs sum-check on:</p>
+        <p>$$\sum_{x \in B_\mu} eq(r, x) \cdot g(x) = 0$$</p>
+        <p>where $g$ is the gate identity, and $eq(r, x)$ is the multilinear polynomial that is 1 when $r = x$ on the hypercube and 0 at other hypercube points. A non-zero value of $g$ anywhere makes this sum non-zero, except with negligible probability over $r$.</p>
+        <p><strong>Wiring: the permutation check.</strong> As in Plonk, wire values are combined with their positions using random $\beta$ and $\gamma$, and the check becomes the claim that two products are equal. HyperPlonk proves that claim with a product check, built from sum-check rather than from $\omega$-shifts. The zero check and these checks all reduce to evaluations of multilinear polynomials at random points.</p>
+        <p><strong>Why higher-degree gates get cheap.</strong> With sum-check, the prover works over the hypercube, whose size doesn't grow with the gate's degree. Plonk's FFTs need a larger evaluation domain as the degree increases. This makes high-degree custom gates practical in HyperPlonk.</p>
+        <p><strong>Finishing.</strong> Those evaluation claims are then opened using a multilinear polynomial commitment scheme, such as <a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">multilinear KZG</a>, and Fiat-Shamir makes the whole protocol non-interactive.</p>
+        <p>For the details of each sub-protocol, read the paper alongside this page.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/"><span>← Previous</span>Halo2 Lookup Protocol</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/"><span>Next →</span>Sumcheck 201 Paper Note</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/">Lookup Arguments in Zero-Knowledge Proofs</a><span>What lookup arguments are, why they replace many gates with one table check, what they do and don&#x27;t hide, and how they connect to PLONK.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/">PLONK and the KZG Universal Trusted Setup</a><span>An introduction to PLONK and its notation, and how the universal KZG trusted setup works, including which points the structured reference string holds.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

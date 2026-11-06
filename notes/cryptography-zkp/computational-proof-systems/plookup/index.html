@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plookup: The Lookup Protocol Explained — Developer Uche</title>
+  <meta name="description" content="The plookup protocol: sorting values with the table, the aggregation polynomial, the identities the verifier checks, and a small worked example." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plookup/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Plookup: The Lookup Protocol Explained" />
+  <meta property="og:description" content="The plookup protocol: sorting values with the table, the aggregation polynomial, the identities the verifier checks, and a small worked example." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plookup/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Plookup: The Lookup Protocol Explained" />
+  <meta name="twitter:description" content="The plookup protocol: sorting values with the table, the aggregation polynomial, the identities the verifier checks, and a small worked example." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Plookup",
+  "description": "The plookup protocol: sorting values with the table, the aggregation polynomial, the identities the verifier checks, and a small worked example.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plookup/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Lookup Arguments, Plookup",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plookup/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Plookup",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plookup/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER EIGHT</span>
+        <h1 class="post-title">Plookup</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p><strong>Introduction and context</strong></p>
+        <p>Polynomial commitment schemes allow a prover to commit to a polynomial and later prove specific properties of it. The plookup protocol, from the paper <a href="https://eprint.iacr.org/2020/315" target="_blank" rel="noopener noreferrer">plookup: A simplified polynomial protocol for lookup tables</a> by Ariel Gabizon and Zachary J. Williamson (2020), addresses a specific challenge: verifying that the values of a committed polynomial $f$, at the points of a multiplicative subgroup, are contained in a lookup table $t$. This is crucial for applications in zk-SNARKs, such as batched range proofs, where we need to ensure all polynomial values fall within a specific range.</p>
+        <p><strong>Background: commitment schemes and polynomial commitments</strong></p>
+        <p>A commitment scheme allows a party to commit to a value, with two key properties:</p>
+        <ul><li><strong>Hiding property:</strong> The commitment reveals no information about the committed value.</li><li><strong>Binding property:</strong> Once committed, the value cannot be changed.</li></ul>
+        <p>Polynomial commitment schemes extend this to polynomials, enabling commitments to functions that encode complex data or computations. Schemes like <a href="https://risencrypto.github.io/Kate/" target="_blank" rel="noopener noreferrer">KZG</a> allow succinct commitments and efficient verification of polynomial evaluations, which are foundational for zk-SNARKs.</p>
+        <p><strong>Problem statement and motivation</strong></p>
+        <p>The protocol verifies that, for each point in a multiplicative subgroup $H$ of size $n + 1$, the value of $f$ at that point (apart from one point left free) is in the lookup table $t$, which has $d$ elements. This is essential in scenarios like range checks, where we need to prove all values of $f$ lie within a specific set.</p>
+        <p>The closest earlier protocol, by <a href="https://eprint.iacr.org/2018/380" target="_blank" rel="noopener noreferrer">Bootle et al. (Asiacrypt 2018)</a>, requires commitments to several auxiliary polynomials of degree $d \cdot \log n$. Plookup simplifies this, requiring only <em>three commitments</em> to auxiliary polynomials of degree $n$, which can be much smaller when $d \sim n$.</p>
+        <p><strong>The idea</strong></p>
+        <p>Take the sorted list $s$ of $f$ and $t$ combined, in the same order as $t$. Every value of $f$ now sits next to an equal value. So if we look at the pairs of neighbours in $s$, we see the neighbouring pairs of $t$, plus some repeated pairs $(f_i, f_i)$. The protocol checks that as a multiset identity: a randomized expression in $\beta$ and $\gamma$ matches on the two sides. A value of $f$ that isn't in $t$ would create pairs that can't be accounted for.</p>
+        <p><strong>Detailed protocol steps</strong></p>
+        <p>The steps assume $d = n + 1$ for simplicity. If $d$ is smaller, pad $t$ by repeating its last element. Here $H = \{\mathbf{g}, \ldots, \mathbf{g}^{n+1} = 1\}$, and $f \in \mathbb{F}^n$ holds the values of the polynomial at the first $n$ points.</p>
+        <ol><li><strong>Sorting and representation:</strong><ul><li>Concatenate $f \in \mathbb{F}^n$ and $t \in \mathbb{F}^{n+1}$, and sort the result by the order of $t$ to get $s \in \mathbb{F}^{2n+1}$.</li><li>Represent $s$ using two polynomials $h_1, h_2$ of degree at most $n$, with $h_1(\mathbf{g}^i) = s_i$ and $h_2(\mathbf{g}^i) = s_{n+i}$ for $i \in [n+1]$. They overlap on one element, $s_{n+1}$, which ties the two halves together.</li></ul></li><li><strong>Prover sends polynomials:</strong> The prover computes and sends $h_1$ and $h_2$ to the verifier.</li><li><strong>Verifier sends random challenges:</strong> The verifier chooses random $\beta, \gamma \in \mathbb{F}$ and sends them to the prover.</li><li><strong>Prover computes the aggregation polynomial:</strong> The prover computes $Z$, of degree at most $n$, defined by $Z(\mathbf{g}) = 1$, $Z(\mathbf{g}^{n+1}) = 1$, and for $2 \leq i \leq n$:</li></ol>
+        <p>$$Z(\mathbf{g}^i) = \frac{(1+\beta)^{i-1} \prod_{j < i} (\gamma + f_j) \cdot \prod_{1 \leq j < i} (\gamma(1+\beta) + t_j + \beta t_{j+1})}{\prod_{1 \leq j < i} (\gamma(1+\beta) + s_j + \beta s_{j+1}) (\gamma(1+\beta) + s_{n+j} + \beta s_{n+j+1})}$$</p>
+        <ol><li><strong>Prover sends the aggregation polynomial:</strong> The prover sends $Z$ to the verifier.</li><li><strong>Verifier checks identities:</strong> The verifier checks these, for all $\mathbf{x} \in H$:</li></ol>
+        <p>$$L_1(\mathbf{x})(Z(\mathbf{x}) - 1) = 0$$</p>
+        <p>$$
+\begin{aligned}
+& (\mathbf{x} - \mathbf{g}^{n+1})\, Z(\mathbf{x})\, (1+\beta)\, (\gamma + f(\mathbf{x}))\, (\gamma(1+\beta) + t(\mathbf{x}) + \beta t(\mathbf{g}\mathbf{x})) \\
+& = (\mathbf{x} - \mathbf{g}^{n+1})\, Z(\mathbf{g}\mathbf{x})\, (\gamma(1+\beta) + h_1(\mathbf{x}) + \beta h_1(\mathbf{g}\mathbf{x}))\, (\gamma(1+\beta) + h_2(\mathbf{x}) + \beta h_2(\mathbf{g}\mathbf{x}))
+\end{aligned}
+$$</p>
+        <p>$$L_{n+1}(\mathbf{x})(h_1(\mathbf{x}) - h_2(\mathbf{g}\mathbf{x})) = 0$$</p>
+        <p>$$L_{n+1}(\mathbf{x})(Z(\mathbf{x}) - 1) = 0$$</p>
+        <p>The first and last identities fix $Z$ to 1 at both ends, the second is the running product, and the third connects the two halves of $s$. The verifier accepts if and only if all of them pass.</p>
+        <p>If the values of $f$ aren't contained in $t$, the verifier accepts with negligible probability.</p>
+        <p><strong>A small example</strong></p>
+        <p>Take $n = 3$, with $t = [1, 2, 3, 4]$ and $f = [2, 2, 4]$. Sorting gives $s = [1, 2, 2, 2, 3, 4, 4]$, so $h_1$ takes the values $[1, 2, 2, 2]$ and $h_2$ takes $[2, 3, 4, 4]$. They share the value of $s_4 = 2$. For random $\beta$ and $\gamma$, the running product $Z$ comes back to 1.</p>
+        <p>If instead $f = [2, 2, 5]$, the value 5 isn't in the table. Sorting gives $[1, 2, 2, 2, 3, 4, 5]$, where the neighbouring pair $(4, 5)$ has no counterpart, and the running product no longer comes back to 1.</p>
+        <p><strong>Key components</strong></p>
+        <ul><li><strong>Sorting mechanism:</strong> Sorting $f$ and $t$ together transforms the membership problem into checking consistency in the sorted list, handled through $h_1$ and $h_2$.</li><li><strong>Aggregation polynomial $Z$:</strong> This polynomial, part of a grand product argument, compactly verifies the multiset identity. The random challenges $\beta$ and $\gamma$ are what make this sound.</li><li><strong>Efficiency:</strong> Plookup needs three commitments to polynomials of degree $n$ (namely $h_1$, $h_2$ and $Z$), which is especially attractive when $d \leq n$.</li></ul>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/"><span>← Previous</span>Lookup Arguments and PlonKup</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/"><span>Next →</span>Halo2 Lookup Protocol</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/">Lookup Arguments in Zero-Knowledge Proofs</a><span>What lookup arguments are, why they replace many gates with one table check, what they do and don&#x27;t hide, and how they connect to PLONK.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/">The Halo2 Lookup Protocol, with a Worked Example</a><span>The Halo2 lookup argument with a worked example: permuted columns, the running product, the four checks, and why a cheating prover gets caught.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

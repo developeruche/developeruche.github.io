@@ -111,7 +111,7 @@
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">The Groth16 Protocol</h1>
         <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/groth16.webp" alt="The Groth16 Protocol — thumbnail" />
-        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 6 min read</p>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 7 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>snarks</span>
           <span>zero knowledge</span>
@@ -120,53 +120,88 @@
       </header>
 
       <div class="post-body">
-<p>prerequisite for this study are;</p>
+<p>Rust implementation: <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/arks/snarks/groth16" target="_blank" rel="noopener noreferrer"><code>arks/snarks/groth16</code></a></p>
+        <p>The prerequisites for this study are:</p>
         <ul><li>Bilinear pairings and elliptic curves</li><li>Quadratic arithmetic programs (QAPs)</li></ul>
-        <p>Bilinear pairings and elliptic curves are fundamental to the Groth16 proving system and many other advanced cryptographic protocols. Elliptic curves provide a secure and efficient foundation, while bilinear pairings enable the construction of succinct, non-interactive proofs that are both powerful and practical for real-world applications.</p>
-        <h4>Elliptic Curves</h4>
-        <p><strong>Elliptic Curves Overview:</strong> An elliptic curve is a set of points that satisfy a specific mathematical equation. Over a finite field $\mathbb{F}_q​$, an elliptic curve $E$ is typically defined by an equation of the form: $y^2 = x^3 + ax + b$ where $a$ and $b$ are coefficients in $\mathbb{F}_q$, and the curve is non-singular (i.e., it has no cusps or self-intersections), which requires the discriminant $4a^3 + 27b^2 \neq 0$.</p>
+        <p>Bilinear pairings and elliptic curves are fundamental to the Groth16 proving system and many other advanced cryptographic protocols. Elliptic curves provide a secure and efficient foundation, while bilinear pairings enable the construction of succinct, non-interactive proofs that are both powerful and practical.</p>
+        <h3>Elliptic Curves</h3>
+        <p>An elliptic curve is a set of points that satisfy a specific mathematical equation. Over a finite field $\mathbb{F}_q$ (of characteristic other than 2 or 3), an elliptic curve $E$ is typically defined by an equation of the form $y^2 = x^3 + ax + b$, where $a$ and $b$ are coefficients in $\mathbb{F}_q$. The curve must be non-singular (it has no cusps or self-intersections), which requires $4a^3 + 27b^2 \neq 0$.</p>
         <h3>Bilinear Pairings in Groth16</h3>
-        <p>In the context of the Groth16 proving system, bilinear pairings are used to construct efficient proofs that are both small in size and quick to verify. The system relies on the properties of bilinear pairings to ensure that the proof verification can be performed using simple algebraic operations, making the process efficient even for complex statements.</p>
-        <p><strong>Example Use in Groth16:</strong></p>
-        <ul><li><strong>Setup Phase:</strong> During the setup phase, a trusted party generates public parameters that include elements in $G_1$​, $G_2$​, and $G_T$​.</li><li><strong>Proving Phase:</strong> The prover uses these parameters to create a proof that certain computations were performed correctly. This involves operations in $G1$​ and $G2$.</li><li><strong>Verification Phase:</strong> The verifier checks the proof by performing pairing operations $e$ and ensures that certain equations hold in $G_T$​. The bilinear nature of the pairing allows these checks to be performed efficiently.</li></ul>
+        <p>A bilinear pairing is a map $e: \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ with the property that $e(aG_1, bG_2) = e(G_1, G_2)^{ab}$. It lets the verifier check a multiplication between values it can only see as curve points. Groth16 uses this so that proofs are small and quick to verify:</p>
+        <ul><li><strong>Setup phase:</strong> Public parameters are generated, with elements in $\mathbb{G}_1$ and $\mathbb{G}_2$.</li><li><strong>Proving phase:</strong> The prover uses these parameters to create a proof that the computation was performed correctly. This involves operations in $\mathbb{G}_1$ and $\mathbb{G}_2$.</li><li><strong>Verification phase:</strong> The verifier computes pairings and checks that one equation holds in $\mathbb{G}_T$.</li></ul>
         <h3>The Protocol</h3>
-        <p>The <code>Groth16</code> protocol in most cases, starts with a Circuit. A <code>Circuit</code>  in ZKP is a structured way to represent a computation. It is analogous to a digital logic circuit used in computer engineering.</p>
+        <p>The <code>Groth16</code> protocol, in most cases, starts with a circuit. A <code>Circuit</code> in ZKP is a structured way to represent a computation, analogous to a digital logic circuit in computer engineering.</p>
         <p><strong>Structure:</strong></p>
-        <ul><li>A circuit is composed of <strong>inputs</strong>, <strong>gates</strong>, and <strong>outputs</strong>.</li><li><strong>Inputs</strong>: These are the values that the prover knows and wants to keep private (often called witnesses) along with the public inputs.</li><li><strong>Gates</strong>: These perform basic operations (such as addition, multiplication, logical AND, OR) on the inputs.</li><li><strong>Outputs</strong>: These are the results of the computations performed by the gates.</li></ul>
-        <p><strong>Types of Circuits:</strong></p>
-        <ul><li><strong>Arithmetic Circuits</strong>: These circuits use arithmetic gates (addition, multiplication) over a finite field. They are often used in zk-SNARKs because they can efficiently represent the types of computations involved in many cryptographic applications.</li><li><strong>Boolean Circuits</strong>: These circuits use logical gates (AND, OR, NOT) and are more common in classical computer science but can be transformed into arithmetic circuits for use in zk-SNARKs.</li></ul>
-        <p>The next stage of the protocol is to convert this <code>Circuit</code> to a format called <code>R1CS</code></p>
-        <p>A rank-1 constraint system (R1CS) with n variables and m constraints and p public inputs has a witness vector $w∈F^n$. By convention, the first p elements of w are the public input and the first public input $w_0​$ is fixed to 1. The m constraints in R1CS are a product equation between three inner products: <p>$$
-(w⋅ai​)⋅(w⋅bi​)=w⋅ci​
-$$</p> where vectors $(a_i​,b_i​,c_i​)∈F^3⋅^n$ specify the constraint. The constraint vectors are usually very sparse, typically only nonzero for a single or few values. These constraint vectors can be aggregated in $n×m$ matrices so that the whole constraint system can be concisely written using an element-wise product.</p>
+        <ul><li><strong>Inputs</strong>: The public inputs, along with the values the prover knows and wants to keep private (the private witness).</li><li><strong>Gates</strong>: Basic operations performed on the inputs.</li><li><strong>Outputs</strong>: The results of the computations performed by the gates.</li></ul>
+        <p><strong>Types of circuits:</strong></p>
+        <ul><li><strong>Arithmetic circuits</strong> use addition and multiplication gates over a finite field. zk-SNARKs like Groth16 work with these.</li><li><strong>Boolean circuits</strong> use logical gates (AND, OR, NOT). They are more common in classical computer science, and can be transformed into arithmetic circuits.</li></ul>
+        <h3>R1CS</h3>
+        <p>The next stage is to convert the circuit to a format called <code>R1CS</code>.</p>
+        <p>A rank-1 constraint system with $n$ variables, $m$ constraints and $p$ public inputs has a witness vector $w \in \mathbb{F}^n$. By convention, the first $p$ elements of $w$ are the public inputs, and $w_0$ is fixed to 1. Each of the $m$ constraints is a product equation between three inner products:</p>
+        <p>$$(a_j \cdot w)(b_j \cdot w) = c_j \cdot w$$</p>
+        <p>where the vectors $a_j, b_j, c_j \in \mathbb{F}^n$ specify constraint $j$. These vectors are usually very sparse. Stacking them into $m \times n$ matrices, the whole system is written with an element-wise product:</p>
+        <p>$$Aw \circ Bw = Cw$$</p>
+        <h3>QAP</h3>
+        <p>Next, the R1CS is transformed into a QAP. For each variable $i$, interpolate polynomials $A_i(X), B_i(X), C_i(X)$ through column $i$ of each matrix, over $m$ fixed points. Then define $A(X) = \sum_{i=0}^{n-1} w_i A_i(X)$, and similarly $B(X)$ and $C(X)$. The constraints hold exactly when there is a polynomial $H(X)$ of degree at most $m - 2$ such that</p>
+        <p>$$A(X)B(X) - C(X) = H(X) Z_x(X)$$</p>
+        <p>where $Z_x(X)$ is the polynomial that vanishes on the $m$ points.</p>
+        <h3>Trusted Setup</h3>
+        <p>The next stage is the trusted setup, where the <code>common reference string</code> is generated. Groth16's setup has two phases:</p>
+        <ol><li><strong>Powers of tau</strong>, which is generic and can be reused by many circuits</li><li><strong>Circuit-specific generation</strong></li></ol>
+        <p><strong>Powers of tau</strong></p>
+        <p>Generate random $\tau, \alpha, \beta$. For a circuit with at most $m$ constraints, compute:</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{2m-2}) \cdot G_1$$</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_2$$</p>
+        <p>$$\alpha \cdot (\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_1$$</p>
+        <p>$$\beta \cdot (\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_1$$</p>
+        <p>$$\beta \cdot G_2$$</p>
+        <p>This completes phase one.</p>
+        <p><strong>Circuit-specific generation</strong></p>
+        <p>Given the circuit polynomials $A_i, B_i, C_i$, generate random $\gamma, \delta$, and define for each variable $i$ the polynomial:</p>
+        <p>$$L_i(X) = \beta A_i(X) + \alpha B_i(X) + C_i(X)$$</p>
+        <p>We cannot compute $L_i(X)$ directly, since nobody knows $\alpha$ and $\beta$, but we can still construct $L_i(\tau) \cdot G_1$ using linear combinations of the values from phase one. (More on this below.) This gives the <strong>proving key</strong>:</p>
+        <p>$$(\alpha, \beta, \delta) \cdot G_1$$</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_1$$</p>
+        <p>$$\delta^{-1} \cdot (L_p(\tau), L_{p+1}(\tau), \ldots, L_{n-1}(\tau)) \cdot G_1$$</p>
+        <p>$$\delta^{-1} \cdot (\tau^0, \tau^1, \ldots, \tau^{m-2}) \cdot Z_x(\tau) \cdot G_1$$</p>
+        <p>$$(\beta, \delta) \cdot G_2$$</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_2$$</p>
+        <p>and the <strong>verification key</strong>:</p>
+        <p>$$\alpha \cdot G_1$$</p>
+        <p>$$\gamma^{-1} \cdot (L_0(\tau), L_1(\tau), \ldots, L_{p-1}(\tau)) \cdot G_1$$</p>
+        <p>$$(\beta, \gamma, \delta) \cdot G_2$$</p>
+        <p>The private variables ($i \geq p$) are divided by $\delta$ and the public ones ($i < p$) by $\gamma$. This separation stops a prover from using public terms in place of private ones.</p>
+        <p>Instead of $\alpha \cdot G_1$ and $\beta \cdot G_2$, the verification key could hold their pairing $e(\alpha G_1, \beta G_2)$, since that is the only way the verifier uses them. Many implementations do this to save one pairing.</p>
+        <p>The values $\tau, \alpha, \beta, \gamma, \delta$ are toxic waste and must be destroyed. Phase two is critical for soundness: $\delta^{-1}$ forces the $H$ part of the proof into the form $\delta^{-1} H(\tau) Z_x(\tau) \cdot G_1$. Anyone who knows $\delta$ escapes that form and can forge a proof of a false statement. In practice both phases are run as multi-party ceremonies, so the setup is safe as long as one participant in each phase is honest.</p>
+        <p><strong>Linear combinations</strong></p>
+        <p>If you are as smart as I am, phase two is very confusing. Before we can break it down, we need to look at linear combinations: how we can compute with a secret, even though we only have the "encrypted" version of it ($\text{secret} \cdot G$).</p>
+        <p><em>Keep your eyes on this:</em></p>
+        <p>$$\sum_{i=0}^{l} \phi_i \cdot (\tau^i G) = \phi(\tau) \cdot G$$</p>
+        <p>Here the $\tau^i G$ are the elements of the powers of tau, and the $\phi_i$ are the public coefficients of a polynomial $\phi$. So anyone can evaluate a known polynomial at the secret $\tau$, inside the group.</p>
+        <p>To obtain $L_i(\tau) \cdot G_1 = \beta A_i(\tau) \cdot G_1 + \alpha B_i(\tau) \cdot G_1 + C_i(\tau) \cdot G_1$, we break it down term by term:</p>
+        <ol><li>$\beta A_i(\tau) \cdot G_1$: a linear combination of $\beta \cdot \tau^j \cdot G_1$, using the coefficients of $A_i$.</li><li>$\alpha B_i(\tau) \cdot G_1$: a linear combination of $\alpha \cdot \tau^j \cdot G_1$, using the coefficients of $B_i$.</li><li>$C_i(\tau) \cdot G_1$: a linear combination of $\tau^j \cdot G_1$, using the coefficients of $C_i$.</li></ol>
+        <p>All three lists were published in phase one, which is why they are there.</p>
+        <h3>Proving</h3>
+        <p>Given a witness $w$ that satisfies the constraints, compute $A(X), B(X), C(X)$ and $H(X)$ as above. Generate two random values $r, s$, which provide the zero knowledge, and compute:</p>
+        <p>$$\mathbf{A} = \big(\alpha + A(\tau) + r\delta\big) \cdot G_1$$</p>
+        <p>$$\mathbf{B} = \big(\beta + B(\tau) + s\delta\big) \cdot G_2$$</p>
         <p>$$
-(w⋅A)∘(w⋅B)=w⋅C
+\begin{aligned}
+\mathbf{C} = \Big(\ & \delta^{-1}\big(\textstyle\sum_{i=p}^{n-1} w_i L_i(\tau) + H(\tau) Z_x(\tau)\big) \\
+& + s\big(\alpha + A(\tau) + r\delta\big) \\
+& + r\big(\beta + B(\tau) + s\delta\big) - rs\delta\ \Big) \cdot G_1
+\end{aligned}
 $$</p>
-        <p>After obtaining this R1CS representation, it needs to be transformed into its QAP representation to go further in this proof system.</p>
-        <h4>Trusted Setup</h4>
-        <p>This next stage of the groth16 protocol is the trusted setup stage, in this stage, something called the <code>Common reference string</code> or <code>Public parameter</code> is obtained. This <code>Groth16</code> proof system has two phases;</p>
-        <ol><li>The <strong>Powers of Tau</strong></li><li><strong>Circuit Specific Common reference string generation</strong></li></ol>
-        <h5>Powers of Tau</h5>
-        <p>During this process, we would be generating $τ,α,β$ having in mind that the number of constraints in the Circuit is $m$, we would compute the following;</p>
-        <p>$(τ^0,τ^1,τ^2,…,τ^{2⋅m−2})⋅G_1​$ $(τ^0,τ^1,τ^2,…,τ^{m−1})⋅G_2​$ $α⋅(τ^0,τ^1,τ^2,…,τ^{m−1})⋅G_1​$ $β⋅(τ^0,τ^1,τ^2,…,τ^{m−1})⋅G_1​$ $β⋅G_2​$</p>
-        <p>This completes the phase one process of the trusted setup.</p>
-        <p><strong>Circuit Specific Common reference string generation</strong> This phase involves doing some operations that are circuit-specific.</p>
-        <p>Given circuit polynomials $A_i​,B_i​,C_i$​, generate random values $γ,δ$ and define the polynomials $L_i$​ by: <p>$$
-L_i​(X)=β⋅A_i​(X)+α⋅B_i​(X)+C_i​(X)
-$$</p></p>
-        <p>We can not compute the $L_i​(X)$ directly since we don't know $α$ and $β$, but we can still construct $L_i​(τ)⋅G_1​$ using linear combinations of the values from the previous step. This way, we compute the proving key:</p>
-        <p>$(α,β,δ)⋅G_1​$ $(τ^0,τ^1,τ^2,τ^3,…,τ^{m−1})⋅G_1​$ $δ^{−1}⋅(L_p​(τ),L_{p+1}​(τ),…,L_{m−1}​(τ))⋅G_1​,$ $δ^{−1}⋅(τ^0,τ^1,τ^2,τ3,…,τ^{m−2})⋅Z_x​(τ)⋅G_1​$ $(β,δ)⋅G_2​$ $(τ^0,τ^1,τ^2,τ^3,…,τ^{m−1})⋅G_2​$</p>
-        <p>Verification key;</p>
-        <p>$α⋅G_1​$ $γ^{−1}⋅(L_0​(τ),L_1​(τ),L_2​(τ),…,L_{p−1}​(τ))⋅G)_1​$ $(β,γ,δ)⋅G_2​$</p>
-        <p>Instead of providing $α⋅G1$​ and $β⋅G_2​$ we could also provide $α⋅β⋅G_3​$ in the verifying key, but $G_3$​elements tend to be big and weird so we avoid them.</p>
-        <p>The Phase 2 ceremony is critical for soundness. If $δ$ is known the prover can construct any $δ^{−1}⋅P(τ)⋅G_1$​ of degree $2⋅n−1$ where otherwise it is constraint to the form $δ^{−1}⋅H(τ)⋅Z_x​(τ)⋅G_1$​. The forced factorization into $H$ and $Z_x$ is critical for soundness.</p>
-        <p><strong>Linear combination</strong> if you are as smart as I am Phase two is very confusing, but before we can break this down, we need to look into linear combination; how we can construct information concerning from secret even though we have just the encrypted version of this secret ($G.secret$).</p>
-        <p><em>Keep your eyes on this</em> $∏_{i=0}^l​(G.{τ^i})^{ϕ_i}​=G.{ϕ(τ)}$</p>
-        <p>Having in mind that $G.{τ^i}$ are the elements of the powers of tau.</p>
-        <p>To achieve this $L_i​(X).G_1 =β⋅A_i​(X).G_1 +α⋅B_i​(X).G_1+C_i​(X).G_1$,</p>
-        <p>We would have to break this down;</p>
-        <ol><li>$β⋅A_i​(τ).G_1$</li><li>$α⋅B_i​(τ).G_1$</li><li>$C_i​(X).G_1$</li></ol>
-        <p>reference; <a href="https://2π.com/22/groth16/" target="_blank" rel="noopener noreferrer">Remco Bloemen</a> <a href="https://www.rareskills.io/post/groth16" target="_blank" rel="noopener noreferrer">https://www.rareskills.io/post/groth16</a></p>
+        <p>Each of these can be computed from the proving key, without knowing the secrets. The proof is the triplet $(\mathbf{A}, \mathbf{B}, \mathbf{C})$: two elements of $\mathbb{G}_1$ and one of $\mathbb{G}_2$, whatever the size of the circuit.</p>
+        <h3>Verifying</h3>
+        <p>Given a proof and the public inputs $w_0, \ldots, w_{p-1}$, the verifier aggregates the public inputs:</p>
+        <p>$$\mathbf{L} = \sum_{i=0}^{p-1} w_i \cdot \left(\gamma^{-1} L_i(\tau) \cdot G_1\right)$$</p>
+        <p>and checks one equation:</p>
+        <p>$$e(\mathbf{A}, \mathbf{B}) = e(\alpha G_1, \beta G_2) \cdot e(\mathbf{L}, \gamma G_2) \cdot e(\mathbf{C}, \delta G_2)$$</p>
+        <p>Expanding both sides in the exponent, the terms with $r$ and $s$ cancel, and what remains is the QAP identity $A(\tau)B(\tau) - C(\tau) = H(\tau)Z_x(\tau)$, evaluated at the secret point $\tau$.</p>
+        <p>Note that Groth16 proofs are malleable: given a valid proof, anyone can produce a different valid proof of the same statement, without knowing the witness. Applications that use a proof as a unique identifier must account for this.</p>
+        <p>Reference:</p>
+        <ul><li><a href="https://2π.com/22/groth16/" target="_blank" rel="noopener noreferrer">Groth16 notes</a> by Remco Bloemen, which this page's setup section follows closely</li><li><a href="https://www.rareskills.io/post/groth16" target="_blank" rel="noopener noreferrer">Groth16</a> by RareSkills</li><li><a href="https://eprint.iacr.org/2016/260" target="_blank" rel="noopener noreferrer">On the Size of Pairing-based Non-interactive Arguments</a> by Jens Groth</li></ul>
       </div>
       <!-- RELATED:START -->
       <aside class="related" aria-label="Related reading">

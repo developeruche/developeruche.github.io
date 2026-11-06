@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Implementing an Arithmetic Circuit in Rust — Developer Uche</title>
+  <meta name="description" content="A layered arithmetic circuit in Rust: the interface, gate and layer data structures, and how evaluation runs from the inputs up to the output." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Implementing an Arithmetic Circuit in Rust" />
+  <meta property="og:description" content="A layered arithmetic circuit in Rust: the interface, gate and layer data structures, and how evaluation runs from the inputs up to the output." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Implementing an Arithmetic Circuit in Rust" />
+  <meta name="twitter:description" content="A layered arithmetic circuit in Rust: the interface, gate and layer data structures, and how evaluation runs from the inputs up to the output." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Arithmetic Circuits in Rust",
+  "description": "A layered arithmetic circuit in Rust: the interface, gate and layer data structures, and how evaluation runs from the inputs up to the output.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Arithmetic Circuits, Rust",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Arithmetic Circuits in Rust",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER ONE</span>
+        <h1 class="post-title">Arithmetic Circuits in Rust</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Arithmetic circuits come to us from a field of research called computational complexity theory, and are the standard model for computing polynomials. An arithmetic circuit is an abstract concept, but it operates like a logic circuit: it takes variables and numbers as inputs, which go through arithmetic gates such as "add" or "multiply", as in the image below, where the boxes are inputs and the circles are gates. (<a href="https://anoma.net/blog/a-vamp-irs-guide-to-arithmetic-circuits-and-perfectly-boiled-eggs" target="_blank" rel="noopener noreferrer">source</a>)</p>
+        <p><img src="/assets/notes/computational-proof-systems/arithmetic-circuit.png" alt="An arithmetic circuit: four inputs feed a multiplication gate and an addition gate, whose outputs feed a final addition gate" loading="lazy" /></p>
+        <p>The design approach here is very similar to the other implementations in this book:</p>
+        <ol><li>Design the structural interface and data structures</li><li>Comment out the steps needed to implement this interface</li><li>Implement the complete interface</li><li>Write unit tests :)</li></ol>
+        <p>You can find the complete code implementation <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/primitives/circuits" target="_blank" rel="noopener noreferrer">here</a>.</p>
+        <h3>Interface and Data Structures</h3>
+        <p>This circuit needs just one method, responsible for evaluating the circuit on some given input.</p>
+        <pre><code>pub trait CircuitInterface {
+    fn evaluate&lt;F&gt;(&amp;self, input: &amp;[F]) -&gt; CircuitEvaluation&lt;F&gt;
+    where
+        F: Add&lt;Output = F&gt; + Mul&lt;Output = F&gt; + Copy;
+}</code></pre>
+        <p><strong>Data structures</strong></p>
+        <pre><code>#[derive(Clone, PartialEq, Eq, Hash, Default, Debug)]
+pub struct Circuit {
+    pub layers: Vec&lt;CircuitLayer&gt;,
+}
+
+#[derive(Clone, PartialEq, Eq, Hash, Default, Debug)]
+pub struct CircuitLayer {
+    pub layer: Vec&lt;Gate&gt;,
+}
+
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+pub struct Gate {
+    pub g_type: GateType,
+    pub inputs: [usize; 2],
+}
+
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+pub enum GateType {
+    Add,
+    Mul,
+}</code></pre>
+        <ul><li><code>Circuit</code>: The entire arithmetic circuit. It contains multiple layers of gates. Layer 0 is the output layer, and the last layer is the one closest to the inputs.</li><li><code>CircuitLayer</code>: A single layer within the circuit, containing multiple gates. This organizes gates into layers, which helps with implementing and understanding the flow of computation.</li><li><code>Gate</code>: An individual gate within a layer. <code>g_type</code> indicates the operation the gate performs (<code>Add</code> or <code>Mul</code>). <code>inputs</code> holds two indices, which refer to outputs of the layer below it or, for the last layer, to the input values.</li><li><code>GateType</code>: An enum defining the operations a gate can perform.</li></ul>
+        <p>Here is how this circuit is constructed:</p>
+        <pre><code>// sample circuit evaluation
+//        100(*)        - layer 0
+//       /      \
+//   5(+)_0    20(*)_1  - layer 1
+//   /  \      /  \
+//  2    3    4    5
+let layer_0 = CircuitLayer::new(vec![Gate::new(GateType::Mul, [0, 1])]);
+let layer_1 = CircuitLayer::new(vec![
+    Gate::new(GateType::Add, [0, 1]),
+    Gate::new(GateType::Mul, [2, 3]),
+]);
+let circuit = Circuit::new(vec![layer_0, layer_1]);</code></pre>
+        <h3>Interface Implementation</h3>
+        <p>This implementation evaluates the circuit on given input values, computing the output of each gate layer by layer, starting from the inputs.</p>
+        <p>The <code>evaluate</code> method takes a slice of inputs and returns a <code>CircuitEvaluation&lt;F&gt;</code>, where <code>F</code> is any type that supports addition and multiplication. The <code>CircuitEvaluation</code> struct holds the result: a vector of layers, where each layer is a vector of gate outputs.</p>
+        <pre><code>impl CircuitInterface for Circuit {
+    fn evaluate&lt;F&gt;(&amp;self, input: &amp;[F]) -&gt; CircuitEvaluation&lt;F&gt;
+    where
+        F: Add&lt;Output = F&gt; + Mul&lt;Output = F&gt; + Copy,
+    {
+        let mut layers = vec![];
+        let mut current_input = input;
+        layers.push(input.to_vec());
+
+        for layer in self.layers.iter().rev() {
+            let temp_layer: Vec&lt;_&gt; = layer
+                .layer
+                .iter()
+                .map(|e| match e.g_type {
+                    GateType::Add =&gt; current_input[e.inputs[0]] + current_input[e.inputs[1]],
+                    GateType::Mul =&gt; current_input[e.inputs[0]] * current_input[e.inputs[1]],
+                })
+                .collect();
+            layers.push(temp_layer);
+            current_input = &amp;layers[layers.len() - 1];
+        }
+
+        layers.reverse();
+        CircuitEvaluation { layers }
+    }
+}</code></pre>
+        <p><strong>How it works</strong></p>
+        <ol><li><strong>Initialization</strong>: <code>layers</code> is created to hold the results of each layer, <code>current_input</code> is set to the input, and the input is pushed as the first entry of <code>layers</code>.</li><li><strong>Layer processing</strong>: The method iterates over the circuit layers in reverse with <code>self.layers.iter().rev()</code>, because the last layer is the one that reads the inputs. Each gate is evaluated according to its type (<code>GateType::Add</code> or <code>GateType::Mul</code>), the results are collected into <code>temp_layer</code> and pushed onto <code>layers</code>, and <code>current_input</code> then points at this new layer.</li><li><strong>Finalization</strong>: <code>layers</code> is reversed, so the result runs from output to input: <code>layers[0]</code> is the circuit output and the last entry is the original input. This matches the layer numbering of the circuit.</li></ol>
+        <p>Here is sample code for building and executing a <code>Circuit</code> on some <code>input</code>. The result is <code>[[100], [5, 20], [2, 3, 4, 5]]</code>.</p>
+        <pre><code>let layer_0 = CircuitLayer::new(vec![Gate::new(GateType::Mul, [0, 1])]);
+let layer_1 = CircuitLayer::new(vec![
+    Gate::new(GateType::Add, [0, 1]),
+    Gate::new(GateType::Mul, [2, 3]),
+]);
+let circuit = Circuit::new(vec![layer_0, layer_1]);
+let input = [
+    Fr::from(2u32),
+    Fr::from(3u32),
+    Fr::from(4u32),
+    Fr::from(5u32),
+];
+let evaluation = circuit.evaluate(&amp;input);</code></pre>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/"><span>← Previous</span>Arithmetic Circuits</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/polynomials/"><span>Next →</span>Polynomials</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG Commitments: A Worked Example</a><span>KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

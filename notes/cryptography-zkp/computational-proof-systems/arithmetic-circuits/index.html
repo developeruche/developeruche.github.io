@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arithmetic Circuits for Zero-Knowledge Proofs — Developer Uche</title>
+  <meta name="description" content="What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Arithmetic Circuits for Zero-Knowledge Proofs" />
+  <meta property="og:description" content="What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Arithmetic Circuits for Zero-Knowledge Proofs" />
+  <meta name="twitter:description" content="What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Arithmetic Circuits",
+  "description": "What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Arithmetic Circuits",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Arithmetic Circuits",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER ONE</span>
+        <h1 class="post-title">Arithmetic Circuits</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>It is impossible to talk about arithmetic circuits without talking about <code>Polynomials</code>.</p>
+        <p><strong>Polynomials:</strong> These are mathematical expressions that combine numbers (constants like 1, 2, 3) with variables (like x, y, z) using addition, multiplication and exponents (x², y³). Think of them as building-block towers, where the blocks are numbers and variables raised to powers.</p>
+        <p><strong>Arithmetic Circuit</strong>: This is a model of how you compute these polynomials. It's like a set of instructions with wires and gates. The wires carry the numbers and variables, and the gates perform addition and multiplication to build the final polynomial expression. Just as real circuits perform calculations with electronic signals, arithmetic circuits perform computations on these mathematical elements.</p>
+        <p>Like Boolean circuits, arithmetic circuits rely on networks of wires and gates to perform computations. However, unlike Boolean circuits, which use logical operations (AND, OR), arithmetic circuits use arithmetic operations (addition, multiplication).</p>
+        <p>Wires carry data to be processed by the gates. In Boolean circuits, wires carry <em>bits</em>, while in arithmetic circuits they carry <em>elements of a field</em> (in zero-knowledge proofs, a finite field, so all arithmetic wraps around a modulus). Wires going into a gate contain the data to be processed by the gate. Wires directed out of a gate contain the result of the operation.</p>
+        <p>If a gate has no input wires, it is considered an input gate. An input gate contains the data to be processed by the circuit, which can be either a variable or a number. (<a href="https://medium.com/web3studio/simple-explanations-of-arithmetic-circuits-and-zero-knowledge-proofs-806e59a79785" target="_blank" rel="noopener noreferrer">source</a>)</p>
+        <p>A very detailed chapter on arithmetic circuits has been written by RareSkills: <a href="https://www.rareskills.io/post/arithmetic-circuit" target="_blank" rel="noopener noreferrer">Arithmetic Circuits for ZK</a>. Finish it before going on to the next page :)</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/"><span>← Previous</span>Overview of Computation in Zero-Knowledge Proofs</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/"><span>Next →</span>Arithmetic Circuits in Rust</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/">From Problem to SNARK: Computation in ZK Proofs</a><span>How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/">HyperPlonk: PLONK Without FFTs on the Hypercube</a><span>A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

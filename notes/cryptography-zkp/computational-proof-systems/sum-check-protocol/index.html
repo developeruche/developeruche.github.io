@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Sum-Check Protocol: Worked Example and Rust Code</title>
+  <meta name="description" content="The sum-check protocol: each round, a fully worked example by hand, why it is sound, a Rust implementation, and the univariate sum-check." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="The Sum-Check Protocol: Worked Example and Rust Code" />
+  <meta property="og:description" content="The sum-check protocol: each round, a fully worked example by hand, why it is sound, a Rust implementation, and the univariate sum-check." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="The Sum-Check Protocol: Worked Example and Rust Code" />
+  <meta name="twitter:description" content="The sum-check protocol: each round, a fully worked example by hand, why it is sound, a Rust implementation, and the univariate sum-check." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "The Sum-Check Protocol",
+  "description": "The sum-check protocol: each round, a fully worked example by hand, why it is sound, a Rust implementation, and the univariate sum-check.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Sum-Check, Rust",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "The Sum-Check Protocol",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER FOUR</span>
+        <h1 class="post-title">The Sum-Check Protocol</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<h3>The Sum-Check Protocol</h3>
+        <p>The sum-check protocol is a fundamental sub-protocol used in many zero-knowledge proofs, in the context of both interactive proofs and zk-SNARKs. It was introduced by Lund, Fortnow, Karloff and Nisan in <a href="https://dl.acm.org/doi/10.1145/146585.146605" target="_blank" rel="noopener noreferrer">Algebraic Methods for Interactive Proof Systems</a>. Its purpose is to prove that a given polynomial, evaluated over a specified domain, sums to a particular value.</p>
+        <p>The sum-check protocol has served as the single most important "hammer" in the design of efficient interactive proofs (from <a href="https://people.cs.georgetown.edu/jthaler/ProofsArgsAndZK.html" target="_blank" rel="noopener noreferrer">Proofs, Arguments, and Zero-Knowledge</a>). Suppose we are given an $n$-variate polynomial $f$ defined over a finite field $\mathbb{F}$. The prover wants to convince the verifier of the value of this sum:</p>
+        <p>$$T = \sum_{x_1 \in \{0,1\}} \sum_{x_2 \in \{0,1\}} \cdots \sum_{x_n \in \{0,1\}} f(x_1, x_2, \ldots, x_n)$$</p>
+        <p>Summing the evaluations of a polynomial over the Boolean hypercube may seem like a simple and not very useful task. Make no mistake: a good number of problems can be translated into this form, and the sum has $2^n$ terms, so the verifier gains a lot by not computing it directly.</p>
+        <h3>The Protocol</h3>
+        <p>Sum-check is an interactive protocol that can be made non-interactive using <code>Fiat-Shamir</code>. This section explores it in its interactive form, while the Rust implementation below is non-interactive.</p>
+        <p><strong>Problem setup</strong></p>
+        <ul><li>Prover $P$ and verifier $V$: the two main entities in the protocol.</li><li>Multivariate polynomial $f(x_1, x_2, \ldots, x_n)$: the polynomial that the prover claims has a specific sum over a domain.</li><li>Domain: this is $\{0, 1\}^n$, meaning every variable $x_i$ takes the value 0 or 1. This domain is popularly known as the Boolean hypercube.</li></ul>
+        <p><strong>Protocol steps</strong></p>
+        <p>Initialization: the prover and verifier agree on the polynomial $f$ and the claimed sum $T$.</p>
+        <p><strong>Round 1.</strong> The prover sends a univariate polynomial, obtained by summing out every variable except the first:</p>
+        <p>$$g_1(X_1) = \sum_{(x_2, \ldots, x_n) \in \{0, 1\}^{n-1}} f(X_1, x_2, \ldots, x_n)$$</p>
+        <p>The verifier checks that $g_1(0) + g_1(1) = T$, and that the degree of $g_1$ is at most the degree of $f$ in $x_1$, rejecting if not. It then chooses a random element $r_1 \in \mathbb{F}$ and sends it to the prover. The claim is now about $g_1(r_1)$, a sum over one fewer variable.</p>
+        <p><strong>Round $j$, for $1 < j < n$.</strong> The prover sends a univariate polynomial $g_j(X_j)$, claimed to equal:</p>
+        <p>$$g_j(X_j) = \sum_{(x_{j+1}, \ldots, x_n) \in \{0,1\}^{n-j}} f(r_1, \ldots, r_{j-1}, X_j, x_{j+1}, \ldots, x_n)$$</p>
+        <ul><li>The verifier checks that $g_{j-1}(r_{j-1}) = g_j(0) + g_j(1)$, and checks the degree of $g_j$, rejecting if not.</li><li>The verifier chooses a random element $r_j \in \mathbb{F}$ and sends it to the prover.</li></ul>
+        <p><strong>Round $n$.</strong> The prover sends $g_n(X_n)$, claimed to equal $f(r_1, \ldots, r_{n-1}, X_n)$.</p>
+        <ul><li>The verifier checks that $g_{n-1}(r_{n-1}) = g_n(0) + g_n(1)$, and checks the degree of $g_n$.</li><li>The verifier chooses a random element $r_n \in \mathbb{F}$ and evaluates $f(r_1, \ldots, r_n)$ with a single oracle query to $f$. This is the only time the verifier needs $f$ itself.</li><li>The verifier checks that $g_n(r_n) = f(r_1, \ldots, r_n)$, rejecting if not. If nothing has been rejected, the verifier accepts.</li></ul>
+        <p><strong>Why this is sound.</strong> Suppose the claimed $T$ is wrong. To pass round 1, the prover must send some $g_1$ that differs from the true polynomial. Two different univariate polynomials of degree at most $d$ agree on at most $d$ points, so at the random $r_1$ the prover is, with high probability, left making a false claim again in the next round. This repeats until the final check, which compares against $f$ directly. By a union bound, a false claim passes with probability at most $nd/|\mathbb{F}|$, where $d$ is the maximum degree of $f$ in any variable. This argument needs the degree bound, which is why the degree checks above are part of the protocol.</p>
+        <p>Through this iterative process of reducing a multivariate sum to univariate polynomials, and using randomness to ensure soundness, the verifier can confidently accept or reject the prover's claim while doing only $O(nd)$ work plus one evaluation of $f$.</p>
+        <hr />
+        <h2>Sum-Check by Hand</h2>
+        <p>This section walks through the steps of the protocol using an example, to get the feeling of following it by hand. We use small integers so the arithmetic is easy to follow. A real run happens over a large finite field, with random challenges.</p>
+        <p>Given the polynomial</p>
+        <p>$$f(x,y,z) = 2x + xz + yz$$</p>
+        <p>its sum over the Boolean hypercube is 12:</p>
+        <table><thead><tr><th>Boolean hypercube</th><th>Poly eval</th><th>Evaluation result</th></tr></thead><tbody><tr><td>$0,0,0$</td><td>$f(0,0,0)$</td><td>$0$</td></tr><tr><td>$0,0,1$</td><td>$f(0,0,1)$</td><td>$0$</td></tr><tr><td>$0,1,0$</td><td>$f(0,1,0)$</td><td>$0$</td></tr><tr><td>$0,1,1$</td><td>$f(0,1,1)$</td><td>$1$</td></tr><tr><td>$1,0,0$</td><td>$f(1,0,0)$</td><td>$2$</td></tr><tr><td>$1,0,1$</td><td>$f(1,0,1)$</td><td>$3$</td></tr><tr><td>$1,1,0$</td><td>$f(1,1,0)$</td><td>$2$</td></tr><tr><td>$1,1,1$</td><td>$f(1,1,1)$</td><td>$4$</td></tr></tbody></table>
+        <p>$$T = 1 + 2 + 3 + 2 + 4 = 12$$</p>
+        <p>The prover computes this and sends the result to the verifier to start the protocol. The prover and verifier also agree on the polynomial $f$.</p>
+        <p><strong>Round 1.</strong> The prover keeps $x$ free and sums over the hypercube of the remaining variables $y$ and $z$:</p>
+        <p>$$
+\begin{aligned}
+g_1(x) &= f(x,0,0) + f(x,0,1) + f(x,1,0) + f(x,1,1) \\
+&= 2x + 3x + 2x + (3x + 1) = 10x + 1
+\end{aligned}
+$$</p>
+        <p>The prover sends $g_1$. The verifier checks it against the claimed sum:</p>
+        <p>$$g_1(0) + g_1(1) = 1 + 11 = 12 = T$$</p>
+        <p>If this check fails, the prover has been malicious and the verifier halts. Otherwise, the verifier chooses a random number and sends it to the prover. Say $r_1 = 2$.</p>
+        <p><strong>Round 2.</strong> The prover fixes $x = r_1 = 2$:</p>
+        <p>$$f(2,y,z) = 4 + 2z + yz$$</p>
+        <p>It then keeps $y$ free and sums over the remaining variable $z$:</p>
+        <p>$$g_2(y) = f(2,y,0) + f(2,y,1) = 4 + (6 + y) = 10 + y$$</p>
+        <p>The prover sends $g_2$. The verifier now compares it with the <em>previous polynomial at the challenge</em>:</p>
+        <p>$$g_2(0) + g_2(1) = 10 + 11 = 21 = g_1(2) = 10 \cdot 2 + 1$$</p>
+        <p>This check passes. The verifier sends another random number. Say $r_2 = 4$.</p>
+        <p><strong>Round 3.</strong> The prover fixes $y = r_2 = 4$. This is the last variable, so nothing is left to sum over:</p>
+        <p>$$g_3(z) = f(2,4,z) = 4 + 2z + 4z = 6z + 4$$</p>
+        <p>The prover sends $g_3$, and the verifier checks:</p>
+        <p>$$g_3(0) + g_3(1) = 4 + 10 = 14 = g_2(4) = 10 + 4$$</p>
+        <p><strong>Final check.</strong> The verifier chooses one last random number, say $r_3 = 3$, and evaluates the original polynomial at the three challenges:</p>
+        <p>$$g_3(3) = 6 \cdot 3 + 4 = 22$$</p>
+        <p>$$f(2,4,3) = 2 \cdot 2 + 2 \cdot 3 + 4 \cdot 3 = 4 + 6 + 12 = 22$$</p>
+        <p>They match, so the verifier accepts that the sum is 12. Here is the whole run on one screen:</p>
+        <table><thead><tr><th>Round</th><th>Prover sends</th><th>Verifier checks</th><th>Verifier replies</th></tr></thead><tbody><tr><td>Start</td><td>$T = 12$</td><td></td><td></td></tr><tr><td>1</td><td>$g_1(x) = 10x + 1$</td><td>$g_1(0) + g_1(1) = 12 = T$</td><td>$r_1 = 2$</td></tr><tr><td>2</td><td>$g_2(y) = 10 + y$</td><td>$g_2(0) + g_2(1) = 21 = g_1(2)$</td><td>$r_2 = 4$</td></tr><tr><td>3</td><td>$g_3(z) = 6z + 4$</td><td>$g_3(0) + g_3(1) = 14 = g_2(4)$</td><td>$r_3 = 3$</td></tr><tr><td>Final</td><td></td><td>$g_3(3) = 22 = f(2,4,3)$</td><td>Accept</td></tr></tbody></table>
+        <p>Notice that the verifier needs the original polynomial only in the final check. The prover needs it throughout. This is the opening for making things cheaper: instead of holding all of $f$, the verifier can hold a polynomial commitment to it, and ask for just that one evaluation with a proof.</p>
+        <hr />
+        <h2>Sum-Check Rust Implementation</h2>
+        <h3>A step-by-step approach to building a sum-check proving system</h3>
+        <p>Complete implementation: <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/iops/sum_check" target="_blank" rel="noopener noreferrer">GitHub repo</a></p>
+        <p>The design approach is very similar to the other implementations in this book:</p>
+        <ol><li>Design the structural interface</li><li>Comment out the steps needed to implement this interface</li><li>Work on any utility functions needed</li><li>Implement the complete interface</li><li>Write unit tests :)</li></ol>
+        <h3>Drawing the Interface</h3>
+        <p>We work with two structures to implement the <code>Sum Check</code> protocol specification:</p>
+        <ol><li>Prover</li><li>Verifier</li></ol>
+        <p><strong>Prover interface</strong></p>
+        <pre><code>pub trait ProverInterface&lt;F: PrimeField&gt; {
+    fn calculate_sum(poly: &amp;Multilinear&lt;F&gt;) -&gt; F;
+    fn compute_round_zero_poly&lt;P: MultilinearPolynomialInterface&lt;F&gt;&gt;(
+        poly: &amp;P,
+        transcript: &amp;mut FiatShamirTranscript,
+    ) -&gt; P;
+    fn sum_check_proof&lt;P: MultilinearPolynomialInterface&lt;F&gt; + Clone&gt;(
+        poly: &amp;P,
+        transcript: &amp;mut FiatShamirTranscript,
+        sum: &amp;F,
+    ) -&gt; SumCheckProof&lt;F, P&gt;;
+}</code></pre>
+        <p>Info:</p>
+        <ul><li>The generic <code>PrimeField</code> comes from the <code>ark_ff</code> crate.</li><li><code>calculate_sum</code>: computes the sum of the polynomial over the Boolean hypercube.</li><li><code>compute_round_zero_poly</code>: computes the polynomial of the first round, $g_1$ in the walkthrough above. The code numbers rounds from zero.</li><li><code>sum_check_proof</code>: the main function of the prover, computing the <code>SumCheckProof</code> of the given polynomial.</li></ul>
+        <p><strong>Verifier interface</strong></p>
+        <pre><code>pub trait VerifierInterface&lt;F: PrimeField&gt; {
+    fn verify&lt;P: MultilinearPolynomialInterface&lt;F&gt; + Clone&gt;(proof: &amp;SumCheckProof&lt;F, P&gt;) -&gt; bool;
+}</code></pre>
+        <p>Info:</p>
+        <ul><li><code>verify</code>: returns the validity of a given <code>SumCheckProof</code>, as <code>true</code> or <code>false</code>.</li></ul>
+        <p><strong>Note: this is a non-interactive implementation, using a Fiat-Shamir transcript.</strong> See <a href="/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/">the chapter on interactive and non-interactive proofs</a> if you haven't.</p>
+        <h3>Defining Data Structures</h3>
+        <p><code>Prover</code> and <code>Verifier</code> are empty structs that the interfaces hang off. The main data structure is the proof itself:</p>
+        <pre><code>#[derive(Clone, PartialEq, Eq, Hash, Default, Debug)]
+pub struct SumCheckProof&lt;F: PrimeField, P: MultilinearPolynomialInterface&lt;F&gt;&gt; {
+    pub polynomial: P,
+    pub round_poly: Vec&lt;P&gt;,
+    pub round_0_poly: P,
+    pub sum: F,
+}</code></pre>
+        <p>Given a polynomial, the prover returns this data structure, and the verifier can check it.</p>
+        <ul><li><code>polynomial</code>: the polynomial the sum-check protocol was run on.</li><li><code>round_poly</code>: the polynomials from every round after the first.</li><li><code>round_0_poly</code>: the polynomial from the first round.</li><li><code>sum</code>: the sum to be proven.</li></ul>
+        <h3>Implementing the Interfaces</h3>
+        <p>Now that the interfaces and data structures are laid out, we implement these interfaces, starting with the <code>Prover</code>.</p>
+        <p><strong>Prover implementation</strong></p>
+        <pre><code>#[derive(Clone, Default, Debug)]
+pub struct Prover;
+
+impl&lt;F: PrimeField&gt; ProverInterface&lt;F&gt; for Prover {
+    fn calculate_sum(poly: &amp;Multilinear&lt;F&gt;) -&gt; F {
+        poly.evaluations.iter().sum()
+    }
+
+    fn compute_round_zero_poly&lt;P: MultilinearPolynomialInterface&lt;F&gt;&gt;(
+        poly: &amp;P,
+        transcript: &amp;mut FiatShamirTranscript,
+    ) -&gt; P {
+        let number_of_round = poly.num_vars() - 1;
+        let bh = boolean_hypercube(number_of_round);
+        let mut bh_partials = P::zero(1); // this is an accumulator
+
+        for bh_i in bh {
+            let current_partial = poly.partial_evaluations(bh_i, vec![1; number_of_round]);
+            bh_partials.internal_add_assign(&amp;current_partial);
+        }
+
+        transcript.append(bh_partials.to_bytes());
+        bh_partials
+    }
+
+    fn sum_check_proof&lt;P: MultilinearPolynomialInterface&lt;F&gt; + Clone&gt;(
+        poly: &amp;P,
+        transcript: &amp;mut FiatShamirTranscript,
+        sum: &amp;F,
+    ) -&gt; SumCheckProof&lt;F, P&gt; {
+        let round_0_poly = Self::compute_round_zero_poly(poly, transcript);
+        let mut all_random_reponse = Vec::new();
+        let mut round_poly = Vec::new();
+
+        for i in 1..poly.num_vars() {
+            let number_of_round = poly.num_vars() - i - 1;
+            let bh = boolean_hypercube::&lt;F&gt;(number_of_round);
+            let mut bh_partials = P::zero(1);
+
+            let verifier_random_reponse_f = F::from_be_bytes_mod_order(&amp;transcript.sample());
+            all_random_reponse.push(verifier_random_reponse_f);
+
+            for bh_i in bh {
+                let bh_len = bh_i.len();
+                let mut eval_vector = all_random_reponse.clone();
+                eval_vector.extend(bh_i);
+                let mut eval_index = vec![0; all_random_reponse.len()];
+                let suffix_eval_index = vec![1; bh_len];
+                eval_index.extend(suffix_eval_index);
+
+                let current_partial = poly.partial_evaluations(eval_vector, eval_index);
+                bh_partials.internal_add_assign(&amp;current_partial);
+            }
+
+            transcript.append(bh_partials.to_bytes());
+            round_poly.push(bh_partials);
+        }
+
+        SumCheckProof {
+            polynomial: poly.clone(),
+            round_poly: round_poly.clone(),
+            round_0_poly: round_0_poly.clone(),
+            sum: sum.clone(),
+        }
+    }
+}</code></pre>
+        <p><strong>Let's dive in!</strong></p>
+        <p>Something you need to know before going further: the <code>Multilinear</code> polynomial structure is expressed as a <code>Vec</code> of evaluations over the Boolean hypercube. If you don't yet understand how a polynomial can be expressed over the Boolean hypercube, now is the best time to <a href="/notes/cryptography-zkp/computational-proof-systems/polynomials/">learn</a>.</p>
+        <p><strong>calculate_sum</strong>: This is simply the sum of the polynomial's evaluation array.</p>
+        <p><strong>compute_round_zero_poly</strong>: This computes the first polynomial of the protocol, by iterating over the Boolean hypercube of all variables but the first and adding up the partial evaluations of the main polynomial. The result is then appended to the <code>transcript</code>. The transcript only accepts bytes, and the polynomial structure provides <code>to_bytes()</code> to get them.</p>
+        <p><strong>sum_check_proof</strong>: This is the main function, as it computes the <code>SumCheckProof</code>. It starts by computing the round zero polynomial. It then needs a <code>Vec</code> to hold all the samples from the transcript, since the transcript emulates a random response from the <code>Verifier</code>. Next is the iteration stage, where most of the computation happens:</p>
+        <ul><li>Sample a pseudo-random response from the <code>transcript</code>, and save it, as it is needed in later rounds.</li><li>Perform partial evaluations of the main polynomial, with the sampled values fixed and the remaining variables running over the hypercube.</li><li>Append the resulting polynomial to the <code>transcript</code>, and push it to <code>round_poly</code>.</li><li>Finally, use all of this data to create the <code>SumCheckProof</code>.</li></ul>
+        <p><strong>Verifier implementation</strong></p>
+        <p>The verifier has just one function, <code>verify</code>, which returns <code>true</code> or <code>false</code> for a given <code>SumCheckProof</code>.</p>
+        <pre><code>impl&lt;F: PrimeField&gt; VerifierInterface&lt;F&gt; for Verifier {
+    fn verify&lt;P: MultilinearPolynomialInterface&lt;F&gt;&gt;(proof: &amp;SumCheckProof&lt;F, P&gt;) -&gt; bool {
+        // steps
+        // 1. eval poly_0 at 0 and 1 and check if the sum is equal to the sum in the proof [done]
+        // 2. append poly_0 to the transcript
+        // 3. eval poly_1 at rand_0 from transcript and check if the eval of poly_0 at 0 and 1 is equal to poly_1 at rand_0
+        // 4. append poly_1 to the transcript
+        // 5. repeat step 3 and 4 until the last round
+        // 6. check if the eval of the last poly at rand(last) is equal to the eval of the main poly at all rands()
+        let mut transcript = FiatShamirTranscript::default();
+        let mut all_rands = Vec::new();
+
+        // step 1
+        let untrusted_sum = proof.round_0_poly.evaluate(&amp;vec![F::one()]).unwrap()
+            + proof.round_0_poly.evaluate(&amp;vec![F::zero()]).unwrap();
+
+        if untrusted_sum != proof.sum {
+            println!(
+                "untrusted_sum != proof.sum --&gt; {} - {}",
+                untrusted_sum, proof.sum
+            );
+            return false;
+        }
+
+        // step 2
+        transcript.append(proof.round_0_poly.to_bytes());
+
+        // step 3 and 4
+        let sample_1 = F::from_be_bytes_mod_order(&amp;transcript.sample());
+        all_rands.push(sample_1);
+        let eval_poly_0_at_rand = proof.round_0_poly.evaluate(&amp;vec![sample_1]).unwrap();
+        let eval_poly_1_at_0_plus_1 = proof.round_poly[0].evaluate(&amp;vec![F::one()]).unwrap()
+            + proof.round_poly[0].evaluate(&amp;vec![F::zero()]).unwrap();
+
+        if eval_poly_0_at_rand != eval_poly_1_at_0_plus_1 {
+            println!(
+                "eval_poly_0_at_rand != eval_poly_1_at_0_plus_1 --&gt; {} - {}",
+                eval_poly_0_at_rand, eval_poly_1_at_0_plus_1
+            );
+            return false;
+        }
+
+        transcript.append(proof.round_poly[0].to_bytes());
+
+        // step 5
+        for i in 1..proof.round_poly.len() {
+            let sample_i = F::from_be_bytes_mod_order(&amp;transcript.sample());
+            all_rands.push(sample_i);
+            let eval_poly_i_at_rand = proof.round_poly[i - 1].evaluate(&amp;vec![sample_i]).unwrap();
+            let eval_poly_i_plus_1_at_0_plus_1 =
+                proof.round_poly[i].evaluate(&amp;vec![F::one()]).unwrap()
+                    + proof.round_poly[i].evaluate(&amp;vec![F::zero()]).unwrap();
+
+            if eval_poly_i_at_rand != eval_poly_i_plus_1_at_0_plus_1 {
+                println!(
+                    "eval_poly_i_at_rand != eval_poly_i_plus_1_at_0_plus_1 --&gt; {} - {}",
+                    eval_poly_i_at_rand, eval_poly_i_plus_1_at_0_plus_1
+                );
+                return false;
+            }
+
+            transcript.append(proof.round_poly[i].to_bytes());
+        }
+
+        // step 6
+        let last_round_rand = F::from_be_bytes_mod_order(&amp;transcript.sample());
+        all_rands.push(last_round_rand);
+        let eval_last_poly_at_rand = proof.round_poly[proof.round_poly.len() - 1]
+            .evaluate(&amp;vec![all_rands[all_rands.len() - 1]])
+            .unwrap();
+        let eval_main_poly_at_all_rands = proof.polynomial.evaluate(&amp;all_rands).unwrap();
+
+        if eval_last_poly_at_rand != eval_main_poly_at_all_rands {
+            println!(
+                "eval_last_poly_at_rand != eval_main_poly_at_all_rands --&gt; {} - {}",
+                eval_last_poly_at_rand, eval_main_poly_at_all_rands
+            );
+            return false;
+        }
+
+        true
+    }
+}</code></pre>
+        <p><strong>verify</strong> takes the following steps:</p>
+        <ul><li>Evaluate <code>round_0_poly</code> at <code>0</code> and <code>1</code>, and check that the result equals the sum stated in the proof. If this passes, continue; otherwise return <code>false</code>.</li><li>Append <code>round_0_poly</code> to the <code>transcript</code>. This repeats what the prover did during proving, so the verifier obtains the same samples.</li><li>Evaluate the previous polynomial at the sample, and check that it equals the next polynomial evaluated at <code>0</code> plus at <code>1</code>, so <code>poly_0(rand_0) == poly_1(0) + poly_1(1)</code>.</li><li>Append the next polynomial to the <code>transcript</code>, and repeat the last two steps until the last round.</li><li>At the last round, check that the last polynomial at the last sample equals the main polynomial at all the samples:</li></ul>
+        <pre><code>poly_last(rand_last) == poly(rand_0, rand_1, ... rand_last)</code></pre>
+        <ul><li>Return <code>true</code> if none of these checks failed.</li></ul>
+        <h3>Limitations of This Implementation</h3>
+        <p>This code is written for learning, and two things separate it from a production verifier:</p>
+        <ul><li><strong>It isn't succinct.</strong> The proof carries the whole polynomial, so the verifier does work linear in its size. A real system replaces this with a polynomial commitment and one opening proof.</li><li><strong>The transcript doesn't bind the statement.</strong> Only the round polynomials are appended to the transcript, not <code>polynomial</code> or <code>sum</code>, and <code>verify</code> takes both from the proof. A cheating prover can therefore claim any sum: pick round polynomials that fit it, derive the samples, and only then choose a polynomial that passes the final check. I confirmed this with a forged proof for a false sum, which <code>verify</code> accepted. In a real system, the verifier must take the polynomial (or its commitment) from a trusted source, not from the proof, and the transcript must absorb the polynomial and the claimed sum before the first sample is drawn. This omission is known as "weak Fiat-Shamir".</li></ul>
+        <hr />
+        <h2>Sum-Check Over a Univariate Polynomial</h2>
+        <p>The most efficient uses of sum-check are on multilinear polynomials, but there is also a univariate version, introduced in <a href="https://eprint.iacr.org/2018/828" target="_blank" rel="noopener noreferrer">Aurora</a>. It works very differently from the multilinear protocol: it has no rounds, and relies on the structure of the domain instead.</p>
+        <p>$$\text{Claim:} \quad \sum_{a \in H} p(a) = T$$</p>
+        <p>Here:</p>
+        <ul><li>$p(X)$ is a univariate polynomial.</li><li>$H$ is a multiplicative subgroup of the field (the roots of unity of some order), with vanishing polynomial $Z_H(X) = \prod_{a \in H}(X - a)$.</li><li>$T$ is the claimed sum.</li></ul>
+        <p><strong>The key fact.</strong> Summing $a^k$ over a multiplicative subgroup $H$ gives $0$ unless $|H|$ divides $k$. So for any polynomial of degree less than $|H|$, the sum over $H$ depends only on the constant term, and equals $|H|$ times that constant term.</p>
+        <p>Now divide $p(X)$ by $Z_H(X)$. The quotient term vanishes on $H$, and the key fact applies to the remainder. So the claim is true exactly when $p(X)$ can be written as:</p>
+        <p>$$p(X) = q(X) \cdot Z_H(X) + X \cdot r(X) + \frac{T}{|H|}, \qquad \deg r < |H| - 1$$</p>
+        <p><strong>Steps of the protocol:</strong></p>
+        <ol><li><strong>Prover's claim:</strong> The prover claims the sum is $T$, and commits to $p(X)$.</li><li><strong>Prover's decomposition:</strong> The prover computes $q(X)$ and $r(X)$ as above, and commits to both.</li><li><strong>Verifier's challenge:</strong> The verifier sends a random point $z$.</li><li><strong>Verifier's check:</strong> The prover opens $p$, $q$ and $r$ at $z$, and the verifier checks the equation above at $X = z$. It also checks the degree bound on $r$, using the commitment scheme. The bound is essential: without it, any $T$ could be made to fit.</li></ol>
+        <p><strong>A small example.</strong> Over $\mathbb{F}_{17}$, take $H = \{1, 4, 16, 13\}$, so $Z_H(X) = X^4 - 1$, and let $p(X) = 3 + X + 4X^2 + X^3 + 5X^4 + 9X^5 + 2X^6$. Evaluating directly gives a sum of $T = 15$. Dividing by $Z_H$ gives $q(X) = 5 + 9X + 2X^2$ and the remainder $8 + 10X + 6X^2 + X^3$. The constant term of the remainder is $8$, and $|H| \cdot 8 = 32 \equiv 15 \pmod{17}$, which matches $T$.</p>
+        <p>References: <a href="https://people.cs.georgetown.edu/jthaler/ProofsArgsAndZK.html" target="_blank" rel="noopener noreferrer">Proofs, Arguments, and Zero-Knowledge</a> by Justin Thaler, and <a href="https://eprint.iacr.org/2018/828" target="_blank" rel="noopener noreferrer">Aurora: Transparent Succinct Arguments for R1CS</a> by Ben-Sasson et al.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/"><span>← Previous</span>FRI Polynomial Commitment Scheme</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/gkr-protocol/"><span>Next →</span>The GKR Protocol</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/">HyperPlonk: PLONK Without FFTs on the Hypercube</a><span>A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/succinct-gkr-protocol/">Succinct GKR with Multilinear KZG Commitments</a><span>Combining GKR with multilinear KZG: committing to the input, what actually gets smaller, a worked example, Rust code and a soundness gap.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/">Sumcheck 201: Collapsing Arrays and Precomputation</a><span>Notes on Sumcheck 201: the Lagrange basis on the hypercube, the collapsing arrays and precomputation algorithms, and a full three-variable example.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

@@ -110,7 +110,7 @@
         <span class="section-label">// TECHNICAL WRITING</span>
         <h1 class="post-title">R1CS to QAP</h1>
         <img fetchpriority="high" decoding="async" width="1672" height="941" class="post-hero-img" src="/assets/blogs/r1cs-to-qap.webp" alt="R1CS to QAP — thumbnail" />
-        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 3 min read</p>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-06-26">2026-06-26</time> · 5 min read</p>
         <div class="meta-tags" style="margin-top: var(--space-sm);">
           <span>snarks</span>
           <span>zero knowledge</span>
@@ -118,86 +118,85 @@
       </header>
 
       <div class="post-body">
-<p>The Rank one constraint system is a very flexible way to represent an arithmetic circuit and to most proving systems, R1CS is the data structure in which the compute is presented to to the proving system.</p>
-        <p>In this write-up, I will be exploring how to go from an arithmetic circuit (in polynomial form) to QAP.</p>
-        <p>Example;</p>
-        <p>$x^3 * x + 5 = 21$</p>
-        <p><em>reducing this equation to a format that can be reduced to R1CS</em></p>
-        <p>$a = x * x$ $b = a * x$ $out - 5 = b * x$</p>
-        <p><em>this is what the witness would look like, recall the witness consists of the</em></p>
-        <p>$w = [1, x, a, b, out]$ $w = [1,2,4,8,21]$</p>
-        <p>recall the R1CS format is as follows;  $Cw=Aw⋅Bw$</p>
-        <p>to represent this in this format;</p>
-        <p>$C$ would be influenced by $[a,b,out-5]$  $A$ would be influenced by $[x,a,b]$ $B$ would be influenced by $[x]$</p>
-        <p><p>$$
-C = 
-\begin{pmatrix}
-	0 & 0 & 1 & 0 & 0 \\
-	0 & 0 & 0 & 1 & 0 \\
-	-5 & 0 & 0 & 0 & 1 \\
-\end{pmatrix}
-$$</p> <p>$$
-A = 
-\begin{pmatrix}
-	0 & 1 & 0 & 0 & 0 \\
-	0 & 0 & 1 & 0 & 0 \\
-	0 & 0 & 0 & 1 & 0 \\
-\end{pmatrix}
-$$</p> <p>$$
-B = 
-\begin{pmatrix}
-	0 & 1 & 0 & 0 & 0 \\
-	0 & 1 & 0 & 0 & 0 \\
-	0 & 1 & 0 & 0 & 0 \\
-\end{pmatrix}
-$$</p></p>
-        <p>The R1CS representation of this would be given as;</p>
-        <p>$$\begin{pmatrix}
-	0 & 0 & 1 & 0 & 0 \\
-	0 & 0 & 0 & 1 & 0 \\
-	-5 & 0 & 0 & 0 & 1 \\
-\end{pmatrix}[1,2,4,8,21] = 
-\begin{pmatrix}
-	0 & 1 & 0 & 0 & 0 \\
-	0 & 0 & 1 & 0 & 0 \\
-	0 & 0 & 0 & 1 & 0 \\
-\end{pmatrix}
-[1,2,4,8,21]
-∘
-\begin{pmatrix}
-	0 & 1 & 0 & 0 & 0 \\
-	0 & 1 & 0 & 0 & 0 \\
-	0 & 1 & 0 & 0 & 0 \\
-\end{pmatrix}
-[1,2,4,8,21]
-$$</p>
-        <p>Now transforming this R1CS to its QAP representation.</p>
-        <p>In QAP we would be representing the R1CS structure using polynomials, but these polynomials completely implement the same logic done by the R1CS.</p>
-        <p>In the construction used, the number of polynomials &amp; their degree would depend on the length of the solution vector &amp; the number of gates. The solution vector contains 5 elements, so we can construct 5 polynomials. Each gate contributes 1 point to each polynomial. We have 3 gates here, we get 3 points per polynomial. 3 points allows us to define a polynomial of maximum degree 2. So we can construct 5 polynomials each with a maximum degree of 2. So we can transform our matrices collectively into 5 polynomials, each of degree 2.</p>
-        <p>for the first column of C;  $y = [0, 0, -5]$ $x=[1,2,3]$</p>
+<p>This section dives into how a problem represented in <code>R1CS</code> can be transformed into a <code>QAP</code>.</p>
+        <p>Explore these chapters of the RareSkills book:</p>
+        <ol><li><a href="https://www.rareskills.io/post/rank-1-constraint-system" target="_blank" rel="noopener noreferrer">R1CS</a></li><li><a href="https://www.rareskills.io/post/quadratic-arithmetic-program" target="_blank" rel="noopener noreferrer">QAP</a></li><li><a href="https://rareskills.io/post/r1cs-to-qap" target="_blank" rel="noopener noreferrer">R1CS to QAP</a></li></ol>
+        <p>Let's play with a quick example of transforming R1CS to QAP.</p>
+        <p>The rank-one constraint system is a very flexible way to represent an arithmetic circuit, and for many proving systems, R1CS is the data structure in which the computation is presented to the proving system.</p>
+        <h3>The example</h3>
+        <p>We will go from this equation, with the solution $x = 2$, to a QAP:</p>
+        <p>$$x^3 \cdot x + 5 = 21$$</p>
+        <p><em>Reducing this equation to a form that fits R1CS, where each line has one multiplication:</em></p>
+        <p>$$a = x \cdot x$$</p>
+        <p>$$b = a \cdot x$$</p>
+        <p>$$out - 5 = b \cdot x$$</p>
+        <p><em>This is what the witness looks like:</em></p>
+        <p>$$w = [1, x, a, b, out] = [1, 2, 4, 8, 21]$$</p>
+        <h3>R1CS</h3>
+        <p>Recall the R1CS format, where $\circ$ is element-wise multiplication:</p>
+        <p>$$Cw = Aw \circ Bw$$</p>
+        <p>Each constraint is one row. $C$ encodes the left-hand sides $[a,\ b,\ out - 5]$, $A$ encodes the first factors $[x,\ a,\ b]$, and $B$ encodes the second factors $[x,\ x,\ x]$:</p>
         <p>$$
-	poly_0 =  -\frac{5}{2} (x-2) (x-1) \\ = \\ -\frac{5 x^2}{2}+\frac{15 x}{2}-5 
-$$</p>
-        <p>for the second column, there is no need to do this, because this would result in a Zero polynomial.</p>
-        <p>for the 3rd column of C; $y = [1, 0, 0]$ $x = [1, 2, 3]$</p>
-        <p><p>$$ poly_2 =  \left(\frac{x-2}{2}-1\right) (x-1)+1 \\ = \\ \frac{x^2}{2}-\frac{5 x}{2}+3  $$</p> for the 4th column of C;  $y = [0,1,0]$ $x=[1,2,3]$</p>
-        <p>$$poly_3 =  (3-x) (x-1) \\ = \\ -x^2+4 x-3 $$</p>
-        <p>for the 5th column of C; $y = [0,0,1]$ $x=[1,2,3]$</p>
-        <p>$$  poly_4 = \frac{1}{2} (x-2) (x-1) \\ = \\ \frac{x^2}{2}-\frac{3 x}{2}+1 $$</p>
-        <p>This construct the QAP representation of C, we would be making use of the co-efficient of these vectors;</p>
-        <p><p>$$
-C = 
+C =
 \begin{pmatrix}
-	-5 & \frac{15}{2} & \frac{-5}{2}\\
-	0 & 0 & 0\\
-	3 & \frac{-5}{2} & \frac{1}{2}\\
-	-3 & 4 & -1\\
-	\frac{1}{2} & \frac{-3}{2} & \frac{1}{2}\\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 \\
+-5 & 0 & 0 & 0 & 1
 \end{pmatrix}
-$$</p> This is how <code>C</code> would be represented in QAP form;</p>
-        <p>But we are not done yet, there is just one more step,</p>
-        <p>We have to multiply $C$ and $w$, $C$ is of the dimension of $3X5$  and $w$ is of the dimension of $5X1$ this would result in a matrix of dimension $3x1$, take this array as the co-efficient of a polynomial, that Polynomial is the QAP representation of $C$.</p>
-        <p>It is truly epic seeing these huge matrices reduced to a single polynomial!</p>
+\quad
+A =
+\begin{pmatrix}
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0
+\end{pmatrix}
+\quad
+B =
+\begin{pmatrix}
+0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0
+\end{pmatrix}
+$$</p>
+        <p>Multiplying each matrix by $w$ gives $Cw = [4, 8, 16]$, $Aw = [2, 4, 8]$ and $Bw = [2, 2, 2]$, and indeed $4 = 2 \cdot 2$, $8 = 4 \cdot 2$ and $16 = 8 \cdot 2$.</p>
+        <p>Note that $out = 21$ is a <em>public input</em>. These three constraints hold for any $x$ with $out = x^4 + 5$ (for example $x = 3$, $out = 86$). What pins the statement to 21 is that the verifier supplies that value itself.</p>
+        <h3>From R1CS to QAP</h3>
+        <p>In a QAP, we represent the R1CS structure using polynomials that implement exactly the same logic.</p>
+        <p>The number of polynomials and their degree depend on the length of the witness and the number of constraints. The witness has 5 elements, so each matrix gives 5 polynomials, one per column. Each constraint contributes 1 point to each polynomial. We have 3 constraints, so we get 3 points per polynomial, which define a polynomial of degree at most 2. We choose the evaluation points $x = 1, 2, 3$, one per constraint.</p>
+        <p>Starting with $C$, we interpolate each column:</p>
+        <p>For the 1st column of $C$, $y = [0, 0, -5]$ at $x = [1, 2, 3]$:</p>
+        <p>$$c_0(x) = -\frac{5}{2}(x-1)(x-2) = -\frac{5}{2}x^2 + \frac{15}{2}x - 5$$</p>
+        <p>For the 2nd column, all values are zero, so $c_1(x) = 0$.</p>
+        <p>For the 3rd column, $y = [1, 0, 0]$:</p>
+        <p>$$c_2(x) = \frac{1}{2}(x-2)(x-3) = \frac{1}{2}x^2 - \frac{5}{2}x + 3$$</p>
+        <p>For the 4th column, $y = [0, 1, 0]$:</p>
+        <p>$$c_3(x) = -(x-1)(x-3) = -x^2 + 4x - 3$$</p>
+        <p>For the 5th column, $y = [0, 0, 1]$:</p>
+        <p>$$c_4(x) = \frac{1}{2}(x-1)(x-2) = \frac{1}{2}x^2 - \frac{3}{2}x + 1$$</p>
+        <p>Writing the coefficients as a matrix, one row per polynomial, with columns for $1$, $x$ and $x^2$:</p>
+        <p>$$
+C_{\text{poly}} =
+\begin{pmatrix}
+-5 & \frac{15}{2} & -\frac{5}{2} \\
+0 & 0 & 0 \\
+3 & -\frac{5}{2} & \frac{1}{2} \\
+-3 & 4 & -1 \\
+1 & -\frac{3}{2} & \frac{1}{2}
+\end{pmatrix}
+$$</p>
+        <p>There is one more step: combining these polynomials with the witness. $w^T$ has dimension $1 \times 5$ and $C_{\text{poly}}$ has dimension $5 \times 3$, so $w^T C_{\text{poly}}$ has dimension $1 \times 3$. That row holds the coefficients of a single polynomial, $C(x) = \sum_i w_i\, c_i(x)$:</p>
+        <p>$$C(x) = 1 \cdot c_0(x) + 2 \cdot c_1(x) + 4 \cdot c_2(x) + 8 \cdot c_3(x) + 21 \cdot c_4(x) = 2x^2 - 2x + 4$$</p>
+        <p>As a check, this passes through the entries of $Cw$: $C(1) = 4$, $C(2) = 8$, $C(3) = 16$.</p>
+        <p>Doing the same for the other two matrices gives:</p>
+        <p>$$A(x) = x^2 - x + 2 \qquad B(x) = 2$$</p>
+        <p>Again, $A(1), A(2), A(3) = 2, 4, 8$ and $B$ is $2$ everywhere, matching $Aw$ and $Bw$.</p>
+        <h3>The QAP check</h3>
+        <p>All three constraints hold exactly when $A(x)B(x) - C(x)$ is zero at $x = 1, 2, 3$, which means it is divisible by the target polynomial $t(x) = (x-1)(x-2)(x-3)$. So the whole R1CS collapses into one polynomial identity:</p>
+        <p>$$A(x)B(x) - C(x) = h(x)\,t(x)$$</p>
+        <p>In this example $A(x)B(x) = 2x^2 - 2x + 4 = C(x)$, so the left side is exactly zero and $h(x) = 0$. That is special to this small example: $B(x)$ happens to be a constant, so the product stays at degree 2. In general the left side is a non-zero polynomial and $h(x)$ is non-zero.</p>
+        <p>A wrong witness breaks the identity. Take $out = 22$ with everything else unchanged, so $w = [1, 2, 4, 8, 22]$. Then $C(x)$ becomes $\frac{5}{2}x^2 - \frac{7}{2}x + 5$, and $A(x)B(x) - C(x)$ equals $-1$ at $x = 3$. It does not vanish at all three points, so no $h(x)$ exists.</p>
+        <p>It is truly epic seeing these huge matrices reduced to a single polynomial identity!</p>
+        <p>In a real proof system all of this happens over a finite field, so a fraction like $\frac{5}{2}$ means $5$ times the field inverse of $2$.</p>
       </div>
       <!-- RELATED:START -->
       <aside class="related" aria-label="Related reading">

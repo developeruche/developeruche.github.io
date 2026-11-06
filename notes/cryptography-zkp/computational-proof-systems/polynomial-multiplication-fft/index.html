@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polynomial Multiplication Using the FFT — Developer Uche</title>
+  <meta name="description" content="Multiplying univariate polynomials with the FFT: evaluate at roots of unity, multiply pointwise, interpolate back, and why fields need roots of unity." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Polynomial Multiplication Using the FFT" />
+  <meta property="og:description" content="Multiplying univariate polynomials with the FFT: evaluate at roots of unity, multiply pointwise, interpolate back, and why fields need roots of unity." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Polynomial Multiplication Using the FFT" />
+  <meta name="twitter:description" content="Multiplying univariate polynomials with the FFT: evaluate at roots of unity, multiply pointwise, interpolate back, and why fields need roots of unity." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Univariate Polynomial Multiplication Using FFT",
+  "description": "Multiplying univariate polynomials with the FFT: evaluate at roots of unity, multiply pointwise, interpolate back, and why fields need roots of unity.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Polynomials, FFT",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Univariate Polynomial Multiplication Using FFT",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER ONE</span>
+        <h1 class="post-title">Univariate Polynomial Multiplication Using FFT</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Here is a brief explanation of polynomial multiplication in evaluation form using the Fast Fourier Transform (FFT).</p>
+        <p>Given two polynomials in coefficient form:</p>
+        <p>$$f(x) = a_0 + a_1x + a_2x^2 + \dots + a_nx^n$$</p>
+        <p>$$g(x) = b_0 + b_1x + b_2x^2 + \dots + b_mx^m$$</p>
+        <p>their product has degree $n + m$, so it is uniquely determined by its values at $n + m + 1$ distinct points. Let $N$ be a power of two with $N \geq n + m + 1$.</p>
+        <ol><li><strong>Convert to evaluation form using the FFT:</strong><ul><li>Evaluate $f(x)$ and $g(x)$ at the $N$-th roots of unity.</li><li>This converts each polynomial from coefficient form to evaluation form, where it is represented by its values at those points.</li></ul></li><li><strong>Multiply in evaluation form:</strong><ul><li>Multiply the corresponding values of $f(x)$ and $g(x)$ at each point.</li><li>This pointwise multiplication takes only $O(N)$ operations.</li></ul></li><li><strong>Convert the result back to coefficient form using the inverse FFT:</strong><ul><li>Apply the inverse FFT to the multiplied values to obtain the coefficients of the product.</li></ul></li></ol>
+        <p>Each transform costs $O(N \log N)$, so the whole method is $O(N \log N)$, compared with $O(nm)$ for multiplying coefficients directly. The saving grows with the degree, which is what makes this method practical for high-degree polynomials.</p>
+        <p>In zero-knowledge proofs, this runs over a finite field rather than the complex numbers, where it is also called the Number Theoretic Transform (NTT). The field must contain the needed roots of unity, meaning $N$ must divide $p - 1$ for a prime field of size $p$. This is why proof systems favour fields whose $p - 1$ is divisible by a large power of two.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/"><span>← Previous</span>R1CS to QAP</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/"><span>Next →</span>Interactive and Non-Interactive Zero-Knowledge Proof Systems</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/polynomials/">Univariate vs Multilinear Polynomials in ZK Proofs</a><span>The roles of univariate and multilinear polynomials in zero-knowledge proofs: QAP, the Boolean hypercube, commitment schemes and Zeromorph.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

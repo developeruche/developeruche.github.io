@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plonkish Arithmetization and Copy Constraints — Developer Uche</title>
+  <meta name="description" content="Plonkish arithmetization by example: the gate equation, selector and witness polynomials, copy constraints, and the permutation argument behind them." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Plonkish Arithmetization and Copy Constraints" />
+  <meta property="og:description" content="Plonkish arithmetization by example: the gate equation, selector and witness polynomials, copy constraints, and the permutation argument behind them." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Plonkish Arithmetization and Copy Constraints" />
+  <meta name="twitter:description" content="Plonkish arithmetization by example: the gate equation, selector and witness polynomials, copy constraints, and the permutation argument behind them." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Plonkish Arithmetization",
+  "description": "Plonkish arithmetization by example: the gate equation, selector and witness polynomials, copy constraints, and the permutation argument behind them.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, PLONK, Arithmetization",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Plonkish Arithmetization",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER SEVEN</span>
+        <h1 class="post-title">Plonkish Arithmetization</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>This is a key component of the PLONK protocol. Before diving in, let's explore the term "arithmetization" in the context of zero knowledge.</p>
+        <p>Arithmetization is the process of converting computational statements into mathematical equations, specifically polynomial equations, that can be efficiently proven and verified. It's like translating a computer program into a mathematical language that zero-knowledge proofs can understand.</p>
+        <p>These are the basic building blocks of arithmetization:</p>
+        <ul><li>Variables: represent values in the computation</li><li>Constraints: mathematical relationships between variables</li><li>Polynomials: used to encode relationships and checks</li><li>Fields: mathematical structures where the computation occurs</li></ul>
+        <p>Over the years, many forms of arithmetization have been laid out. Let's explore a few.</p>
+        <p><strong>Rank-1 Constraint System (R1CS)</strong></p>
+        <ul><li>Used in protocols like <em>Groth16</em></li><li>Represents a computation as $Ax \circ Bx = Cx$, where $A, B, C$ are matrices, $x$ is the witness vector, and $\circ$ is element-wise multiplication</li></ul>
+        <p><strong>Plonkish arithmetization</strong></p>
+        <ul><li>Used in <em>PLONK</em> and its variants</li><li>Gate format: $q_L a + q_R b + q_O c + q_M (a b) + q_C = 0$, where $a, b, c$ are witness values, and $q_L, q_R, q_O, q_M, q_C$ are selectors indicating the gate operation</li></ul>
+        <p><strong>Algebraic Intermediate Representation</strong></p>
+        <ul><li>Used in STARKs</li><li>Represents a computation as polynomial constraints over an execution trace</li></ul>
+        <p><strong>Common steps in arithmetization</strong></p>
+        <ol><li><strong>Statement → circuit:</strong> Convert the computation into an arithmetic circuit, and identify inputs, outputs and intermediate values.</li><li><strong>Circuit → constraints:</strong> Transform the circuit's gates into mathematical constraints that capture the computational logic.</li><li><strong>Constraints → polynomials:</strong> Convert the constraints into polynomial equations, keeping the degrees manageable.</li><li><strong>Optimization:</strong> Reduce the number of constraints, minimize polynomial degrees, and optimize for proof size and verification time.</li></ol>
+        <h3>Back to PLONK Arithmetization</h3>
+        <p>Say we are given this computation: $out = xy(p + q)$</p>
+        <p>Its circuit is made of the following steps:</p>
+        <p>$$z = x \cdot y$$</p>
+        <p>$$r = p + q$$</p>
+        <p>$$out = z \cdot r$$</p>
+        <p><img src="/assets/notes/computational-proof-systems/plonk-circuit.png" alt="The circuit: x times y gives z, p plus q gives r, and z times r gives out" loading="lazy" /></p>
+        <p>When the circuit is executed, all these variables take concrete values, forming the execution trace with which the proof is generated. This is the trace when $x = 2$, $y = 3$, $p = 4$ and $q = 5$:</p>
+        <table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>2</td><td>3</td><td>6</td></tr><tr><td>4</td><td>5</td><td>9</td></tr><tr><td>6</td><td>9</td><td>54</td></tr></tbody></table>
+        <p>Using this trace, we can now introduce the gate constraint, encoding the gate operation and ensuring correct execution. This is the vanilla PLONK gate equation:</p>
+        <p>$$q_L a + q_R b + q_O c + q_M (a b) + q_C = 0$$</p>
+        <p>where $a, b$ and $c$ are the left, right and output wires of the gate.</p>
+        <ul><li>To say $a + b = c$, we let $q_L$ and $q_R$ equal $1$, and $q_O$ equal $-1$. The other coefficients aren't used, so we set $q_M$ and $q_C$ to $0$.</li><li>To say $a \times b = c$, we set $q_O$ to $-1$, $q_M$ to $1$, and the rest of the coefficients to $0$.</li><li>To bind a wire to a public constant $k$, we let $q_L$ equal $1$, $q_C$ equal $-k$, and the rest equal $0$, so that the gate reads $a - k = 0$.</li></ul>
+        <p>For the 3 gates we are working with, the gate equations look like this, and each one holds:</p>
+        <ul><li>Gate 1: $0 \cdot 2 + 0 \cdot 3 - 1 \cdot 6 + 1 \cdot (2 \cdot 3) + 0 = 0$</li><li>Gate 2: $1 \cdot 4 + 1 \cdot 5 - 1 \cdot 9 + 0 \cdot (4 \cdot 5) + 0 = 0$</li><li>Gate 3: $0 \cdot 6 + 0 \cdot 9 - 1 \cdot 54 + 1 \cdot (6 \cdot 9) + 0 = 0$</li></ul>
+        <p>Next, we collect all these values into vectors, so we can build one relationship with which the protocol can progress:</p>
+        <p>$$q_L = (0, 1, 0) \quad q_R = (0, 1, 0) \quad q_O = (-1, -1, -1)$$</p>
+        <p>$$q_M = (1, 0, 1) \quad q_C = (0, 0, 0)$$</p>
+        <p>$$a = (2, 4, 6) \quad b = (3, 5, 9) \quad c = (6, 9, 54)$$</p>
+        <p>Next we interpolate these vectors to obtain polynomials, over the domain of roots of unity. But our example has a small problem: the vectors have size $3$, which is not a power of $2$, and we need a power of two to get a suitable multiplicative subgroup. To solve this, we extend the vectors with zeros, which is an empty gate that trivially holds, and interpolate over the roots of unity with $n = 4$:</p>
+        <p>$$q_L = (0, 1, 0, 0) \quad q_R = (0, 1, 0, 0) \quad q_O = (-1, -1, -1, 0)$$</p>
+        <p>$$q_M = (1, 0, 1, 0) \quad q_C = (0, 0, 0, 0)$$</p>
+        <p>$$a = (2, 4, 6, 0) \quad b = (3, 5, 9, 0) \quad c = (6, 9, 54, 0)$$</p>
+        <p>Using this technique, we can capture the whole execution trace with these 8 polynomials, no matter how big the circuit is.</p>
+        <p>But there is one more thing! We have only shown that each gate is satisfied, not how the gates are wired to each other. This introduces us to "copy constraints".</p>
+        <h3>Copy Constraints</h3>
+        <p>Copy constraints ensure that certain wire values are equal across different parts of a circuit, without revealing the actual values. For example, the output of gate 1 must be the same value as the left input of gate 3.</p>
+        <p>We check that the wire values are copied correctly using a permutation argument (Bayer and Groth, 2012).</p>
+        <p><strong>The permutation check</strong></p>
+        <p>Label the positions $1, \ldots, 5$, with wire values $w = (5, 10, 2, 5, 5)$, where positions 1, 4 and 5 must hold the same value. Pick a permutation that cycles through the positions that must match: $\sigma = (5, 2, 3, 1, 4)$. So position 1 maps to 5, position 4 maps to 1, and position 5 maps to 4.</p>
+        <p>Using random $\beta, \gamma$, combine each wire value with its position, and separately with its permuted position:</p>
+        <p>$$z_{1,i} = w_i + \beta i + \gamma \qquad z_{2,i} = w_i + \beta \sigma_i + \gamma$$</p>
+        <p>For our values:</p>
+        <p>$$z_1 = [5 + \beta + \gamma,\ 10 + 2\beta + \gamma,\ 2 + 3\beta + \gamma,\ 5 + 4\beta + \gamma,\ 5 + 5\beta + \gamma]$$</p>
+        <p>$$z_2 = [5 + 5\beta + \gamma,\ 10 + 2\beta + \gamma,\ 2 + 3\beta + \gamma,\ 5 + \beta + \gamma,\ 5 + 4\beta + \gamma]$$</p>
+        <p>These are the same list in a different order, so the check $\prod_i z_{1,i} / z_{2,i} = 1$ passes. If position 4 held 6 instead of 5, then $z_1$ would contain $6 + 4\beta + \gamma$ and $z_2$ would contain $6 + \beta + \gamma$. The lists would no longer match, and the check would fail, except with negligible probability over $\beta$ and $\gamma$.</p>
+        <p>Now that we have a good understanding of the permutation check, let's connect it to PLONK.</p>
+        <p>The best explanation of this concept I found was documented by the <a href="https://blog.lambdaclass.com/all-you-wanted-to-know-about-plonk/" target="_blank" rel="noopener noreferrer">LambdaClass team</a>, so I use the same approach to explain this wire relationship. We represent the circuit structure and the witness in the form of matrices.</p>
+        <p>Introducing the $Q$ matrix:</p>
+        <table><thead><tr><th>$Q_L$</th><th>$Q_R$</th><th>$Q_M$</th><th>$Q_O$</th><th>$Q_C$</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>-1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>-1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>-1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table>
+        <p><strong>The $V$ matrix.</strong> The gate equations alone are not enough. This trace satisfies all of them, but it doesn't correspond to a valid execution, because the left input of the third gate is 7 rather than the 6 computed by the first gate:</p>
+        <table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>2</td><td>3</td><td>6</td></tr><tr><td>4</td><td>5</td><td>9</td></tr><tr><td>7</td><td>9</td><td>63</td></tr></tbody></table>
+        <p>The $V$ matrix encodes how the result of one gate is carried to an input of a later one. These are called wirings. Like the $Q$ matrix, it's independent of any individual evaluation. It holds an index for each input and intermediate variable. In this case (leaving out the empty padding row):</p>
+        <table><thead><tr><th>L</th><th>R</th><th>O</th></tr></thead><tbody><tr><td>1</td><td>2</td><td>0</td></tr><tr><td>4</td><td>5</td><td>3</td></tr><tr><td>0</td><td>3</td><td>6</td></tr></tbody></table>
+        <p>Here $0$ is the index of $z$, $1$ of $x$, $2$ of $y$, $3$ of $r$, $4$ of $p$, $5$ of $q$, and $6$ of $out$. Now we can state a claim that is "if and only if".</p>
+        <p><strong>New PLONK claim:</strong> Let $T$ be a matrix with columns $A, B, C$. It corresponds to a proper evaluation of the circuit if and only if:</p>
+        <ol><li>For all $i$, the following equality holds: $Q_{Li} A_i + Q_{Ri} B_i + Q_{Oi} C_i + Q_{Mi} (A_i B_i) + Q_{Ci} = 0$</li><li>For all $i, j, k, l$ such that $V_{i,j} = V_{k,l}$, we have $T_{i,j} = T_{k,l}$. This is the copy constraint.</li></ol>
+        <p>With this, we can encode the circuit execution and enforce its wiring, which is just what we need.</p>
+        <p>In zero-knowledge proof protocols, we almost always operate on polynomials, so we need to convert these claims into polynomial equations.</p>
+        <p><strong><em>Starting with claim 1</strong></em></p>
+        <p>Let $\omega$ be a primitive $N$-th root of unity, and let $H = \{\omega^i : 0 \leq i < N\}$. Let $a, b, c, q_L, q_R, q_M, q_O, q_C$ be the polynomials of degree less than $N$ that interpolate the columns $A, B, C, Q_L, Q_R, Q_M, Q_O, Q_C$ on the domain $H$. This means, for example, that $a(\omega^i) = A_i$ for all $i$, and similarly for the other columns.</p>
+        <p>With this, claim 1 can be expressed as:</p>
+        <p>$$a(x) q_L(x) + b(x) q_R(x) + a(x) b(x) q_M(x) + c(x) q_O(x) + q_C(x) = 0 \quad \text{for all } x \in H$$</p>
+        <p>Interestingly, in the world of polynomials, this is equivalent to the left side being divisible by the polynomial that vanishes on $H$. So there is a polynomial $t$ with:</p>
+        <p>$$a q_L + b q_R + a b q_M + c q_O + q_C = Z_H\, t, \quad \text{where } Z_H(X) = X^N - 1$$</p>
+        <p><strong><em>Transforming claim 2</strong></em></p>
+        <p>Recall the permutation check. A permutation is a rearrangement of a set, usually denoted $\sigma$. In our case, the set is all position pairs:</p>
+        <p>$$I = \{(i, j) : 0 \leq i < N,\ 0 \leq j < 3\}$$</p>
+        <p>where $i$ is the row and $j$ is the column. The matrix $V$ induces a permutation of this set: $\sigma((i, j))$ is the position of the next occurrence of the value at $(i, j)$, and after the last occurrence it goes back to the first. Recall $V$ is:</p>
+        <table><thead><tr><th>L</th><th>R</th><th>O</th></tr></thead><tbody><tr><td>1</td><td>2</td><td>0</td></tr><tr><td>4</td><td>5</td><td>3</td></tr><tr><td>0</td><td>3</td><td>6</td></tr></tbody></table>
+        <p>The permutation for this case is:</p>
+        <ul><li>$\sigma((0,0)) = (0,0)$</li><li>$\sigma((0,1)) = (0,1)$</li><li>$\sigma((0,2)) = (2,0)$</li><li>$\sigma((1,0)) = (1,0)$</li><li>$\sigma((1,1)) = (1,1)$</li><li>$\sigma((1,2)) = (2,1)$</li><li>$\sigma((2,0)) = (0,2)$</li><li>$\sigma((2,1)) = (1,2)$</li><li>$\sigma((2,2)) = (2,2)$</li></ul>
+        <p>Claim 2 can now be expressed as: for all $(i,j) \in I$, $T_{i,j} = T_{\sigma((i,j))}$. This means that the sets $A$ and $B$ below are equal:</p>
+        <p>$$A = \{((i,j), T_{i,j}) : (i,j) \in I\}$$</p>
+        <p>$$B = \{(\sigma((i,j)), T_{i,j}) : (i,j) \in I\}$$</p>
+        <p>This is great, but we would like to represent claim 2 as a polynomial identity, which is more convenient for the protocol. The solution introduces the concept of <strong>equality of sets</strong>.</p>
+        <p>First, explore <a href="https://hackmd.io/@0xdeveloperuche/HJX8bvAz1x" target="_blank" rel="noopener noreferrer">this</a>, a deep dive into multiset equality checks, for a very good overview before we continue.</p>
+        <h3>Equality of Sets</h3>
+        <p>Problem: how do we check if two multisets $A = \{a_0, a_1, \ldots, a_{k-1}\}$ and $B = \{b_0, b_1, \ldots, b_{k-1}\}$ of field elements are equal?</p>
+        <p><strong>Naive attempt: multiplication</strong></p>
+        <p>You might think to multiply all the elements of $A$ and $B$, and compare the results:</p>
+        <p>$$\prod_{i=0}^{k-1} a_i \quad \text{and} \quad \prod_{i=0}^{k-1} b_i$$</p>
+        <p>This test fails in some cases. For instance, $A = \{4, 15\}$ and $B = \{6, 10\}$ both give a product of $60$, but clearly $A \neq B$.</p>
+        <p><strong>Better approach: polynomials</strong></p>
+        <p>Instead of comparing products, we use polynomials whose roots represent the sets. For $A$, construct:</p>
+        <p>$$f_A(X) = (a_0 + X)(a_1 + X) \cdots (a_{k-1} + X)$$</p>
+        <p>and do the same for $B$:</p>
+        <p>$$f_B(X) = (b_0 + X)(b_1 + X) \cdots (b_{k-1} + X)$$</p>
+        <p>The multisets $A$ and $B$ are equal if and only if $f_A(X) = f_B(X)$, which holds because of unique factorization of polynomials.</p>
+        <p><strong>Checking equality efficiently</strong></p>
+        <p>Instead of comparing the polynomials symbolically, we use a random evaluation. Pick a random field element $\gamma$ and evaluate $f_A(\gamma)$ and $f_B(\gamma)$. If they are equal then, with high probability, $A = B$.</p>
+        <p>This relies on the Schwartz-Zippel lemma, which says that two distinct polynomials are equal at a random point only with very small probability.</p>
+        <p><strong>Encoding the product with roots of unity</strong></p>
+        <p>A verifier can't multiply all those terms itself, so we use a special domain $H$ based on the roots of unity. Define:</p>
+        <ul><li>$\omega$: A primitive $k$-th root of unity.</li><li>$H = \{1, \omega, \omega^2, \ldots, \omega^{k-1}\}$: The evaluation points.</li></ul>
+        <p>For $A$, construct the polynomial $f$ that interpolates the values $\{a_0 + \gamma, a_1 + \gamma, \ldots, a_{k-1} + \gamma\}$ on $H$. Similarly, construct $g$ for $B$.</p>
+        <p>Now introduce a polynomial $Z(X)$, a running product of the ratios, with:</p>
+        <p>$$Z(1) = 1 \qquad \text{and} \qquad Z(h) f(h) = g(h) Z(\omega h) \quad \forall h \in H$$</p>
+        <p>Walking around the domain and returning to the start, these conditions can only hold if:</p>
+        <p>$$\prod_{i=0}^{k-1} (a_i + \gamma) = \prod_{i=0}^{k-1} (b_i + \gamma)$$</p>
+        <p><em>Note: if you find $g(X)Z(\omega X)$ confusing, explore</em> <a href="https://hackmd.io/@0xdeveloperuche/HyxpMJa-Xyg" target="_blank" rel="noopener noreferrer"><em>this</em></a>.</p>
+        <p>The next thing to do is extend this from a set of field elements to a set of tuples of field elements, which gets us much closer to the Plonkish permutation argument.</p>
+        <p><strong>Lemma</strong></p>
+        <p>Let $A = \{\bar{a}_0, \ldots, \bar{a}_{k-1}\}$ and $B = \{\bar{b}_0, \ldots, \bar{b}_{k-1}\}$ be multisets of pairs of field elements, where $\bar{a}_i = (a_{i,0}, a_{i,1})$ and similarly for $\bar{b}_i$.</p>
+        <ol><li><strong>Mapping tuples to field elements:</strong> Let $\beta, \gamma \in \mathbb{F}$ be random field elements. Each pair is mapped to a single field element, $a_{i,0} + a_{i,1}\beta + \gamma$, and similarly for $B$.</li><li><strong>Interpolating polynomials:</strong> With $H$ as above, construct $f(X)$ and $g(X)$ that interpolate those mapped values for $A$ and $B$ respectively on $H$.</li><li><strong>Equality verification:</strong> Check for the existence of a polynomial $Z(X)$ satisfying $Z(\omega^0) = 1$, and $Z(h) f(h) = g(h) Z(\omega h)$ for all $h \in H$.</li></ol>
+        <blockquote>If such a polynomial $Z(X)$ exists then, with overwhelming probability over $\beta$ and $\gamma$, the multisets $A$ and $B$ are equal.</blockquote>
+        <h3>Applying This to PLONK</h3>
+        <p>Recall the sets from claim 2:</p>
+        <p>$$A = \{((i,j), T_{i,j}) : (i,j) \in I\} \qquad B = \{(\sigma((i,j)), T_{i,j}) : (i,j) \in I\}$$</p>
+        <p>Their elements include an index pair $(i, j)$, not a field element, so we can't apply the lemma yet. We need to convert them.</p>
+        <p><strong>Mapping indexed pairs to field elements</strong></p>
+        <p>For each element $((i, j), v)$, we leave $v$ as it is, and map the index $(i, j)$ to a field element such that different index pairs map to distinct field elements. Let $\eta$ be a primitive $3N$-th root of unity, and map $((i, j), v)$ to the pair $(\eta^{3i + j}, v)$.</p>
+        <p>Using this mapping, the sets become:</p>
+        <p>$$A = \{(\eta^{3i + j}, T_{i,j}) : (i,j) \in I\}$$</p>
+        <p>$$B = \{(\eta^{3k + l}, T_{i,j}) : (i,j) \in I,\ \sigma((i,j)) = (k,l)\}$$</p>
+        <p>Claim 2 is equivalent to the equality of these two sets.</p>
+        <p><strong>Equality verification via polynomials</strong></p>
+        <p>Let $\beta, \gamma \in \mathbb{F}$ be random, and $D = \{1, \eta, \eta^2, \ldots, \eta^{3N-1}\}$. Define $f(X)$ and $g(X)$ as the polynomials interpolating these values on $D$:</p>
+        <p>$$f \text{ interpolates } \{T_{i,j} + \eta^{3i + j}\beta + \gamma : (i,j) \in I\}$$</p>
+        <p>$$g \text{ interpolates } \{T_{i,j} + \eta^{3k + l}\beta + \gamma : (i,j) \in I,\ \sigma((i,j)) = (k,l)\}$$</p>
+        <p>If there exists a polynomial $Z(X)$ such that</p>
+        <p>$$Z(\eta^0) = 1 \qquad \text{and} \qquad Z(d) f(d) = g(d) Z(\eta d) \quad \forall d \in D$$</p>
+        <p>then the sets $A$ and $B$ are equal with overwhelming probability.</p>
+        <p><strong>Moving to the smaller domain</strong></p>
+        <p>Let $\omega = \eta^3$, a primitive $N$-th root of unity, and $H = \{1, \omega, \ldots, \omega^{N-1}\}$. Since $\eta^{3i+j} = \omega^i \eta^j$, the three columns of row $i$ have the indices $\omega^i$, $\eta\, \omega^i$ and $\eta^2 \omega^i$. Three distinct shifts of $H$ like these are written $H$, $k_1 H$ and $k_2 H$, so here $k_1 = \eta$ and $k_2 = \eta^2$. The protocol can then take three steps of the running product at once, one row at a time, and work over $H$ alone. That gives the $z$ polynomial of the <a href="/notes/cryptography-zkp/computational-proof-systems/plonk-prover/">prover's second round</a>.</p>
+        <p>Define $S_{\sigma_1}, S_{\sigma_2}, S_{\sigma_3}$ as the interpolations on $H$ of these values:</p>
+        <p>$$S_{\sigma_1} : \{\eta^{3k + l} : (i, 0) \in I,\ \sigma((i, 0)) = (k, l)\}$$</p>
+        <p>$$S_{\sigma_2} : \{\eta^{3k + l} : (i, 1) \in I,\ \sigma((i, 1)) = (k, l)\}$$</p>
+        <p>$$S_{\sigma_3} : \{\eta^{3k + l} : (i, 2) \in I,\ \sigma((i, 2)) = (k, l)\}$$</p>
+        <p>Before concluding, we clearly define the structure <code>CommonPreprocessedInput</code>, which holds everything fixed by the circuit, and is essential in the proof generation phase:</p>
+        <p>CommonPreprocessedInput $\{ S_{\sigma_1}, S_{\sigma_2}, S_{\sigma_3}, q_L, q_R, q_O, q_M, q_C \}$</p>
+        <p>The witness polynomials $a, b, c$ are not part of it, since they change with every execution.</p>
+        <p>With these, PLONKish arithmetization is complete.</p>
+        <p>References (these resources are life savers):</p>
+        <ul><li><a href="https://research.metastate.dev/plonk-by-hand-part-1" target="_blank" rel="noopener noreferrer">PLONK by Hand</a></li><li><a href="https://www.youtube.com/watch?v=-SXMd6S0r0I" target="_blank" rel="noopener noreferrer">PLONK talk (video)</a></li><li><a href="https://blog.lambdaclass.com/all-you-wanted-to-know-about-plonk/" target="_blank" rel="noopener noreferrer">All you wanted to know about Plonk</a></li></ul>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/"><span>← Previous</span>PLONK Introduction and the KZG Universal Setup</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/plonk-prover/"><span>Next →</span>The PLONK Prover</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/">From Problem to SNARK: Computation in ZK Proofs</a><span>How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/">HyperPlonk: PLONK Without FFTs on the Hypercube</a><span>A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

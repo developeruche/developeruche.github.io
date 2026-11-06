@@ -142,5 +142,125 @@
   "/notes/cryptography-zkp/rapidly-verifiable-xmss/": {
     "title": "Rapidly Verifiable XMSS Signatures",
     "description": "How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/": {
+    "title": "Computational Proof Systems",
+    "description": "A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/": {
+    "title": "From Problem to SNARK: Computation in ZK Proofs",
+    "description": "How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/": {
+    "title": "Arithmetic Circuits for Zero-Knowledge Proofs",
+    "description": "What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/": {
+    "title": "Implementing an Arithmetic Circuit in Rust",
+    "description": "A layered arithmetic circuit in Rust: the interface, gate and layer data structures, and how evaluation runs from the inputs up to the output."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/polynomials/": {
+    "title": "Univariate vs Multilinear Polynomials in ZK Proofs",
+    "description": "The roles of univariate and multilinear polynomials in zero-knowledge proofs: QAP, the Boolean hypercube, commitment schemes and Zeromorph."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/": {
+    "title": "R1CS to QAP: A Complete Worked Example",
+    "description": "A complete worked example from R1CS to a QAP: the matrices, interpolating each column, combining with the witness, and the final divisibility check."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/": {
+    "title": "Polynomial Multiplication Using the FFT",
+    "description": "Multiplying univariate polynomials with the FFT: evaluate at roots of unity, multiply pointwise, interpolate back, and why fields need roots of unity."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/": {
+    "title": "Interactive vs Non-Interactive Zero-Knowledge Proofs",
+    "description": "Interactive and non-interactive zero-knowledge proofs compared: graph 3-coloring, the Fiat-Shamir transform, zk-SNARKs, setup and public verifiability."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/polynomial-commitment-schemes/": {
+    "title": "Polynomial Commitment Schemes: An Introduction",
+    "description": "What polynomial commitment schemes are: committing to a polynomial, opening evaluations, and why binding and hiding are different properties."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/": {
+    "title": "KZG Polynomial Commitments Explained",
+    "description": "How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/": {
+    "title": "Univariate KZG: Worked Example and Rust Code",
+    "description": "Univariate KZG in practice: recommended resources, a small worked commit, open and verify example, and a Rust implementation."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/": {
+    "title": "Multilinear KZG Commitments: A Worked Example",
+    "description": "KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/": {
+    "title": "Batch KZG: Opening at Many Points with One Proof",
+    "description": "Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/": {
+    "title": "FRI: A Beginner-Friendly Guide with a Worked Example",
+    "description": "What FRI is and how it works, in plain language: stretching, Merkle commitments, folding and queries, with a full example you can follow by hand."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/": {
+    "title": "The Sum-Check Protocol: Worked Example and Rust Code",
+    "description": "The sum-check protocol: each round, a fully worked example by hand, why it is sound, a Rust implementation, and the univariate sum-check."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/gkr-protocol/": {
+    "title": "The GKR Protocol: Proving Layered Circuits",
+    "description": "How the GKR protocol proves a layered arithmetic circuit: the layer equation, sum-check reductions, and turning it into a SNARK with a commitment."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/succinct-gkr-protocol/": {
+    "title": "Succinct GKR with Multilinear KZG Commitments",
+    "description": "Combining GKR with multilinear KZG: committing to the input, what actually gets smaller, a worked example, Rust code and a soundness gap."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/": {
+    "title": "The Groth16 Protocol: Setup, Proving and Verifying",
+    "description": "Groth16 from R1CS and QAP to its trusted setup, the proving key, the three-element proof and the single pairing check that verifies it."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/": {
+    "title": "The PLONK Protocol: A Guided Walkthrough",
+    "description": "A guided path through PLONK: the universal setup, Plonkish arithmetization, the prover's five rounds and the verifier's single pairing check."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/plonk-universal-setup/": {
+    "title": "PLONK and the KZG Universal Trusted Setup",
+    "description": "An introduction to PLONK and its notation, and how the universal KZG trusted setup works, including which points the structured reference string holds."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/plonkish-arithmetization/": {
+    "title": "Plonkish Arithmetization and Copy Constraints",
+    "description": "Plonkish arithmetization by example: the gate equation, selector and witness polynomials, copy constraints, and the permutation argument behind them."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/plonk-prover/": {
+    "title": "The PLONK Prover: All Five Rounds Explained",
+    "description": "The PLONK prover round by round: blinded wires, the permutation polynomial, the quotient, evaluations, linearisation and the two opening proofs."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/": {
+    "title": "The PLONK Verifier: Step by Step",
+    "description": "How the PLONK verifier works: replaying the transcript, computing the batched commitments, and the single pairing equation that checks everything."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/turboplonk/": {
+    "title": "TurboPLONK: Custom Gates and Transition Constraints",
+    "description": "TurboPLONK explained: programs as state sequences, transition gates over the next row, selectors for constants, and copy constraints as memory."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/": {
+    "title": "Lookup Arguments in Zero-Knowledge Proofs",
+    "description": "What lookup arguments are, why they replace many gates with one table check, what they do and don't hide, and how they connect to PLONK."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/plookup/": {
+    "title": "Plookup: The Lookup Protocol Explained",
+    "description": "The plookup protocol: sorting values with the table, the aggregation polynomial, the identities the verifier checks, and a small worked example."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/": {
+    "title": "The Halo2 Lookup Protocol, with a Worked Example",
+    "description": "The Halo2 lookup argument with a worked example: permuted columns, the running product, the four checks, and why a cheating prover gets caught."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/hyperplonk/": {
+    "title": "HyperPlonk: PLONK Without FFTs on the Hypercube",
+    "description": "A study companion to HyperPlonk: replacing Plonk's FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/": {
+    "title": "Sumcheck 201: Collapsing Arrays and Precomputation",
+    "description": "Notes on Sumcheck 201: the Lagrange basis on the hypercube, the collapsing arrays and precomputation algorithms, and a full three-variable example."
+  },
+  "/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/": {
+    "title": "Keccak Explained: The Sponge and Keccak-f",
+    "description": "How Keccak works: the sponge, padding, absorbing and squeezing, the five steps of Keccak-f, and where its one-way security actually comes from."
   }
 }

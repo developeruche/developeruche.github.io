@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batch KZG: Opening at Many Points with One Proof</title>
+  <meta name="description" content="Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Batch KZG: Opening at Many Points with One Proof" />
+  <meta property="og:description" content="Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Batch KZG: Opening at Many Points with One Proof" />
+  <meta name="twitter:description" content="Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Batch Univariate KZG Polynomial Commitment Scheme",
+  "description": "Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Polynomial Commitments, KZG, Rust",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Batch Univariate KZG Polynomial Commitment Scheme",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER THREE</span>
+        <h1 class="post-title">Batch Univariate KZG Polynomial Commitment Scheme</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>This is very similar to the standard univariate commitment scheme, but it opens one polynomial at several points at once, with a single group element as the proof.</p>
+        <p>To open $P$ at points $z_1, \ldots, z_k$, with values $y_1, \ldots, y_k$:</p>
+        <ol><li>Interpolate $r(X)$, the polynomial of degree less than $k$ with $r(z_i) = y_i$.</li><li>Build the vanishing polynomial $Z(X) = \prod_i (X - z_i)$.</li><li>Compute $Q(X) = \frac{P(X) - r(X)}{Z(X)}$, which is a polynomial exactly when all the claimed values are right. The proof is $W = Q(\alpha) G_1$.</li></ol>
+        <p>The verifier computes $r$ and $Z$ from the points and values, and checks:</p>
+        <p>$$e(C - r(\alpha) G_1,\ G_2) = e(W,\ Z(\alpha) G_2)$$</p>
+        <p>Here $r(\alpha)G_1$ and $Z(\alpha)G_2$ come from the SRS, so unlike single-point KZG, the SRS needs enough powers of $\alpha$ in $\mathbb{G}_2$ to cover $Z$, which has degree $k$. The verifier's work also grows with $k$, since it has to compute $r$ and $Z$.</p>
+        <p><strong>Example.</strong> Take $P(x) = 2x^3 + x + 4$, opened at $1$ and $2$, with values $7$ and $22$. Then $r(x) = 15x - 8$, $Z(x) = x^2 - 3x + 2$, and $Q(x) = 2x + 6$. With a toy $\alpha = 5$, the check compares exponents: $259 - 67 = 192$ on the left, and $16 \cdot 12 = 192$ on the right.</p>
+        <p>Rust implementation: <a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/pcs/src/kzg/univariate/batch.rs" target="_blank" rel="noopener noreferrer"><code>pcs/src/kzg/univariate/batch.rs</code></a></p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/"><span>← Previous</span>Multilinear KZG Polynomial Commitment Scheme</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/"><span>Next →</span>FRI Polynomial Commitment Scheme</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG Commitments: A Worked Example</a><span>KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/">Univariate KZG: Worked Example and Rust Code</a><span>Univariate KZG in practice: recommended resources, a small worked commit, open and verify example, and a Rust implementation.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/">KZG Polynomial Commitments Explained</a><span>How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRI: A Beginner-Friendly Guide with a Worked Example</title>
+  <meta name="description" content="What FRI is and how it works, in plain language: stretching, Merkle commitments, folding and queries, with a full example you can follow by hand." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="FRI: A Beginner-Friendly Guide with a Worked Example" />
+  <meta property="og:description" content="What FRI is and how it works, in plain language: stretching, Merkle commitments, folding and queries, with a full example you can follow by hand." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="FRI: A Beginner-Friendly Guide with a Worked Example" />
+  <meta name="twitter:description" content="What FRI is and how it works, in plain language: stretching, Merkle commitments, folding and queries, with a full example you can follow by hand." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "FRI Polynomial Commitment Scheme",
+  "description": "What FRI is and how it works, in plain language: stretching, Merkle commitments, folding and queries, with a full example you can follow by hand.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Polynomial Commitments, FRI, STARKs",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "FRI Polynomial Commitment Scheme",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER THREE</span>
+        <h1 class="post-title">FRI Polynomial Commitment Scheme</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>FRI lets a prover convince a verifier that a long list of committed values really comes from a low-degree polynomial, while the verifier reads only a few of those values. It needs no trusted setup and no elliptic curves, only a hash function.</p>
+        <p>FRI stands for <strong>Fast Reed-Solomon Interactive Oracle Proof of Proximity</strong>. The name sounds scary, but the core idea is one trick repeated: <strong>fold the polynomial in half, again and again, until it is a constant.</strong> By the end of this page you will have followed that trick by hand.</p>
+        <h3>The Problem FRI Solves</h3>
+        <p>Say the prover has a polynomial $f$ of degree less than $d$. In most proof systems, the prover must show the verifier that some committed data is such a polynomial, because a correct computation produces a low-degree polynomial, and a cheating one generally doesn't.</p>
+        <p><a href="/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/">KZG</a> solves this with a pairing and a trusted setup: the structure of the setup forces the degree bound. FRI takes a different route.</p>
+        <h3>Step 1: Stretch the Polynomial</h3>
+        <p>The prover evaluates $f$ on a domain $D$ much larger than $d$. For example, $f$ might have degree below 4 and be evaluated on 8 points. The list of values is called a <strong>Reed-Solomon codeword</strong>, and the ratio $\rho = d / |D|$ is the <strong>rate</strong>. Here $\rho = \frac{1}{2}$.</p>
+        <p>Why stretch it? Two different polynomials of degree below $d$ agree on fewer than $d$ points. So on a domain several times bigger than $d$, two low-degree polynomials must differ almost everywhere. A list of values is therefore either close to one low-degree polynomial, or it disagrees with every low-degree polynomial on many positions.</p>
+        <p>That is what makes spot checks work, because cheating can't be hidden in just one or two places. It is also why FRI speaks of <em>proximity</em>: it shows the list is close to a low-degree polynomial, not exactly equal to one.</p>
+        <h3>Step 2: Commit with a Merkle Tree</h3>
+        <p>The prover hashes all the values into a <a href="/blog/merkle-tree-blockchain/">Merkle tree</a>, and sends the root. This single hash fixes every value. Later, the prover can reveal any position with a short path that proves it was in the tree.</p>
+        <p>The verifier could now ask for random positions. But a few random values say nothing about the degree on their own, since any handful of points fits some low-degree polynomial. Checking the degree directly would need more than $d$ values, and for large $d$ that is far too many. We need a way to make the problem smaller.</p>
+        <h3>Step 3: Fold</h3>
+        <p>Here is the trick. Any polynomial can be split into its even and odd powers:</p>
+        <p>$$f(x) = f_{even}(x^2) + x \cdot f_{odd}(x^2)$$</p>
+        <p>For example:</p>
+        <p>$$1 + 2x + 3x^2 + 4x^3 = \underbrace{(1 + 3x^2)}_{f_{even}(x^2)} + x \cdot \underbrace{(2 + 4x^2)}_{f_{odd}(x^2)}$$</p>
+        <p>Both $f_{even}(y) = 1 + 3y$ and $f_{odd}(y) = 2 + 4y$ have half the degree bound of $f$.</p>
+        <p>The verifier sends a random number $\beta$, and the prover combines the two halves into one new polynomial:</p>
+        <p>$$f_1(y) = f_{even}(y) + \beta \cdot f_{odd}(y)$$</p>
+        <p>This $f_1$ has half the degree. It also needs only half the domain, because of how the domain is chosen. $D$ is built from roots of unity, so if $x$ is in $D$ then so is $-x$, and both square to the same $y = x^2$. So the squares of $D$ form a new domain, half the size. The rate stays the same.</p>
+        <p>The prover commits to $f_1$ on the new domain with a new Merkle root, and folds again. Each fold halves the degree bound, so after $\log_2 d$ folds the polynomial is a <strong>constant</strong>, a single number, which the prover simply sends.</p>
+        <p>Checking that a list is a constant is easy: every value in it must be that number.</p>
+        <h3>Step 4: Check the Folds with Queries</h3>
+        <p>The prover could have cheated by committing to anything at each layer, so the verifier must confirm each layer is really the fold of the one before. The key fact is that one fold can be checked at a point using just two values from the previous layer:</p>
+        <p>$$f_{even}(x^2) = \frac{f(x) + f(-x)}{2} \qquad f_{odd}(x^2) = \frac{f(x) - f(-x)}{2x}$$</p>
+        <p>So:</p>
+        <p>$$f_1(x^2) = \frac{f(x) + f(-x)}{2} + \beta \cdot \frac{f(x) - f(-x)}{2x}$$</p>
+        <p>The verifier picks a random $x$, and the prover opens $f(x)$ and $f(-x)$ with Merkle paths, along with $f_1(x^2)$. The verifier checks that formula. Then it moves down a layer using $x^2$ and $-x^2$, and continues all the way to the constant.</p>
+        <p>Repeating this at several random starting points makes up the whole test.</p>
+        <h3>A Worked Example</h3>
+        <p>We work in the field $\mathbb{F}_{97}$, where 64 has order 8, so the domain is its powers:</p>
+        <p>$$D = [1, 64, 22, 50, 96, 33, 75, 47]$$</p>
+        <p>Notice the pairs: each element's negative sits 4 places later. For example, $-64 \equiv 33 \pmod{97}$.</p>
+        <p>Take $f(x) = 1 + 2x + 3x^2 + 4x^3$, of degree below 4. Its codeword is:</p>
+        <table><thead><tr><th>$x$</th><th>1</th><th>64</th><th>22</th><th>50</th><th>96</th><th>33</th><th>75</th><th>47</th></tr></thead><tbody><tr><td>$f(x)$</td><td>10</td><td>7</td><td>51</td><td>0</td><td>95</td><td>30</td><td>42</td><td>64</td></tr></tbody></table>
+        <p>The prover commits to this list.</p>
+        <p><strong>First fold.</strong> The verifier sends $\beta = 7$. The prover computes:</p>
+        <p>$$f_1(y) = (1 + 3y) + 7(2 + 4y) = 15 + 31y$$</p>
+        <p>on the domain of squares, $[1, 22, 96, 75]$, and commits to:</p>
+        <table><thead><tr><th>$y$</th><th>1</th><th>22</th><th>96</th><th>75</th></tr></thead><tbody><tr><td>$f_1(y)$</td><td>46</td><td>18</td><td>81</td><td>12</td></tr></tbody></table>
+        <p><strong>Second fold.</strong> The verifier sends $\beta = 11$. Now $f_1$ splits into $f_{even} = 15$ and $f_{odd} = 31$, so:</p>
+        <p>$$f_2 = 15 + 11 \cdot 31 = 356 \equiv 65 \pmod{97}$$</p>
+        <p>That is a constant, so the prover just sends 65.</p>
+        <p><img src="/assets/notes/computational-proof-systems/fri-folding.svg" alt="Folding: eight values fold into four, and then into a constant, 65" loading="lazy" /></p>
+        <p><strong>A query.</strong> The verifier picks $x = 64$, so $-x = 33$ and $x^2 = 22$. The prover opens $f(64) = 7$ and $f(33) = 30$. The verifier computes, modulo 97:</p>
+        <p>$$\frac{7 + 30}{2} = 67 \qquad \frac{7 - 30}{2 \cdot 64} = 90 \qquad f_1(22) \stackrel{?}{=} 67 + 7 \cdot 90 \equiv 18$$</p>
+        <p>The opened value is $f_1(22) = 18$, so the check passes.</p>
+        <p>Next layer: $y = 22$, so $-y = 75$. The prover opens $f_1(22) = 18$ and $f_1(75) = 12$:</p>
+        <p>$$\frac{18 + 12}{2} = 15 \qquad \frac{18 - 12}{2 \cdot 22} = 31 \qquad 15 + 11 \cdot 31 \equiv 65$$</p>
+        <p>That matches the constant, so this query passes.</p>
+        <p><strong>Catching a cheater.</strong> Suppose the prover changes one value, committing $f(50) = 1$ instead of 0. Now there are two options:</p>
+        <ul><li><strong>Fold it honestly.</strong> The value at $y = 75$ in the next layer becomes 31 rather than 12. The last layer becomes $[65, 94]$, which isn't constant. The query above would catch this: it computes 94 from the opened values $18$ and $31$, instead of 65.</li><li><strong>Hide it by keeping $f_1$ as it was.</strong> A query at $x = 50$ now computes 31 from the first layer, but finds 12 opened in the second, so it fails.</li></ul>
+        <p>Not every query lands on the problem, though. A query starting at $x = 1$ only touches the unchanged values, and passes either way. That is why the verifier makes many queries.</p>
+        <h3>How Much Checking Is Enough?</h3>
+        <p>If the committed list is far from any low-degree polynomial, then each query catches the prover with a decent probability, and independent queries multiply. The number of queries for a target security level depends on the rate and on which security analysis is used. As a rough guide, for 100 bits at rate $\frac{1}{2}$:</p>
+        <ul><li><strong>Commonly used conjecture:</strong> about 100 queries</li><li><strong>A conservative simple bound</strong> (catching with probability $\frac{1 - \rho}{2}$ per query): about 240 queries</li></ul>
+        <p>Lower rates need fewer queries, at the cost of a larger codeword and slower proving. Real systems also fold by more than 2 at a time, and evaluate on a shifted domain (a coset) so that the codeword doesn't overlap the points where the computation is defined.</p>
+        <h3>The Non-Interactive Version</h3>
+        <p>As usual, <a href="/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/">Fiat-Shamir</a> removes the conversation. Each $\beta$ is the hash of the transcript so far, including the Merkle roots, and so are the query positions. The order matters: the prover must commit to each layer before it can learn the next $\beta$.</p>
+        <h3>From a Low-Degree Test to a Commitment Scheme</h3>
+        <p>FRI as described tests the degree. To use it as a polynomial commitment, the prover also needs to show an evaluation, $f(z) = v$. The same trick as KZG applies. If $f(z) = v$, then this is a polynomial, of degree one less:</p>
+        <p>$$q(x) = \frac{f(x) - v}{x - z}$$</p>
+        <p>If the claim is false, the division doesn't come out clean, and $q$ isn't close to a low-degree polynomial. So the prover runs FRI on $q$, and the verifier computes each value of $q$ it needs from the opened values of $f$.</p>
+        <h3>FRI Compared with KZG</h3>
+        <table><thead><tr><th></th><th>KZG</th><th>FRI</th></tr></thead><tbody><tr><td>Trusted setup</td><td>Yes</td><td>No</td></tr><tr><td>Relies on</td><td>Elliptic curve pairings</td><td>Hash functions</td></tr><tr><td>Post-quantum</td><td>No</td><td>Believed to be, if the hash is</td></tr><tr><td>Proof size</td><td>Very small and constant</td><td>Larger, growing with $\log^2 d$ (often tens of kilobytes or more)</td></tr><tr><td>Verifier</td><td>A few pairings</td><td>Many hashes and small field operations</td></tr></tbody></table>
+        <p>Neither is simply better. FRI is the commitment behind STARKs and many fast modern provers, while KZG wins where tiny proofs matter most, such as verification on a blockchain.</p>
+        <h3>Summary</h3>
+        <ol><li><strong>Stretch</strong> the polynomial onto a large domain, so cheating must be widespread.</li><li><strong>Commit</strong> with a Merkle tree.</li><li><strong>Fold</strong> with random challenges until only a constant is left.</li><li><strong>Query</strong> random positions, to check each fold was done honestly.</li></ol>
+        <h3>Further Reading</h3>
+        <ul><li><a href="https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ICALP.2018.14" target="_blank" rel="noopener noreferrer">Fast Reed-Solomon Interactive Oracle Proofs of Proximity</a>, the original paper by Ben-Sasson, Bentov, Horesh and Riabzev</li><li><a href="https://vitalik.eth.limo/general/2017/11/22/starks_part_2.html" target="_blank" rel="noopener noreferrer">STARKs, Part II: Thank Goodness It's FRI-day</a> by Vitalik Buterin</li><li><a href="https://eprint.iacr.org/2022/1216" target="_blank" rel="noopener noreferrer">A summary on the FRI low degree test</a> by Ulrich Haböck, for the security analysis</li></ul>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/"><span>← Previous</span>Batch Univariate KZG Polynomial Commitment Scheme</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/"><span>Next →</span>The Sum-Check Protocol</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/">KZG Polynomial Commitments Explained</a><span>How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG Commitments: A Worked Example</a><span>KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

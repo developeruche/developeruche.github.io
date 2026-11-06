@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The PLONK Verifier: Step by Step — Developer Uche</title>
+  <meta name="description" content="How the PLONK verifier works: replaying the transcript, computing the batched commitments, and the single pairing equation that checks everything." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="The PLONK Verifier: Step by Step" />
+  <meta property="og:description" content="How the PLONK verifier works: replaying the transcript, computing the batched commitments, and the single pairing equation that checks everything." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="The PLONK Verifier: Step by Step" />
+  <meta name="twitter:description" content="How the PLONK verifier works: replaying the transcript, computing the batched commitments, and the single pairing equation that checks everything." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "The PLONK Verifier",
+  "description": "How the PLONK verifier works: replaying the transcript, computing the batched commitments, and the single pairing equation that checks everything.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, PLONK, SNARKs",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "The PLONK Verifier",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER SEVEN</span>
+        <h1 class="post-title">The PLONK Verifier</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>The PLONK verification algorithm is a cornerstone of modern zk-SNARKs, enabling succinct, non-interactive proofs of arbitrary computations. Here we break it down step by step.</p>
+        <p>At a high level, PLONK verification ensures that the proof generated by the prover is valid for a specific computation. The verifier performs various checks, using cryptographic commitments and field operations to validate the proof without re-executing the computation.</p>
+        <p>Before diving into the steps, let's clarify the inputs:</p>
+        <ul><li><strong>Verifier preprocessed input:</strong> Commitments to the selector polynomials $[q_M]_1, [q_L]_1, [q_R]_1, [q_O]_1, [q_C]_1$, commitments to the permutation polynomials $[s_{\sigma_1}]_1, [s_{\sigma_2}]_1, [s_{\sigma_3}]_1$, and $[x]_2$, the secret point of the setup in $\mathbb{G}_2$.</li><li><strong>Proof elements</strong> ($\pi_{\text{SNARK}}$): The commitments $[a]_1, [b]_1, [c]_1, [z]_1, [t_{lo}]_1, [t_{mid}]_1, [t_{hi}]_1, [W_\zeta]_1, [W_{\zeta\omega}]_1$, and the field elements $\bar{a}, \bar{b}, \bar{c}, \bar{s}_{\sigma_1}, \bar{s}_{\sigma_2}, \bar{z}_\omega$.</li><li><strong>Challenges</strong> ($\beta, \gamma, \alpha, \zeta, v, u$): Generated deterministically from the circuit, the public inputs and the proof.</li></ul>
+        <h3>Step-by-Step Breakdown</h3>
+        <p><strong>1. Validate the proof components.</strong> The verifier starts by checking that the proof elements are well formed:</p>
+        <ul><li>All nine commitments are valid points of $\mathbb{G}_1$.</li><li>All six evaluations are elements of $\mathbb{F}$.</li><li>The public inputs $(w_i)_{i \in [\ell]}$ are elements of $\mathbb{F}$.</li></ul>
+        <p><strong>2. Compute the challenges.</strong> The challenges $\beta, \gamma, \alpha, \zeta, v, u$ are derived by replaying the transcript exactly as the prover did.</p>
+        <p><strong>3. Evaluate polynomials.</strong> Three evaluations are computed:</p>
+        <ul><li><strong>Zero polynomial</strong>, which vanishes on the roots of unity: $Z_H(\zeta) = \zeta^n - 1$</li><li><strong>First Lagrange polynomial:</strong> $L_1(\zeta) = \dfrac{\omega (\zeta^n - 1)}{n (\zeta - \omega)}$</li><li><strong>Public input polynomial</strong>, using the sign convention from the prover: $\text{PI}(\zeta) = -\sum_{i \in [\ell]} w_i L_i(\zeta)$</li></ul>
+        <p><strong>4. Split $r$, and compute the batched commitment $[D]_1$.</strong> The verifier splits the polynomial $r$ into a constant part and a part that depends on commitments. The constant part is:</p>
+        <p>$$r_0 = \text{PI}(\zeta) - L_1(\zeta)\alpha^2 - \alpha (\bar{a} + \beta \bar{s}_{\sigma_1} + \gamma)(\bar{b} + \beta \bar{s}_{\sigma_2} + \gamma)(\bar{c} + \gamma) \bar{z}_\omega$$</p>
+        <p>The remaining terms of $r(X)$, along with a term for the $z$ opening, form the batched commitment:</p>
+        <p>$$
+\begin{aligned}
+[D]_1 = {} & \bar{a}\bar{b} [q_M]_1 + \bar{a} [q_L]_1 + \bar{b} [q_R]_1 + \bar{c} [q_O]_1 + [q_C]_1 \\
+& + \big( (\bar{a} + \beta\zeta + \gamma)(\bar{b} + \beta k_1 \zeta + \gamma)(\bar{c} + \beta k_2 \zeta + \gamma)\alpha + L_1(\zeta)\alpha^2 + u \big) [z]_1 \\
+& - (\bar{a} + \beta \bar{s}_{\sigma_1} + \gamma)(\bar{b} + \beta \bar{s}_{\sigma_2} + \gamma) \alpha\beta \bar{z}_\omega [s_{\sigma_3}]_1 \\
+& - Z_H(\zeta) \big( [t_{lo}]_1 + \zeta^n [t_{mid}]_1 + \zeta^{2n} [t_{hi}]_1 \big)
+\end{aligned}
+$$</p>
+        <p><strong>5. Compute the full batched commitment $[F]_1$.</strong> The verifier aggregates the commitments into a single point:</p>
+        <p>$$[F]_1 = [D]_1 + v [a]_1 + v^2 [b]_1 + v^3 [c]_1 + v^4 [s_{\sigma_1}]_1 + v^5 [s_{\sigma_2}]_1$$</p>
+        <p><strong>6. Compute the group-encoded batch evaluation $[E]_1$.</strong> The verifier encodes the claimed evaluations into another group element:</p>
+        <p>$$[E]_1 = \left( -r_0 + v\bar{a} + v^2\bar{b} + v^3\bar{c} + v^4\bar{s}_{\sigma_1} + v^5\bar{s}_{\sigma_2} + u\bar{z}_\omega \right) [1]_1$$</p>
+        <p><strong>7. Pairing check.</strong> The final step is a single pairing equation:</p>
+        <p>$$e\big([W_\zeta]_1 + u [W_{\zeta\omega}]_1,\ [x]_2\big) = e\big(\zeta [W_\zeta]_1 + u\zeta\omega [W_{\zeta\omega}]_1 + [F]_1 - [E]_1,\ [1]_2\big)$$</p>
+        <p>This confirms the consistency of all the evaluations, and through them, all the constraints.</p>
+        <h3>Why PLONK Verification Is Efficient</h3>
+        <ul><li><strong>Batched evaluations:</strong> Multiple checks are combined into one equation, needing just two pairings.</li><li><strong>Scalability:</strong> The work is independent of the circuit's size, apart from the public input evaluation, which grows with the number of public inputs.</li><li><strong>Zero knowledge:</strong> The verifier learns nothing beyond the validity of the proof.</li></ul>
+        <p>By combining polynomial commitments, batched evaluations and pairings, PLONK provides a secure and scalable way to validate computations in zk-SNARKs.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/plonk-prover/"><span>← Previous</span>The PLONK Prover</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/turboplonk/"><span>Next →</span>TurboPLONK</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/">The PLONK Protocol: A Guided Walkthrough</a><span>A guided path through PLONK: the universal setup, Plonkish arithmetization, the prover&#x27;s five rounds and the verifier&#x27;s single pairing check.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-prover/">The PLONK Prover: All Five Rounds Explained</a><span>The PLONK prover round by round: blinded wires, the permutation polynomial, the quotient, evaluations, linearisation and the two opening proofs.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

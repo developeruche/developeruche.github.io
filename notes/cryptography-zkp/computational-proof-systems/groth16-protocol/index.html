@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Groth16 Protocol: Setup, Proving and Verifying</title>
+  <meta name="description" content="Groth16 from R1CS and QAP to its trusted setup, the proving key, the three-element proof and the single pairing check that verifies it." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="The Groth16 Protocol: Setup, Proving and Verifying" />
+  <meta property="og:description" content="Groth16 from R1CS and QAP to its trusted setup, the proving key, the three-element proof and the single pairing check that verifies it." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="The Groth16 Protocol: Setup, Proving and Verifying" />
+  <meta name="twitter:description" content="Groth16 from R1CS and QAP to its trusted setup, the proving key, the three-element proof and the single pairing check that verifies it." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "The Groth16 Protocol",
+  "description": "Groth16 from R1CS and QAP to its trusted setup, the proving key, the three-element proof and the single pairing check that verifies it.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Groth16, SNARKs, Pairings",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "The Groth16 Protocol",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/groth16-protocol/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER SIX</span>
+        <h1 class="post-title">The Groth16 Protocol</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Rust implementation: <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/arks/snarks/groth16" target="_blank" rel="noopener noreferrer"><code>arks/snarks/groth16</code></a></p>
+        <p>The prerequisites for this study are:</p>
+        <ul><li>Bilinear pairings and elliptic curves</li><li><a href="/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/">Quadratic arithmetic programs (QAPs)</a></li></ul>
+        <p>Bilinear pairings and elliptic curves are fundamental to the Groth16 proving system and many other advanced cryptographic protocols. Elliptic curves provide a secure and efficient foundation, while bilinear pairings enable the construction of succinct, non-interactive proofs that are both powerful and practical.</p>
+        <h3>Elliptic Curves</h3>
+        <p>An elliptic curve is a set of points that satisfy a specific mathematical equation. Over a finite field $\mathbb{F}_q$ (of characteristic other than 2 or 3), an elliptic curve $E$ is typically defined by an equation of the form $y^2 = x^3 + ax + b$, where $a$ and $b$ are coefficients in $\mathbb{F}_q$. The curve must be non-singular (it has no cusps or self-intersections), which requires $4a^3 + 27b^2 \neq 0$.</p>
+        <h3>Bilinear Pairings in Groth16</h3>
+        <p>A bilinear pairing is a map $e: \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ with the property that $e(aG_1, bG_2) = e(G_1, G_2)^{ab}$. It lets the verifier check a multiplication between values it can only see as curve points. Groth16 uses this so that proofs are small and quick to verify:</p>
+        <ul><li><strong>Setup phase:</strong> Public parameters are generated, with elements in $\mathbb{G}_1$ and $\mathbb{G}_2$.</li><li><strong>Proving phase:</strong> The prover uses these parameters to create a proof that the computation was performed correctly. This involves operations in $\mathbb{G}_1$ and $\mathbb{G}_2$.</li><li><strong>Verification phase:</strong> The verifier computes pairings and checks that one equation holds in $\mathbb{G}_T$.</li></ul>
+        <h3>The Protocol</h3>
+        <p>The <code>Groth16</code> protocol, in most cases, starts with a circuit. A <code>Circuit</code> in ZKP is a structured way to represent a computation, analogous to a digital logic circuit in computer engineering.</p>
+        <p><strong>Structure:</strong></p>
+        <ul><li><strong>Inputs</strong>: The public inputs, along with the values the prover knows and wants to keep private (the private witness).</li><li><strong>Gates</strong>: Basic operations performed on the inputs.</li><li><strong>Outputs</strong>: The results of the computations performed by the gates.</li></ul>
+        <p><strong>Types of circuits:</strong></p>
+        <ul><li><strong>Arithmetic circuits</strong> use addition and multiplication gates over a finite field. zk-SNARKs like Groth16 work with these.</li><li><strong>Boolean circuits</strong> use logical gates (AND, OR, NOT). They are more common in classical computer science, and can be transformed into arithmetic circuits.</li></ul>
+        <h3>R1CS</h3>
+        <p>The next stage is to convert the circuit to a format called <code>R1CS</code>.</p>
+        <p>A rank-1 constraint system with $n$ variables, $m$ constraints and $p$ public inputs has a witness vector $w \in \mathbb{F}^n$. By convention, the first $p$ elements of $w$ are the public inputs, and $w_0$ is fixed to 1. Each of the $m$ constraints is a product equation between three inner products:</p>
+        <p>$$(a_j \cdot w)(b_j \cdot w) = c_j \cdot w$$</p>
+        <p>where the vectors $a_j, b_j, c_j \in \mathbb{F}^n$ specify constraint $j$. These vectors are usually very sparse. Stacking them into $m \times n$ matrices, the whole system is written with an element-wise product:</p>
+        <p>$$Aw \circ Bw = Cw$$</p>
+        <h3>QAP</h3>
+        <p>Next, the R1CS is <a href="/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/">transformed into a QAP</a>. For each variable $i$, interpolate polynomials $A_i(X), B_i(X), C_i(X)$ through column $i$ of each matrix, over $m$ fixed points. Then define $A(X) = \sum_{i=0}^{n-1} w_i A_i(X)$, and similarly $B(X)$ and $C(X)$. The constraints hold exactly when there is a polynomial $H(X)$ of degree at most $m - 2$ such that</p>
+        <p>$$A(X)B(X) - C(X) = H(X) Z_x(X)$$</p>
+        <p>where $Z_x(X)$ is the polynomial that vanishes on the $m$ points.</p>
+        <h3>Trusted Setup</h3>
+        <p>The next stage is the trusted setup, where the <code>common reference string</code> is generated. Groth16's setup has two phases:</p>
+        <ol><li><strong>Powers of tau</strong>, which is generic and can be reused by many circuits</li><li><strong>Circuit-specific generation</strong></li></ol>
+        <p><strong>Powers of tau</strong></p>
+        <p>Generate random $\tau, \alpha, \beta$. For a circuit with at most $m$ constraints, compute:</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{2m-2}) \cdot G_1$$</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_2$$</p>
+        <p>$$\alpha \cdot (\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_1$$</p>
+        <p>$$\beta \cdot (\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_1$$</p>
+        <p>$$\beta \cdot G_2$$</p>
+        <p>This completes phase one.</p>
+        <p><strong>Circuit-specific generation</strong></p>
+        <p>Given the circuit polynomials $A_i, B_i, C_i$, generate random $\gamma, \delta$, and define for each variable $i$ the polynomial:</p>
+        <p>$$L_i(X) = \beta A_i(X) + \alpha B_i(X) + C_i(X)$$</p>
+        <p>We cannot compute $L_i(X)$ directly, since nobody knows $\alpha$ and $\beta$, but we can still construct $L_i(\tau) \cdot G_1$ using linear combinations of the values from phase one. (More on this below.) This gives the <strong>proving key</strong>:</p>
+        <p>$$(\alpha, \beta, \delta) \cdot G_1$$</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_1$$</p>
+        <p>$$\delta^{-1} \cdot (L_p(\tau), L_{p+1}(\tau), \ldots, L_{n-1}(\tau)) \cdot G_1$$</p>
+        <p>$$\delta^{-1} \cdot (\tau^0, \tau^1, \ldots, \tau^{m-2}) \cdot Z_x(\tau) \cdot G_1$$</p>
+        <p>$$(\beta, \delta) \cdot G_2$$</p>
+        <p>$$(\tau^0, \tau^1, \ldots, \tau^{m-1}) \cdot G_2$$</p>
+        <p>and the <strong>verification key</strong>:</p>
+        <p>$$\alpha \cdot G_1$$</p>
+        <p>$$\gamma^{-1} \cdot (L_0(\tau), L_1(\tau), \ldots, L_{p-1}(\tau)) \cdot G_1$$</p>
+        <p>$$(\beta, \gamma, \delta) \cdot G_2$$</p>
+        <p>The private variables ($i \geq p$) are divided by $\delta$ and the public ones ($i < p$) by $\gamma$. This separation stops a prover from using public terms in place of private ones.</p>
+        <p>Instead of $\alpha \cdot G_1$ and $\beta \cdot G_2$, the verification key could hold their pairing $e(\alpha G_1, \beta G_2)$, since that is the only way the verifier uses them. Many implementations do this to save one pairing.</p>
+        <p>The values $\tau, \alpha, \beta, \gamma, \delta$ are toxic waste and must be destroyed. Phase two is critical for soundness: $\delta^{-1}$ forces the $H$ part of the proof into the form $\delta^{-1} H(\tau) Z_x(\tau) \cdot G_1$. Anyone who knows $\delta$ escapes that form and can forge a proof of a false statement. In practice both phases are run as multi-party ceremonies, so the setup is safe as long as one participant in each phase is honest.</p>
+        <p><strong>Linear combinations</strong></p>
+        <p>If you are as smart as I am, phase two is very confusing. Before we can break it down, we need to look at linear combinations: how we can compute with a secret, even though we only have the "encrypted" version of it ($\text{secret} \cdot G$).</p>
+        <p><em>Keep your eyes on this:</em></p>
+        <p>$$\sum_{i=0}^{l} \phi_i \cdot (\tau^i G) = \phi(\tau) \cdot G$$</p>
+        <p>Here the $\tau^i G$ are the elements of the powers of tau, and the $\phi_i$ are the public coefficients of a polynomial $\phi$. So anyone can evaluate a known polynomial at the secret $\tau$, inside the group.</p>
+        <p>To obtain $L_i(\tau) \cdot G_1 = \beta A_i(\tau) \cdot G_1 + \alpha B_i(\tau) \cdot G_1 + C_i(\tau) \cdot G_1$, we break it down term by term:</p>
+        <ol><li>$\beta A_i(\tau) \cdot G_1$: a linear combination of $\beta \cdot \tau^j \cdot G_1$, using the coefficients of $A_i$.</li><li>$\alpha B_i(\tau) \cdot G_1$: a linear combination of $\alpha \cdot \tau^j \cdot G_1$, using the coefficients of $B_i$.</li><li>$C_i(\tau) \cdot G_1$: a linear combination of $\tau^j \cdot G_1$, using the coefficients of $C_i$.</li></ol>
+        <p>All three lists were published in phase one, which is why they are there.</p>
+        <h3>Proving</h3>
+        <p>Given a witness $w$ that satisfies the constraints, compute $A(X), B(X), C(X)$ and $H(X)$ as above. Generate two random values $r, s$, which provide the zero knowledge, and compute:</p>
+        <p>$$\mathbf{A} = \big(\alpha + A(\tau) + r\delta\big) \cdot G_1$$</p>
+        <p>$$\mathbf{B} = \big(\beta + B(\tau) + s\delta\big) \cdot G_2$$</p>
+        <p>$$
+\begin{aligned}
+\mathbf{C} = \Big(\ & \delta^{-1}\big(\textstyle\sum_{i=p}^{n-1} w_i L_i(\tau) + H(\tau) Z_x(\tau)\big) \\
+& + s\big(\alpha + A(\tau) + r\delta\big) \\
+& + r\big(\beta + B(\tau) + s\delta\big) - rs\delta\ \Big) \cdot G_1
+\end{aligned}
+$$</p>
+        <p>Each of these can be computed from the proving key, without knowing the secrets. The proof is the triplet $(\mathbf{A}, \mathbf{B}, \mathbf{C})$: two elements of $\mathbb{G}_1$ and one of $\mathbb{G}_2$, whatever the size of the circuit.</p>
+        <h3>Verifying</h3>
+        <p>Given a proof and the public inputs $w_0, \ldots, w_{p-1}$, the verifier aggregates the public inputs:</p>
+        <p>$$\mathbf{L} = \sum_{i=0}^{p-1} w_i \cdot \left(\gamma^{-1} L_i(\tau) \cdot G_1\right)$$</p>
+        <p>and checks one equation:</p>
+        <p>$$e(\mathbf{A}, \mathbf{B}) = e(\alpha G_1, \beta G_2) \cdot e(\mathbf{L}, \gamma G_2) \cdot e(\mathbf{C}, \delta G_2)$$</p>
+        <p>Expanding both sides in the exponent, the terms with $r$ and $s$ cancel, and what remains is the QAP identity $A(\tau)B(\tau) - C(\tau) = H(\tau)Z_x(\tau)$, evaluated at the secret point $\tau$.</p>
+        <p>Note that Groth16 proofs are malleable: given a valid proof, anyone can produce a different valid proof of the same statement, without knowing the witness. Applications that use a proof as a unique identifier must account for this.</p>
+        <p>Reference:</p>
+        <ul><li><a href="https://2π.com/22/groth16/" target="_blank" rel="noopener noreferrer">Groth16 notes</a> by Remco Bloemen, which this page's setup section follows closely</li><li><a href="https://www.rareskills.io/post/groth16" target="_blank" rel="noopener noreferrer">Groth16</a> by RareSkills</li><li><a href="https://eprint.iacr.org/2016/260" target="_blank" rel="noopener noreferrer">On the Size of Pairing-based Non-interactive Arguments</a> by Jens Groth</li></ul>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/succinct-gkr-protocol/"><span>← Previous</span>Succinct GKR Protocol</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/"><span>Next →</span>The PLONK Protocol</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/">R1CS to QAP: A Complete Worked Example</a><span>A complete worked example from R1CS to a QAP: the matrices, interpolating each column, combining with the witness, and the final divisibility check.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plonk-protocol/">The PLONK Protocol: A Guided Walkthrough</a><span>A guided path through PLONK: the universal setup, Plonkish arithmetization, the prover&#x27;s five rounds and the verifier&#x27;s single pairing check.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

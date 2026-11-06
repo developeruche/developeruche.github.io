@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive vs Non-Interactive Zero-Knowledge Proofs</title>
+  <meta name="description" content="Interactive and non-interactive zero-knowledge proofs compared: graph 3-coloring, the Fiat-Shamir transform, zk-SNARKs, setup and public verifiability." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Interactive vs Non-Interactive Zero-Knowledge Proofs" />
+  <meta property="og:description" content="Interactive and non-interactive zero-knowledge proofs compared: graph 3-coloring, the Fiat-Shamir transform, zk-SNARKs, setup and public verifiability." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Interactive vs Non-Interactive Zero-Knowledge Proofs" />
+  <meta name="twitter:description" content="Interactive and non-interactive zero-knowledge proofs compared: graph 3-coloring, the Fiat-Shamir transform, zk-SNARKs, setup and public verifiability." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Interactive and Non-Interactive Zero-Knowledge Proof Systems",
+  "description": "Interactive and non-interactive zero-knowledge proofs compared: graph 3-coloring, the Fiat-Shamir transform, zk-SNARKs, setup and public verifiability.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Fiat-Shamir",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Interactive and Non-Interactive Zero-Knowledge Proof Systems",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/interactive-and-non-interactive-proofs/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER TWO</span>
+        <h1 class="post-title">Interactive and Non-Interactive Zero-Knowledge Proof Systems</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<h3>Introduction</h3>
+        <p>Zero-knowledge proof systems come in two fundamental varieties: interactive and non-interactive protocols. Each has distinct characteristics and use cases that make it suitable for different applications in cryptography and secure computation.</p>
+        <h3>Interactive Zero-Knowledge Proofs</h3>
+        <p>Interactive zero-knowledge proofs involve a back-and-forth dialogue between two parties:</p>
+        <ul><li>The <strong>prover</strong> (P), who possesses the secret information and wants to prove a statement</li><li>The <strong>verifier</strong> (V), who challenges the prover and verifies the proof</li></ul>
+        <p><strong>Key characteristics</strong></p>
+        <ol><li><strong>Multiple rounds</strong>: The proof consists of multiple rounds of communication between P and V.</li><li><strong>Challenge-response</strong>: Each round typically involves a commitment from the prover, a challenge from the verifier, and a response from the prover.</li><li><strong>Randomness</strong>: The verifier's challenges are randomly chosen.</li><li><strong>Completeness</strong>: An honest prover can convince an honest verifier.</li><li><strong>Soundness</strong>: A dishonest prover cannot convince a verifier, except with negligible probability.</li><li><strong>Zero knowledge</strong>: The verifier learns nothing beyond the validity of the statement.</li></ol>
+        <p><strong>Public-coin protocol example: graph 3-coloring</strong></p>
+        <p>Consider the following interactive protocol for proving that a graph G is 3-colorable without revealing the coloring:</p>
+        <pre><code>Protocol steps:
+1. P has a valid 3-coloring C of graph G
+2. In each round:
+   a. P randomly permutes the three colors (e.g., red→blue, blue→green, green→red)
+   b. P commits to the color of each vertex using a cryptographic commitment scheme
+   c. V randomly selects an edge (u,v) from G
+   d. P opens the commitments to the colors of vertices u and v
+   e. V checks that the openings are valid and that the two colors are different
+
+Security parameters:
+- If G has no valid 3-coloring, each round catches P with probability at least 1/|E|
+- k rounds achieve a soundness error of at most (1-1/|E|)^k</code></pre>
+        <p>This protocol exemplifies several key properties:</p>
+        <ul><li>It is public coin, because V's challenges are purely random and V keeps no secrets.</li><li>It reveals nothing about the actual coloring. The verifier only ever sees two different colors, and fresh permutations stop the colors from being linked across rounds. This relies on the commitments being hiding.</li><li>It can be repeated to reach any desired security level.</li></ul>
+        <h3>Non-interactive Zero-Knowledge Proofs (NIZK)</h3>
+        <p>Non-interactive zero-knowledge proofs eliminate the need for multiple rounds of interaction between the prover and verifier.</p>
+        <p><strong>Key features</strong></p>
+        <ol><li><strong>Single message</strong>: The entire proof is contained in one message from P to V.</li><li><strong>Some shared setup</strong>: NIZKs need an assumption beyond plain interaction: either a common reference string (CRS), which may or may not need a trusted setup, or the random oracle model.</li><li><strong>Public verifiability</strong>: Anyone with the verification key and the statement can verify the proof.</li><li><strong>Reusability</strong>: The same proof can be verified multiple times by different parties.</li></ol>
+        <p><strong>Construction methods</strong></p>
+        <ol><li><strong>Fiat-Shamir transform</strong><ul><li>Converts a public-coin interactive proof into a non-interactive one.</li><li>Replaces the verifier's challenges with the output of a cryptographic hash function, applied to everything sent so far. That includes the statement itself: leaving it out ("weak Fiat-Shamir") has led to real attacks.</li><li>Security is analysed in the random oracle model. Not every interactive protocol stays sound when transformed, because the prover can now try many challenges offline. Protocols with many rounds need a stronger property called round-by-round soundness.</li></ul></li><li><strong>zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge)</strong><ul><li>Provide succinct proofs (constant or polylogarithmic size).</li><li>Some require a trusted setup (Groth16, and PLONK with KZG). Others are transparent (STARKs).</li><li>Rest on cryptographic assumptions such as pairings or collision-resistant hash functions.</li><li>Many SNARKs are themselves built by applying Fiat-Shamir to an interactive protocol, so these two methods are not exclusive.</li></ul></li></ol>
+        <p><strong>Comparison table</strong></p>
+        <table><thead><tr><th>Aspect</th><th>Interactive ZK</th><th>Non-interactive ZK</th></tr></thead><tbody><tr><td>Communication rounds</td><td>Multiple</td><td>Single</td></tr><tr><td>Setup requirements</td><td>Minimal</td><td>CRS or random oracle</td></tr><tr><td>Proof size</td><td>Depends on the protocol</td><td>Depends on the scheme; can be succinct</td></tr><tr><td>Real-time requirement</td><td>Yes</td><td>No</td></tr><tr><td>Public verifiability</td><td>No: the transcript only convinces the verifier who chose the challenges</td><td>Yes</td></tr></tbody></table>
+        <h3>Applications</h3>
+        <ol><li><strong>Interactive ZK use cases</strong><ul><li>Authentication systems</li><li>Secure multiparty computation</li><li>Online zero-knowledge protocols</li></ul></li><li><strong>NIZK use cases</strong><ul><li>Blockchain and cryptocurrency systems</li><li>Digital signature schemes (Schnorr signatures are Fiat-Shamir applied to an interactive proof)</li><li>Anonymous credentials</li><li>Privacy-preserving smart contracts</li></ul></li></ol>
+        <h3>Technical Considerations</h3>
+        <p>When choosing between interactive and non-interactive protocols, consider:</p>
+        <ol><li><strong>Performance requirements</strong>: proof generation time, verification time, communication complexity and storage requirements.</li><li><strong>Security requirements</strong>: trusted setup assumptions, cryptographic assumptions and the required security level.</li><li><strong>System constraints</strong>: network latency tolerance, storage limitations and real-time interaction capabilities.</li></ol>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/polynomial-multiplication-fft/"><span>← Previous</span>Univariate Polynomial Multiplication Using FFT</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/polynomial-commitment-schemes/"><span>Next →</span>Polynomial Commitment Schemes</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/">From Problem to SNARK: Computation in ZK Proofs</a><span>How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 290" width="680" height="290" role="img" aria-labelledby="t d" font-family="'Share Tech Mono', ui-monospace, monospace" font-size="15" fill="#0B1A2E">
+  <title id="t">FRI folding layers</title>
+  <desc id="d">Eight values of f fold with challenge beta into four values of f1, then with challenge beta 2 into two equal values of f2, a constant polynomial.</desc>
+  <defs><style>.c{fill:#FCFBF8;stroke:#0B1A2E;stroke-width:1.4}.k{fill:#E7EAF0;stroke:#1B3A6B;stroke-width:1.6}.w{fill:none;stroke:#1B3A6B;stroke-width:1.2}.l{font-size:13px;fill:#54627A}</style></defs>
+  <rect width="680" height="290" fill="#F4F2EC"/>
+  <text x="20" y="40">f</text><text x="20" y="58" class="l">deg &lt; 4</text>
+  <text x="20" y="150">f1</text><text x="20" y="168" class="l">deg &lt; 2</text>
+  <text x="20" y="258">f2</text><text x="20" y="276" class="l">constant</text>
+  <!-- wires -->
+  <g class="w"><path d="M136 66L184 122M416 66L184 122M206 66L304 122M486 66L304 122M276 66L424 122M556 66L424 122M346 66L544 122M626 66L544 122"/>
+  <path d="M184 158L304 232M424 158L304 232M304 158L504 232M544 158L504 232"/></g>
+  <!-- layer 0 -->
+  <g text-anchor="middle">
+  <rect class="c" x="112" y="30" width="48" height="36"/><text x="136" y="54">10</text>
+  <rect class="c" x="182" y="30" width="48" height="36"/><text x="206" y="54">7</text>
+  <rect class="c" x="252" y="30" width="48" height="36"/><text x="276" y="54">51</text>
+  <rect class="c" x="322" y="30" width="48" height="36"/><text x="346" y="54">0</text>
+  <rect class="c" x="392" y="30" width="48" height="36"/><text x="416" y="54">95</text>
+  <rect class="c" x="462" y="30" width="48" height="36"/><text x="486" y="54">30</text>
+  <rect class="c" x="532" y="30" width="48" height="36"/><text x="556" y="54">42</text>
+  <rect class="c" x="602" y="30" width="48" height="36"/><text x="626" y="54">64</text>
+  <!-- layer 1 -->
+  <rect class="k" x="160" y="122" width="48" height="36"/><text x="184" y="146">46</text>
+  <rect class="k" x="280" y="122" width="48" height="36"/><text x="304" y="146">18</text>
+  <rect class="k" x="400" y="122" width="48" height="36"/><text x="424" y="146">81</text>
+  <rect class="k" x="520" y="122" width="48" height="36"/><text x="544" y="146">12</text>
+  <!-- layer 2 -->
+  <rect class="k" x="280" y="232" width="48" height="36"/><text x="304" y="256">65</text>
+  <rect class="k" x="480" y="232" width="48" height="36"/><text x="504" y="256">65</text>
+  <text x="20" y="100" class="l" text-anchor="start">fold with β = 7</text>
+  <text x="20" y="208" class="l" text-anchor="start">fold with β = 11</text>
+  </g>
+</svg>

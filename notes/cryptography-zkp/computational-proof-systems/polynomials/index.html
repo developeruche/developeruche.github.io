@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Univariate vs Multilinear Polynomials in ZK Proofs</title>
+  <meta name="description" content="The roles of univariate and multilinear polynomials in zero-knowledge proofs: QAP, the Boolean hypercube, commitment schemes and Zeromorph." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomials/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Univariate vs Multilinear Polynomials in ZK Proofs" />
+  <meta property="og:description" content="The roles of univariate and multilinear polynomials in zero-knowledge proofs: QAP, the Boolean hypercube, commitment schemes and Zeromorph." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomials/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Univariate vs Multilinear Polynomials in ZK Proofs" />
+  <meta name="twitter:description" content="The roles of univariate and multilinear polynomials in zero-knowledge proofs: QAP, the Boolean hypercube, commitment schemes and Zeromorph." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Polynomials",
+  "description": "The roles of univariate and multilinear polynomials in zero-knowledge proofs: QAP, the Boolean hypercube, commitment schemes and Zeromorph.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomials/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Polynomials",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomials/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Polynomials",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/polynomials/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER ONE</span>
+        <h1 class="post-title">Polynomials</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Polynomials play a central role in zero-knowledge proofs because they provide a mathematical foundation for constructing efficient and secure cryptographic systems.</p>
+        <p>A polynomial is a mathematical expression made up of variables and coefficients, combined using addition, subtraction and multiplication, where the variables are raised to non-negative integer powers. For example, $P(x) = 3x^2 + 5x + 2$ is a polynomial. In zero-knowledge proofs, these polynomials are typically defined over finite fields (a special kind of number system used in cryptography), which makes them well suited to computation and security.</p>
+        <p>This chapter is concerned with just two classes of polynomials.</p>
+        <h3>Univariate Polynomials</h3>
+        <p>Univariate polynomials have just one variable, and they are a backbone of zero-knowledge proofs, especially zk-SNARKs. Many of these proofs encode a computation as a polynomial identity in one variable $x$. One method for doing this is the Quadratic Arithmetic Program (QAP). The verifier checks the identity at a random point rather than everywhere, because two different low-degree polynomials agree at a random point only with negligible probability.</p>
+        <h3>Multilinear Polynomials</h3>
+        <p>Multilinear polynomials are linear in each of their variables, like $P(x, y) = x + y + xy$. They are a natural fit for computations over many variables: a multilinear polynomial in $n$ variables is uniquely determined by its $2^n$ values on the Boolean hypercube $\{0,1\}^n$, so any table of data can be treated as one. Proof systems built on the <a href="/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/">sum-check protocol</a> rely on them, and a scheme called Zeromorph commits to them and proves evaluations of them in zero knowledge.</p>
+        <h3>Univariate and Multilinear Polynomials in Zero-Knowledge Proofs</h3>
+        <p>Zero-knowledge proofs are cryptographic protocols that allow a prover to demonstrate the validity of a statement without revealing any additional information, a concept pivotal for privacy and scalability in applications like blockchains. Within this domain, polynomials are fundamental mathematical constructs that enable the design of efficient and secure proof systems.</p>
+        <p><strong>Univariate Polynomials: The Backbone of Many zk-SNARKs</strong></p>
+        <p>Univariate polynomials are central to many proof systems, particularly zk-SNARKs. They are instrumental in arithmetization, where a computation, often represented as a circuit, is transformed into a system of polynomial equations, using techniques such as the Quadratic Arithmetic Program (QAP).</p>
+        <p>In the QAP framework, each wire of the circuit gets polynomials for the left inputs, right inputs and outputs of the gates. Combining them with the witness gives three polynomials: $L(x)$, $R(x)$ and $O(x)$. The computation is correct exactly when $L(x) \cdot R(x) - O(x)$ is zero at every gate's evaluation point, which means it is divisible by the target polynomial $t(x)$ that vanishes on those points:</p>
+        <p>$$L(x) \cdot R(x) - O(x) = h(x) \cdot t(x)$$</p>
+        <p>The verifier checks this identity at a random point, which makes verification both simple and cheap, without revealing the inputs.</p>
+        <p>Univariate polynomials also pair well with polynomial commitment schemes such as Kate-Zaverucha-Goldberg (KZG), where the prover commits to a polynomial and later reveals its evaluation at chosen points with a short proof (<a href="https://medium.com/@bhaskark2/understanding-zero-knowledge-proofs-part-4-polynomial-commitments-e6e2a6a5e5e8" target="_blank" rel="noopener noreferrer">Understanding Zero-Knowledge Proofs: Part 4 — Polynomial Commitments</a>). This efficiency is crucial for applications that need succinct proofs, such as privacy-preserving cryptocurrencies.</p>
+        <p><strong>Multilinear Polynomials: Handling Multiple Variables Efficiently</strong></p>
+        <p>Multilinear polynomials have degree at most one in each variable, e.g. $P(x, y) = ax + by + cxy + d$. They are particularly useful for representing functions of many variables.</p>
+        <p>Their structure allows efficient evaluation: given the $2^n$ values on the hypercube, the polynomial can be evaluated at any point in $O(2^n)$ field operations, by fixing one variable at a time. This is what lets a sum-check prover run in time linear in the size of the table.</p>
+        <p>A notable application is the paper <a href="https://eprint.iacr.org/2023/917" target="_blank" rel="noopener noreferrer">Zeromorph: Zero-Knowledge Multilinear-Evaluation Proofs from Homomorphic Univariate Commitments</a>, which introduces a scheme to commit to multilinear polynomials and prove their evaluations in zero knowledge. The construction relies on any additively homomorphic univariate commitment, plus a protocol showing that committed polynomials satisfy public degree bounds. For an $n$-linear polynomial, instantiating it with a hiding version of KZG means the prover performs only $n + 5$ extra first-group operations to achieve zero knowledge. Previous constructions required an extra multi-scalar multiplication of size $2^n$.</p>
+        <p>For contrast, the name "multivariate" also appears in a different line of work. <a href="https://link.springer.com/chapter/10.1007/978-3-642-33481-8_11" target="_blank" rel="noopener noreferrer">Zero-Knowledge for Multivariate Polynomials</a> builds zero-knowledge arguments of knowledge of a <em>solution to a system of multivariate equations</em> of degree $d$, generalizing schemes based on the MQ problem. It uses a polarization identity to obtain a $d$-linear function, and a cut-and-choose technique. The hard problem there is solving the equations, so it is not a commitment to a multilinear polynomial in the sense used above.</p>
+        <p><strong>Comparative Analysis</strong></p>
+        <table><thead><tr><th><strong>Aspect</strong></th><th><strong>Univariate Polynomials</strong></th><th><strong>Multilinear Polynomials</strong></th></tr></thead><tbody><tr><td><strong>Definition</strong></td><td>One variable, e.g. $P(x) = x^2 + 2x + 1$</td><td>Linear in each variable, e.g. $P(x, y) = x + y + xy$</td></tr><tr><td><strong>Primary use in ZK</strong></td><td>Encoding a computation as a polynomial identity (QAP, PLONK)</td><td>Representing large tables over the Boolean hypercube (sum-check based systems)</td></tr><tr><td><strong>Natural domain</strong></td><td>Roots of unity, using FFTs</td><td>The Boolean hypercube $\{0,1\}^n$</td></tr><tr><td><strong>Example check</strong></td><td>$L(x) R(x) - O(x) = h(x) t(x)$ at a random point</td><td>A sum over the hypercube, using sum-check</td></tr><tr><td><strong>Commitment schemes</strong></td><td>KZG, FRI</td><td>Multilinear KZG, or univariate commitments via Zeromorph</td></tr></tbody></table>
+        <p>The choice between them depends on the proof system's design goals, such as proof size, verification time and prover cost. Multilinear systems avoid FFTs, which is often a large saving for the prover, while univariate systems have mature tooling and very small proofs. Both are indispensable in the construction of modern zero-knowledge proofs.</p>
+        <ul><li><a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/primitives/polynomial/src/univariant.rs" target="_blank" rel="noopener noreferrer">Univariate polynomial Rust implementation</a></li><li><a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/primitives/polynomial/src/multilinear.rs" target="_blank" rel="noopener noreferrer">Multilinear polynomial Rust implementation</a></li></ul>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits-rust/"><span>← Previous</span>Arithmetic Circuits in Rust</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/r1cs-to-qap/"><span>Next →</span>R1CS to QAP</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/overview-of-computation/">From Problem to SNARK: Computation in ZK Proofs</a><span>How a problem becomes a zero-knowledge proof: computation, algebraic circuits and arithmetization, with a sound Circom IsZero circuit as the example.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

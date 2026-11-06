@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Halo2 Lookup Protocol, with a Worked Example</title>
+  <meta name="description" content="The Halo2 lookup argument with a worked example: permuted columns, the running product, the four checks, and why a cheating prover gets caught." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="The Halo2 Lookup Protocol, with a Worked Example" />
+  <meta property="og:description" content="The Halo2 lookup argument with a worked example: permuted columns, the running product, the four checks, and why a cheating prover gets caught." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="The Halo2 Lookup Protocol, with a Worked Example" />
+  <meta name="twitter:description" content="The Halo2 lookup argument with a worked example: permuted columns, the running product, the four checks, and why a cheating prover gets caught." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Halo2 Lookup Protocol",
+  "description": "The Halo2 lookup argument with a worked example: permuted columns, the running product, the four checks, and why a cheating prover gets caught.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, Lookup Arguments, Halo2",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Halo2 Lookup Protocol",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/halo2-lookup-protocol/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER EIGHT</span>
+        <h1 class="post-title">Halo2 Lookup Protocol</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<h2>Introduction</h2>
+        <p>This is a way to prove something about two lists of data ("columns" in cryptographic terms), called $A$ and $S$. Imagine $A$ as a list of items you're claiming something about, and $S$ as a reference list you're checking against. The goal is to prove that every item in $A$ exists somewhere in $S$. In other words, $A$ is a subset of $S$. $S$ might have extra items not in $A$, and both lists can have repeats. Plus, $S$ can either be a fixed list agreed on beforehand, or a list that's part of the proof itself. You can compare this with the protocol description in the <a href="https://zcash.github.io/halo2/design/proving-system/lookup.html" target="_blank" rel="noopener noreferrer">Halo2 book</a>.</p>
+        <p><strong>Key components</strong></p>
+        <ol><li><strong>Two columns:</strong> $A$ is the "claim" column, the list being tested. $S$ is the "reference" column. Both have a length of $2^k$. This power-of-two size aligns with roots of unity.</li><li><strong>The goal of the protocol:</strong><ul><li>Every value in $A$ must appear at least once in $S$. For example, if $A = [1, 2]$, then $S = [3, 1, 2, 4]$ works.</li><li>$S$ can have extra values that don't appear in $A$, as 3 and 4 do above.</li></ul></li><li><strong>Fixed or variable $S$:</strong><ul><li><strong>Fixed:</strong> $S$ is a predefined list, like a table of valid denominations.</li><li><strong>Variable:</strong> $S$ is part of the trace, the computation's record. It isn't fixed in advance, but provided by the prover. This is more flexible, and the circuit must then constrain what $S$ may contain.</li></ul></li><li><strong>Duplicates allowed:</strong> For instance, $A = [1, 1, 2]$ and $S = [1, 2, 2, 3]$ are valid.</li><li><strong>Padding to $2^k$:</strong> If $A$ or $S$ isn't already $2^k$ long, it must be extended.<ul><li><strong>$A$:</strong> Fill it with some data from $S$. If $A = [1, 2]$ with $S = [1, 2, 3]$ and $k = 2$, it might become $[1, 2, 3, 3]$.</li><li><strong>$S$:</strong> Fill it with its last value, so $[1, 2, 3]$ becomes $[1, 2, 3, 3]$.</li></ul></li></ol>
+        <p><strong>Is padding safe?</strong> Padding $A$ with values from $S$ doesn't weaken the proof. Padded cells hold values that are already in $S$, and they occupy only the rows the circuit doesn't otherwise use. The cells of $A$ that matter are fixed by the rest of the circuit, so the prover can't swap them out, and they must still pass the checks below.</p>
+        <h3>What's Being Proved?</h3>
+        <p>This is done in a cryptographic context, for a zero-knowledge proof system:</p>
+        <ul><li>The prover, who knows $A$ and $S$, convinces the verifier, who doesn't see the lists, that $A \subseteq S$.</li><li>It's efficient, using polynomials and permutations.</li></ul>
+        <p>The flexibility of $S$ is useful:</p>
+        <ul><li><strong>Fixed $S$</strong> is used to check against a standard table (e.g., "all my transaction amounts are valid denominations").</li><li><strong>Variable $S$</strong> is used where the table is generated by the computation itself.</li></ul>
+        <h2>Protocol</h2>
+        <p>The protocol works over $H = \{1, w, w^2, \ldots, w^{2^k - 1}\}$, a set of $2^k$ elements where $w$ is a root of unity in the finite field.</p>
+        <p>We will use this example throughout, with $k = 2$:</p>
+        <p>$$A = [1, 2, 2, 3] \qquad S = [3, 1, 2, 4]$$</p>
+        <p>Every value of $A$ is in $S$, and 4 is the extra value in $S$.</p>
+        <h3>Step 1: Creating the Permutations $A'$ and $S'$</h3>
+        <p>The prover rearranges $A$ and $S$ into new lists $A'$ and $S'$, with specific rules:</p>
+        <ul><li><strong>$A'$:</strong> A permutation of $A$ where identical values are adjacent. Different values can be in any order.</li><li><strong>$S'$:</strong> A permutation of $S$ such that wherever a new value first appears in $A'$, $S'$ holds the same value at that position. The remaining positions of $S'$ are filled with whatever is left of $S$.</li></ul>
+        <p>For our example:</p>
+        <p>$$A' = [1, 2, 2, 3] \qquad S' = [1, 2, 4, 3]$$</p>
+        <p>These satisfy the rule that, for each position $i$, either $A'_i = S'_i$ or $A'_i = A'_{i-1}$. So $A'$ either matches $S'$ or repeats its previous value, which means that every value in $A'$ traces back to an equal value in $S'$.</p>
+        <p>Position 2 is the interesting one: $A'_2 = 2$ isn't equal to $S'_2 = 4$, but it repeats $A'_1 = 2$, so it's fine. A value not in $S$ can't pass this. If $A'$ ended in 5, then at that position $A'_3 = 5$ would match neither $S'_3$ nor $A'_2$.</p>
+        <h3>Step 2: Computing the $Z$ Polynomial</h3>
+        <p>The verifier sends random challenges $\beta$ and $\gamma$. The prover computes a polynomial $Z$, a running product proving that $A'$ and $S'$ really are permutations of $A$ and $S$:</p>
+        <ul><li><strong>Boundary conditions:</strong> $Z_0 = 1$ and $Z_{2^k} = 1$.</li><li><strong>Recurrence:</strong> For $i$ from 0 to $2^k - 1$:</li></ul>
+        <p>$$Z_{i+1} = Z_i \cdot \frac{(A_i + \beta)(S_i + \gamma)}{(A'_i + \beta)(S'_i + \gamma)}$$</p>
+        <p>For our example, with $\beta = 2$ and $\gamma = 3$ (small numbers to keep it readable):</p>
+        <ul><li>$Z_0 = 1$</li><li>$Z_1 = 1 \cdot \frac{(1+2)(3+3)}{(1+2)(1+3)} = \frac{3}{2}$</li><li>$Z_2 = \frac{3}{2} \cdot \frac{(2+2)(1+3)}{(2+2)(2+3)} = \frac{6}{5}$</li><li>$Z_3 = \frac{6}{5} \cdot \frac{(2+2)(2+3)}{(2+2)(4+3)} = \frac{6}{7}$</li><li>$Z_4 = \frac{6}{7} \cdot \frac{(3+2)(4+3)}{(3+2)(3+3)} = 1$</li></ul>
+        <p>The product returns to 1, because the numerators and denominators contain the same values in a different order. In a real run this happens in a finite field, with fractions meaning field inverses.</p>
+        <h3>Step 3: Verifier Checks $A'$ and $S'$</h3>
+        <p>The verifier checks two conditions over all points in $H$:</p>
+        <p>$$(A'(X) - S'(X)) \cdot (A'(X) - A'(w^{-1}X)) = 0$$</p>
+        <p>At every position, either $A'_i = S'_i$ or $A'_i = A'_{i-1}$.</p>
+        <p>$$L_0(X) \cdot (A'(X) - S'(X)) = 0$$</p>
+        <p>$L_0(X)$ is the Lagrange polynomial that's 1 at the first position $X = 1$, and 0 elsewhere. This forces $A'_0 = S'_0$. It is needed because, at the first position, the first check's "previous value" wraps around to the last one, which would otherwise let the first value of $A'$ escape the check.</p>
+        <h3>Step 4: Verifier Checks $Z$</h3>
+        <p>The verifier also checks $Z$ with two equations:</p>
+        <p>$$Z(wX) \cdot (A'(X) + \beta)(S'(X) + \gamma) - Z(X) \cdot (A(X) + \beta)(S(X) + \gamma) = 0$$</p>
+        <p>This is the polynomial version of the recurrence. It holds across all of $H$, including the wrap-around from the last position to the first, which is how it forces the product to come back to the start.</p>
+        <p>$$L_0(X) \cdot (1 - Z(X)) = 0$$</p>
+        <p>This fixes the starting value $Z_0 = 1$.</p>
+        <p>If all four equations hold, the verifier accepts. A real implementation in Halo2 also reserves a few rows for blinding, to keep the protocol zero knowledge, and leaves those rows out of the first and third checks.</p>
+        <h3>Why Does This Prove $A \subseteq S$?</h3>
+        <p>The two parts do different jobs:</p>
+        <ul><li><strong>The $Z$ checks</strong> prove that $A'$ is a permutation of $A$, and $S'$ a permutation of $S$. So the prover can't invent new values for $S'$ or drop values of $A$.</li><li><strong>The $A'$ and $S'$ checks</strong> prove that each value of $A'$ appears in $S'$.</li></ul>
+        <p>Together, each value of $A$ appears in $S$.</p>
+        <h3>Can a Dishonest Prover Cheat?</h3>
+        <p>Suppose $A = [1, 2, 4, 4]$ and $S = [3, 4, 4, 4]$, where 1 and 2 aren't in $S$. A cheating prover might set $A' = S' = [1, 2, 4, 4]$, which satisfies the checks of step 3. But this $S'$ isn't a permutation of $S$, and step 4 catches that. With $\beta = 2$ and $\gamma = 3$, the running product goes $1, \frac{3}{2}, \frac{21}{10}, \frac{21}{10}, \frac{21}{10}$, and never returns to 1.</p>
+        <h3>Summary</h3>
+        <p>The protocol pads $A$ and $S$, permutes them into $A'$ and $S'$, computes $Z$, and verifies polynomial equations to prove $A \subseteq S$.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/plookup/"><span>← Previous</span>Plookup</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/"><span>Next →</span>HyperPlonk</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/">Lookup Arguments in Zero-Knowledge Proofs</a><span>What lookup arguments are, why they replace many gates with one table check, what they do and don&#x27;t hide, and how they connect to PLONK.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/plookup/">Plookup: The Lookup Protocol Explained</a><span>The plookup protocol: sorting values with the table, the aggregation polynomial, the identities the verifier checks, and a small worked example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

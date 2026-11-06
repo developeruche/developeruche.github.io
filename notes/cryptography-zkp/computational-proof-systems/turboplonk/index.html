@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TurboPLONK: Custom Gates and Transition Constraints</title>
+  <meta name="description" content="TurboPLONK explained: programs as state sequences, transition gates over the next row, selectors for constants, and copy constraints as memory." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/turboplonk/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="TurboPLONK: Custom Gates and Transition Constraints" />
+  <meta property="og:description" content="TurboPLONK explained: programs as state sequences, transition gates over the next row, selectors for constants, and copy constraints as memory." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/turboplonk/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="TurboPLONK: Custom Gates and Transition Constraints" />
+  <meta name="twitter:description" content="TurboPLONK explained: programs as state sequences, transition gates over the next row, selectors for constants, and copy constraints as memory." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "TurboPLONK",
+  "description": "TurboPLONK explained: programs as state sequences, transition gates over the next row, selectors for constants, and copy constraints as memory.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/turboplonk/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Zero-Knowledge, PLONK, Custom Gates",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/turboplonk/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "TurboPLONK",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/turboplonk/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER EIGHT</span>
+        <h1 class="post-title">TurboPLONK</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>TurboPLONK is an evolution of PLONK that interprets a circuit as a sequence of states, with transitions between them and copy constraints. This model keeps the benefits of zero-knowledge proofs based on polynomial commitment schemes, but allows more concise and specialized representations, resulting in better performance for constraint-heavy tasks such as bitwise operations.</p>
+        <p>See TurboPLONK as "PLONK with superpowers". It lets you define custom gates, and inject constants via selectors, which compresses operations like elliptic curve arithmetic into fewer constraints, making circuits smaller and proofs faster. The <a href="https://docs.zkproof.org/pages/standards/accepted-workshop3/proposal-turbo_plonk.pdf" target="_blank" rel="noopener noreferrer">TurboPLONK proposal</a> by Gabizon and Williamson gives fixed-base scalar multiplication as an example: one gate for every two input bits.</p>
+        <p>This works because the verifier checks its equation directly on a random opening of the prover's polynomials, rather than "in the exponent" with a pairing, so PLONK isn't tied to R1CS-style constraints.</p>
+        <h3>Key Components of TurboPLONK</h3>
+        <p><strong>The state.</strong> A program is a sequence of states in $\mathbb{F}^w$, one per row of the trace, where the state size $w$ is chosen by the program designer. Proof size and prover time grow linearly with $w$, and standard choices are 3 or 4.</p>
+        <p><strong>Transition gate.</strong> A transition gate is a polynomial constraint that can involve the values of both the current row and the next row. Vanilla PLONK is the special case that only uses the current row.</p>
+        <p>For example, a Fibonacci trace with columns $a$ and $b$ needs no copy constraints between rows at all, just two transition constraints:</p>
+        <p>$$a_{i+1} - b_i = 0 \qquad b_{i+1} - a_i - b_i = 0$$</p>
+        <p>Starting from $(1, 1)$, the rows are $(1, 1), (1, 2), (2, 3), (3, 5)$. On the polynomial side, the next row is reached with $a(\omega X)$.</p>
+        <p><strong>Selectors.</strong> Selectors are preprocessed values fixed by the circuit, one per row. They are no longer limited to choosing between addition and multiplication. They can supply arbitrary precomputed constants (e.g. elliptic curve parameters), or switch a row between different constraint modes.</p>
+        <p><strong>Copy constraints as memory.</strong> A copy constraint partitions the cells of the trace into sets that must hold equal values. The proposal notes that this can be thought of as enabling memory access, since a later value in the trace can be forced to equal an earlier one.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/plonk-verifier/"><span>← Previous</span>The PLONK Verifier</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/"><span>Next →</span>Lookup Arguments and PlonKup</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/">HyperPlonk: PLONK Without FFTs on the Hypercube</a><span>A study companion to HyperPlonk: replacing Plonk&#x27;s FFTs with sum-check over the Boolean hypercube, the zero check, and cheap high-degree gates.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/lookup-arguments-and-plonkup/">Lookup Arguments in Zero-Knowledge Proofs</a><span>What lookup arguments are, why they replace many gates with one table check, what they do and don&#x27;t hide, and how they connect to PLONK.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sumcheck 201: Collapsing Arrays and Precomputation</title>
+  <meta name="description" content="Notes on Sumcheck 201: the Lagrange basis on the hypercube, the collapsing arrays and precomputation algorithms, and a full three-variable example." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Sumcheck 201: Collapsing Arrays and Precomputation" />
+  <meta property="og:description" content="Notes on Sumcheck 201: the Lagrange basis on the hypercube, the collapsing arrays and precomputation algorithms, and a full three-variable example." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Sumcheck 201: Collapsing Arrays and Precomputation" />
+  <meta name="twitter:description" content="Notes on Sumcheck 201: the Lagrange basis on the hypercube, the collapsing arrays and precomputation algorithms, and a full three-variable example." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Sumcheck 201 Paper Note",
+  "description": "Notes on Sumcheck 201: the Lagrange basis on the hypercube, the collapsing arrays and precomputation algorithms, and a full three-variable example.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Sum-Check, Multilinear, Rust",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Sumcheck 201 Paper Note",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · MISCELLANEOUS</span>
+        <h1 class="post-title">Sumcheck 201 Paper Note</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>These are my notes from reading <a href="https://github.com/ingonyama-zk/papers/blob/main/sumcheck_201_chapter_1.pdf" target="_blank" rel="noopener noreferrer">Sumcheck 201</a> by Ingonyama, which explores algorithmic modifications to the sum-check protocol for products of multilinear extensions, to improve parallel computation and address memory bottlenecks. I implemented both algorithms in <a href="https://github.com/developeruche/super-sumcheck" target="_blank" rel="noopener noreferrer">super-sumcheck</a>. If the <a href="/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/">sum-check protocol</a> is new to you, start there.</p>
+        <p>A feeling you must get used to going further: this feels like doing sum-check in reverse.</p>
+        <h3>The Boolean Hypercube and the Lagrange Basis</h3>
+        <p>Take the $n$-dimensional Boolean hypercube $\{0,1\}^n$, with $n = \log_2 N$. The Lagrange basis on it is:</p>
+        <p>$$\chi_{\vec{s}}(\vec{x}) = \prod_{i=1}^{n} (\bar{x}_i \bar{s}_i + x_i s_i)$$</p>
+        <p>where:</p>
+        <ul><li>$\vec{s}_n(k) = \{s_{MSB(k)}, \ldots, s_{LSB(k)}\}$ is the $n$-bit representation of an integer $k$</li><li>$\vec{x}_n = \{x_n, x_{n-1}, \ldots, x_1\}$</li><li>$\bar{x}_i = 1 - x_i$ and $\bar{s}_i = 1 - s_i$</li></ul>
+        <p>A multilinear polynomial can be expressed in the Lagrange basis as:</p>
+        <p>$$f(\vec{x}) = \sum_{k=1}^{2^n} \chi_{\vec{s}_n(k-1)}(\vec{x}) \cdot f(\vec{s}_n(k-1))$$</p>
+        <p><strong>Sample.</strong> The values $\{f_0, f_1, f_2, f_3\} \in \mathbb{F}^4$ are represented on $\{0,1\}^2$, each one occupying a vertex of the hypercube:</p>
+        <table><thead><tr><th>$k$</th><th>$\vec{s}_2(k)$, as $(x_2, x_1)$</th><th>$f(\vec{s}_2(k))$</th></tr></thead><tbody><tr><td>0</td><td>$(0, 0)$</td><td>$f_0$</td></tr><tr><td>1</td><td>$(0, 1)$</td><td>$f_1$</td></tr><tr><td>2</td><td>$(1, 0)$</td><td>$f_2$</td></tr><tr><td>3</td><td>$(1, 1)$</td><td>$f_3$</td></tr></tbody></table>
+        <p>So:</p>
+        <p>$$f(x_2, x_1) = \sum_{k=1}^{4} \chi_{\vec{s}_2(k-1)}(\vec{x}) \cdot f(\vec{s}_2(k-1)) = \bar{x}_2 \bar{x}_1 f_0 + \bar{x}_2 x_1 f_1 + x_2 \bar{x}_1 f_2 + x_2 x_1 f_3$$</p>
+        <p>The property everything below relies on is that a multilinear polynomial can be split on any one variable, for any input, not only 0 and 1:</p>
+        <p>$$f(x, y) = \bar{y} \cdot f(x, 0) + y \cdot f(x, 1)$$</p>
+        <p>For example, take $f(x, y) = 2xy + 2x$. Directly, $f(2, 3) = 2 \cdot 2 \cdot 3 + 2 \cdot 2 = 16$. Using the split, $f(2, 3) = (1 - 3) \cdot f(2, 0) + 3 \cdot f(2, 1) = -2 \cdot 4 + 3 \cdot 8 = 16$.</p>
+        <h3>Algorithm 1: Collapsing Arrays</h3>
+        <p>The idea is to parallelize each round's computation efficiently, while collapsing the vector size by half each round. Each round depends only on the array from the previous round.</p>
+        <p>We can write the polynomial of round 1 as an indexed vector:</p>
+        <p>$$r_1(\vec{x}_{n-1}, x) = \bar{x} \cdot f(\vec{x}_{n-1}, 0) + x \cdot f(\vec{x}_{n-1}, 1)$$</p>
+        <p>and store $f$ in an array of size $2^n$, where the even element $f(\vec{x}_{n-1}, 0)$ and the odd element $f(\vec{x}_{n-1}, 1)$ are consecutive. Then we sum over $\{0,1\}^{n-1}$ to compute the first round polynomial:</p>
+        <p>$$
+\begin{aligned}
+r_1(x) &= \sum_{x_i \in \{0,1\}} r_1(\vec{x}_{n-1}, x) \\
+&= \bar{x} \sum_{x_i \in \{0,1\}} f(\vec{x}_{n-1}, 0) + x \sum_{x_i \in \{0,1\}} f(\vec{x}_{n-1}, 1)
+\end{aligned}
+$$</p>
+        <p>The prover sends $r_1(x)$ to the verifier, to obtain $\alpha_1 \in \mathbb{F}$. Computing this sum can be done entirely in parallel. As a preparatory step for the next round, we compute</p>
+        <p>$$r_1(x_n, \ldots, x_2, \alpha_1) = \bar{\alpha}_1 \cdot f(x_n, \ldots, x_2, 0) + \alpha_1 \cdot f(x_n, \ldots, x_2, 1)$$</p>
+        <p>and store it in a $2^{n-1}$-element array, the intermediate representation.</p>
+        <p>In round 2:</p>
+        <p>$$
+\begin{aligned}
+r_2(\vec{x}_{n-2}, x, \alpha_1) = {} & \bar{x} \big( \bar{\alpha}_1 f(\vec{x}_{n-2}, 0, 0) + \alpha_1 f(\vec{x}_{n-2}, 0, 1) \big) \\
+& + x \big( \bar{\alpha}_1 f(\vec{x}_{n-2}, 1, 0) + \alpha_1 f(\vec{x}_{n-2}, 1, 1) \big) \\
+= {} & \bar{x} \cdot r_1(\vec{x}_{n-2}, 0, \alpha_1) + x \cdot r_1(\vec{x}_{n-2}, 1, \alpha_1)
+\end{aligned}
+$$</p>
+        <p>We can note that this equation can be written in terms of $r_1$, so we can discard the original $2^n$ array. In general, the array for the $p$-th round follows this recursive formula:</p>
+        <p>$$r_p(\vec{x}_{n-p}, x, \vec{\alpha}_{p-1}) = \bar{x} \cdot r_{p-1}(\vec{x}_{n-p}, 0, \vec{\alpha}_{p-1}) + x \cdot r_{p-1}(\vec{x}_{n-p}, 1, \vec{\alpha}_{p-1})$$</p>
+        <p>where the two terms are consecutive even and odd elements of the array of $2^{n-p+1}$ elements left over from the previous round. This temporary array must be stored in memory, to be used in the next round. This is how the prover computes $r_p(x)$:</p>
+        <p>$$r_p(x) = \sum_{x_i \in \{0,1\}} r_p(\vec{x}_{n-p}, x, \vec{\alpha}_{p-1})$$</p>
+        <h3>Example</h3>
+        <p>Take a polynomial in 3 variables:</p>
+        <p>$$
+\begin{aligned}
+f(x_3, x_2, x_1) = {} & f_0 \bar{x}_3 \bar{x}_2 \bar{x}_1 + f_1 \bar{x}_3 \bar{x}_2 x_1 + f_2 \bar{x}_3 x_2 \bar{x}_1 + f_3 \bar{x}_3 x_2 x_1 \\
+& + f_4 x_3 \bar{x}_2 \bar{x}_1 + f_5 x_3 \bar{x}_2 x_1 + f_6 x_3 x_2 \bar{x}_1 + f_7 x_3 x_2 x_1
+\end{aligned}
+$$</p>
+        <p><strong>Round 1.</strong> The round polynomial is:</p>
+        <p>$$r_1(x) = \sum_{x_3, x_2 \in \{0,1\}} f(x_3, x_2, x) = \sum_{i=0}^{3} r_1^{(i)}(x) \qquad \text{where} \qquad r_1^{(i)}(x) = f_{2i} \bar{x} + f_{2i+1} x$$</p>
+        <p>That is:</p>
+        <p>$$r_1(x) = \bar{x} (f_0 + f_2 + f_4 + f_6) + x (f_1 + f_3 + f_5 + f_7)$$</p>
+        <p>with one term per pair: $r_1^{(0)}(x) = \bar{x} f_0 + x f_1$, $r_1^{(1)}(x) = \bar{x} f_2 + x f_3$, $r_1^{(2)}(x) = \bar{x} f_4 + x f_5$, and $r_1^{(3)}(x) = \bar{x} f_6 + x f_7$.</p>
+        <p>After substituting $x = \alpha_1$, we keep the values $r_1^{(i)}(\alpha_1)$ as the entries on the vertices of a 2-dimensional Boolean hypercube, or equivalently a 4-element array. We can then compute $r_2$ directly from this data.</p>
+        <p><strong>Round 2.</strong></p>
+        <p>$$r_2(x) = \sum_{x_3 \in \{0,1\}} f(x_3, x, \alpha_1) = \sum_{i=0}^{1} r_2^{(i)}(x) \qquad \text{where} \qquad r_2^{(i)}(x) = r_1^{(2i)}(\alpha_1) \bar{x} + r_1^{(2i+1)}(\alpha_1) x$$</p>
+        <p>So:</p>
+        <p>$$r_2^{(0)}(x) = [\bar{\alpha}_1 f_0 + \alpha_1 f_1] \bar{x} + [\bar{\alpha}_1 f_2 + \alpha_1 f_3] x$$</p>
+        <p>$$r_2^{(1)}(x) = [\bar{\alpha}_1 f_4 + \alpha_1 f_5] \bar{x} + [\bar{\alpha}_1 f_6 + \alpha_1 f_7] x$$</p>
+        <p><strong>Round 3.</strong> Similarly, we keep $r_2^{(i)}(\alpha_2)$ as a two-element array, and compute:</p>
+        <p>$$r_3(x) = f(x, \alpha_2, \alpha_1) = r_2^{(0)}(\alpha_2) \bar{x} + r_2^{(1)}(\alpha_2) x$$</p>
+        <p>$$
+\begin{aligned}
+r_3(x) = {} & \big( [\bar{\alpha}_1 \bar{\alpha}_2 f_0 + \alpha_1 \bar{\alpha}_2 f_1] + [\bar{\alpha}_1 \alpha_2 f_2 + \alpha_1 \alpha_2 f_3] \big) \bar{x} \\
+& + \big( [\bar{\alpha}_1 \bar{\alpha}_2 f_4 + \alpha_1 \bar{\alpha}_2 f_5] + [\bar{\alpha}_1 \alpha_2 f_6 + \alpha_1 \alpha_2 f_7] \big) x
+\end{aligned}
+$$</p>
+        <p>At the end, $r_3(\alpha_3) = f(\alpha_3, \alpha_2, \alpha_1)$, the single evaluation the verifier needs to check.</p>
+        <p>This example uses one polynomial, so each round polynomial is linear. For a product of $d$ multilinear polynomials, the prover keeps one array per polynomial and folds them all the same way. Each round polynomial then has degree $d$, so the prover computes it at $d + 1$ points.</p>
+        <h3>Algorithm 2: Precomputation</h3>
+        <p>The round polynomial can also be written using the Lagrange basis over the variables already fixed:</p>
+        <p>$$
+\begin{aligned}
+r_p(x) &= \sum_{x_i \in \{0,1\}} f(\vec{x}_{n-p}, x, \vec{\alpha}_{p-1}) \\
+&= \sum_{r=1}^{2^p} \left( \chi_{\vec{s}_p(r-1)}(x, \vec{\alpha}_{p-1}) \cdot \sum_{x_i \in \{0,1\}} f(\vec{x}_{n-p}, \vec{s}_p(r-1)) \right)
+\end{aligned}
+$$</p>
+        <p>Notice that the round polynomial in the $p$-th round is a sum of the elements of the Hadamard product of two $2^p$-element vectors, and one of them, the inner sums of $f$, can be precomputed entirely before the sum-check protocol starts. The challenges only enter through the $\chi$ vector.</p>
+        <h3>Comparing the Two</h3>
+        <p>Algorithm 1 is less memory intensive, since the arrays halve each round, while Algorithm 2 stores precomputed tables to offload work up front.</p>
+        <p>Algorithm 2 is easier to understand by looking at the paper's diagram. But my <a href="https://github.com/developeruche/super-sumcheck/blob/main/benches/benchmark.rs" target="_blank" rel="noopener noreferrer">benchmark</a> shows Algorithm 1 is far faster in this implementation: for four polynomials in 7 variables, around 270 µs against around 775 ms, measured while preparing this page. So more effort has been placed into Algorithm 1. That gap reflects this implementation and these parameters, and shouldn't be read as a general ratio between the two algorithms.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/hyperplonk/"><span>← Previous</span>HyperPlonk</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/"><span>Next →</span>Keccak Hash Function</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG Commitments: A Worked Example</a><span>KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/sum-check-protocol/">The Sum-Check Protocol: Worked Example and Rust Code</a><span>The sum-check protocol: each round, a fully worked example by hand, why it is sound, a Rust implementation, and the univariate sum-check.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

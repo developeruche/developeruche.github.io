@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KZG Polynomial Commitments Explained — Developer Uche</title>
+  <meta name="description" content="How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="KZG Polynomial Commitments Explained" />
+  <meta property="og:description" content="How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="KZG Polynomial Commitments Explained" />
+  <meta name="twitter:description" content="How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "KZG Polynomial Commitment Scheme",
+  "description": "How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Polynomial Commitments, KZG, Pairings",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "KZG Polynomial Commitment Scheme",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER THREE</span>
+        <h1 class="post-title">KZG Polynomial Commitment Scheme</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Let's dive into the KZG polynomial commitment scheme, a standout in the world of cryptography for its efficiency and elegance. Named after its creators (Kate, Zaverucha and Goldberg), KZG has become a go-to in areas like zero-knowledge proofs and blockchains.</p>
+        <p>The KZG scheme lets someone commit to a polynomial, say $P(x) = 2x^3 + x + 4$, in a way that's compact and verifiable. A single small commitment (think of it as a cryptographic fingerprint) locks in your polynomial without sending it. Later, you can open specific evaluations, like proving $P(2) = 22$, and anyone can check that quickly without seeing the whole polynomial.</p>
+        <p><strong>How does it work?</strong> It relies on a bilinear pairing: a map $e: \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ between elliptic curve groups, with the property that $e(aG_1, bG_2) = e(G_1, G_2)^{ab}$. This lets the verifier check one multiplication between hidden values, which ordinary curve operations can't do.</p>
+        <p>The setup starts with a trusted ceremony that generates a structured reference string (SRS), a list of precomputed points:</p>
+        <p>$$[G_1,\ \alpha G_1,\ \alpha^2 G_1,\ \ldots,\ \alpha^d G_1] \quad \text{and} \quad [G_2,\ \alpha G_2]$$</p>
+        <p>Here $G_1$ and $G_2$ are base points of the two groups, $\alpha$ is a secret number (called the trapdoor), and $d$ is the maximum degree of the polynomials you can commit to. This string is public, but $\alpha$ must stay unknown. Anyone who learns it can open a commitment to false values, so the setup has to be secure.</p>
+        <p><strong>Commit.</strong> To commit to $P(x) = \sum_i p_i x^i$, you compute $C = P(\alpha) G_1$. Nobody knows $\alpha$, but this can still be computed from the SRS as a linear combination:</p>
+        <p>$$C = \sum_i p_i \cdot (\alpha^i G_1)$$</p>
+        <p>This single point $C$ is your commitment: constant-sized, no matter how big your polynomial is.</p>
+        <p><strong>Open.</strong> To prove $P(a) = b$, you create the quotient polynomial</p>
+        <p>$$Q(x) = \frac{P(x) - b}{x - a}$$</p>
+        <p>which works because $P(a) = b$ means $x - a$ divides $P(x) - b$ cleanly. The proof is a commitment to the quotient: $W = Q(\alpha) G_1$.</p>
+        <p><strong>Verify.</strong> The verifier uses the pairing to check $P(\alpha) - b = Q(\alpha)(\alpha - a)$ without knowing $\alpha$:</p>
+        <p>$$e(C - bG_1,\ G_2) = e(W,\ \alpha G_2 - aG_2)$$</p>
+        <p>If it holds, the claim is legit, and the check takes constant time regardless of the polynomial's size.</p>
+        <p><strong>Why is KZG cool?</strong> It's very efficient: commitments and proofs are one group element each, and verification is a fixed number of pairings. This is why it's widely used in zk-SNARKs and in Ethereum's blobs (<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank" rel="noopener noreferrer">EIP-4844</a>).</p>
+        <p><strong>The catch.</strong> That trusted setup: if the secret $\alpha$ leaks, the prover can forge openings. Multi-party ceremonies mitigate this, since $\alpha$ stays secret as long as a single participant is honest. Also, plain KZG isn't hiding. The commitment is deterministic, and every opening reveals an evaluation, so applications that need secrecy add random blinding. Finally, it relies on elliptic curve assumptions, so it isn't post-quantum secure. Alternatives like <a href="/notes/cryptography-zkp/computational-proof-systems/fri-polynomial-commitment/">FRI</a> avoid both the trusted setup and the curves, at the cost of larger proofs.</p>
+        <p>In short, KZG is a sleek, pairing-based way to commit to polynomials, balancing compactness with provability. We will look at 3 flavors of this scheme:</p>
+        <ul><li><a href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/">Univariate KZG</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG</a></li><li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch Univariate KZG</a></li></ul>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/polynomial-commitment-schemes/"><span>← Previous</span>Polynomial Commitment Schemes</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/"><span>Next →</span>Univariate KZG Polynomial Commitment Scheme</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/">Multilinear KZG Commitments: A Worked Example</a><span>KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/">Univariate KZG: Worked Example and Rust Code</a><span>Univariate KZG in practice: recommended resources, a small worked commit, open and verify example, and a Rust implementation.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

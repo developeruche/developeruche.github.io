@@ -1,5 +1,21 @@
 [
   {
+    "title": "Computational Proof Systems",
+    "slug": "computational-proof-systems",
+    "category": "cryptography-zkp",
+    "date": "2026-11-06",
+    "excerpt": "A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with worked examples and Rust code.",
+    "tags": [
+      "Zero-Knowledge",
+      "Cryptography",
+      "SNARKs",
+      "PLONK"
+    ],
+    "link": "/notes/cryptography-zkp/computational-proof-systems/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Rapidly Verifiable XMSS Signatures",
     "slug": "rapidly-verifiable-xmss",
     "category": "cryptography-zkp",
@@ -109,7 +125,7 @@
     "links": [
       {
         "label": "RESEARCH NOTES",
-        "url": "https://developeruche.gitbook.io/computational-proof-systems"
+        "url": "/notes/cryptography-zkp/computational-proof-systems/"
       },
       {
         "label": "SOURCE CODE",

@@ -77,6 +77,18 @@ def load_articles():
         arts.append(dict(kind="note", path=link, file=link.strip("/") + "/index.html",
                          title=n["title"], tags=n.get("tags", []), cat=n["category"],
                          excerpt=n.get("excerpt") or ""))
+    for bf in sorted((ROOT / "data/notes-md").glob("*/book.json")):
+        book = json.loads(bf.read_text(encoding="utf-8"))
+        if not book.get("published"):
+            continue
+        base = f"/notes/{book['category']}/{book['slug']}/"
+        for c in book["chapters"]:
+            for p in c["pages"]:
+                if p.get("done"):
+                    link = f"{base}{p['slug']}/"
+                    arts.append(dict(kind="note", path=link, file=link.strip("/") + "/index.html",
+                                     title=p["title"], tags=p.get("tags", []), cat=book["category"],
+                                     excerpt=p["description"], unlisted=True))
     out = []
     for a in arts:
         if not (ROOT / a["file"]).is_file():
@@ -139,6 +151,8 @@ def related_for(a, arts, k=3):
     for b in arts:
         if b["path"] == a["path"]:
             continue
+        if b.get("unlisted") and not a.get("unlisted"):
+            continue  # the book's pages link out; other articles link to its contents page
         shared = len(tags & {t.lower() for t in b["tags"]})
         score = shared * 2 + (1 if b["cat"] == a["cat"] else 0)
         if score:
@@ -303,6 +317,11 @@ def touch_sitemap(paths):
     for p in paths:
         loc = re.escape(SITE + p)
         s = re.sub(r"(<loc>%s</loc>\s*<lastmod>)[^<]*" % loc, lambda m: m.group(1) + TODAY, s)
+    for path in paths:
+        loc = SITE + path
+        if f"<loc>{loc}</loc>" not in s:
+            s = s.replace("</urlset>", f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{TODAY}</lastmod>\n"
+                                       "    <priority>0.6</priority>\n  </url>\n</urlset>")
     write("sitemap.xml", s)
 
 
@@ -312,13 +331,13 @@ def main():
         process_article(a, arts)
 
     blogs = [a for a in arts if a["kind"] == "blog"]
-    notes = [a for a in arts if a["kind"] == "note"]
+    notes = [a for a in arts if a["kind"] == "note" and not a.get("unlisted")]
     fill_grid("blog.html", "blog-grid", blogs)
     fill_grid("notes.html", "notes-grid", notes)
     for cat in NOTE_CATS:
         fill_grid(f"notes/{cat}/index.html", "notes-grid", [n for n in notes if n["cat"] == cat])
 
-    build_feed(arts)
+    build_feed([a for a in arts if not a.get("unlisted")])
     touch_sitemap([a["path"] for a in arts] + ["/blog", "/notes"] + [f"/notes/{c}/" for c in NOTE_CATS])
 
     # the dummy post template must never be indexed

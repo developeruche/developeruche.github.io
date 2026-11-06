@@ -7,6 +7,14 @@
     <language>en</language>
     <atom:link href="https://developeruche.com/feed.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Computational Proof Systems</title>
+      <link>https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/</link>
+      <guid isPermaLink="true">https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 +0000</pubDate>
+      <description>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</description>
+      <category>Zero-Knowledge</category><category>Cryptography</category><category>SNARKs</category><category>PLONK</category>
+    </item>
+    <item>
       <title>Rapidly Verifiable XMSS Signatures</title>
       <link>https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/</link>
       <guid isPermaLink="true">https://developeruche.com/notes/cryptography-zkp/rapidly-verifiable-xmss/</guid>

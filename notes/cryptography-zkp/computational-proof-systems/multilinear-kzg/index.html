@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multilinear KZG Commitments: A Worked Example — Developer Uche</title>
+  <meta name="description" content="KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Multilinear KZG Commitments: A Worked Example" />
+  <meta property="og:description" content="KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Multilinear KZG Commitments: A Worked Example" />
+  <meta name="twitter:description" content="KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Multilinear KZG Polynomial Commitment Scheme",
+  "description": "KZG for multilinear polynomials: the Lagrange-basis SRS, witness polynomials, the pairing check, and a full example worked by hand.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Polynomial Commitments, KZG, Multilinear, Rust",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Multilinear KZG Polynomial Commitment Scheme",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/multilinear-kzg/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · CHAPTER THREE</span>
+        <h1 class="post-title">Multilinear KZG Polynomial Commitment Scheme</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Similar to the univariate KZG scheme, the interface of this commitment scheme entails:</p>
+        <ol><li>Generate SRS</li><li>Commit function</li><li>Opening</li><li>Verification</li></ol>
+        <p>Because we are dealing with multiple variables, these functions need adapting to keep the scheme secure and succinct.</p>
+        <p>KZG on multilinear polynomials is quite different from the univariate case. First, the multilinear polynomial is expressed by its evaluations over the Boolean hypercube, which has $2^{\ell}$ points for a polynomial with $\ell$ variables.</p>
+        <p>For example, given the multilinear polynomial $f(x,y) = 2xy + x + y + 4$, its evaluation form is:</p>
+        <table><thead><tr><th>Boolean hypercube</th><th>Poly eval</th><th>Evaluation result</th></tr></thead><tbody><tr><td>$0,0$</td><td>$f(0,0)$</td><td>$4$</td></tr><tr><td>$0,1$</td><td>$f(0,1)$</td><td>$5$</td></tr><tr><td>$1,0$</td><td>$f(1,0)$</td><td>$5$</td></tr><tr><td>$1,1$</td><td>$f(1,1)$</td><td>$8$</td></tr></tbody></table>
+        <p>$$f(x,y) = [4, 5, 5, 8]$$</p>
+        <h3>Generating the Structured Reference String (SRS)</h3>
+        <p>The structured reference string (SRS) consists of encodings in $\mathbb{G}_1$ of all Lagrange basis polynomials, evaluated at a randomly chosen input $\tau \in \mathbb{F}^{\ell}$. That is, if $\chi_1, \ldots, \chi_{2^{\ell}}$ denotes an enumeration of the $2^{\ell}$ Lagrange basis polynomials, the SRS contains $(g_1^{\chi_1(\tau)}, \ldots, g_1^{\chi_{2^{\ell}}(\tau)})$. The toxic waste that must be discarded, because it can be used to destroy binding, is the value $\tau$. Recall that $\ell$ is the number of variables of the multilinear polynomial.</p>
+        <pre><code>pub struct MultiLinearSRS&lt;P: Pairing&gt; {
+    pub g1_power_of_taus: Vec&lt;P::G1&gt;, // this is an expression of g1^tau^i over the boolean hypercube (every possible combination of each monomial)
+    pub g2_power_of_taus: Vec&lt;P::G2&gt;, // this is a vector of g2^tau^i
+}</code></pre>
+        <p>This is the <code>MultiLinearSRS</code> structure. We have already described <code>g1_power_of_taus</code>. <code>g2_power_of_taus</code> is simpler: one element of $\mathbb{G}_2$ for each coordinate of $\tau$:</p>
+        <p>$$\texttt{g2\_power\_of\_taus} = [g_2^{\tau_1}, \ldots, g_2^{\tau_{\ell}}]$$</p>
+        <h3>Commit Function</h3>
+        <p>This function commits to the polynomial, returning a group element that can be used for verification later. This is what the function interface looks like:</p>
+        <pre><code>fn commit&lt;F: PrimeField&gt;(srs: &amp;MultiLinearSRS&lt;P&gt;, poly: &amp;Multilinear&lt;F&gt;) -&gt; P::G1</code></pre>
+        <p>It takes the <code>srs</code> and the <code>poly</code> to commit to, and returns the commitment.</p>
+        <p>This function is quite simple: it raises each element of the <code>srs</code> to the matching evaluation in <code>poly</code>, and multiplies the results together. Mathematically, if</p>
+        <p>$$q(X) = \sum_{i=1}^{2^{\ell}} c_i \chi_i(X)$$</p>
+        <p>then</p>
+        <p>$$g_1^{q(\tau)} = \prod_{i=1}^{2^{\ell}} \left(g_1^{\chi_i(\tau)}\right)^{c_i}$$</p>
+        <p>which can be computed given the values $g_1^{\chi_i(\tau)}$ for all $i$, even without knowing $\tau$.</p>
+        <h3>Opening Function</h3>
+        <p>This is also known as making an evaluation and creating a proof for it. This is what the interface of <code>open</code> looks like:</p>
+        <pre><code>fn open&lt;F: PrimeField&gt;(
+    srs: &amp;MultiLinearSRS&lt;P&gt;,
+    poly: &amp;Multilinear&lt;F&gt;,
+    point: &amp;[F],
+) -&gt; (F, Vec&lt;&lt;P as Pairing&gt;::G1&gt;)</code></pre>
+        <p>This function takes the <code>srs</code>, the <code>poly</code>, and the <code>point</code> at which to evaluate the polynomial, and returns the evaluation along with a <code>Vec</code> of group elements, where each element is a commitment associated with one variable of the polynomial.</p>
+        <p><strong>Mathematically</strong></p>
+        <p>To open the commitment at input $z \in \mathbb{F}^{\ell}$ to some value $v$, i.e. to prove that $q(z) = v$, the committer computes a series of $\ell$ "witness polynomials" $w_1, \ldots, w_{\ell}$, defined by the following fact. For any fixed $z = (z_1, \ldots, z_{\ell}) \in \mathbb{F}^{\ell}$ and any multilinear polynomial $q$, we have $q(z) = v$ if and only if there exist multilinear polynomials $w_1, \ldots, w_{\ell}$ such that:</p>
+        <p>$$q(X) - v = \sum_{i=1}^{\ell} (X_i - z_i)\, w_i(X)$$</p>
+        <p>If $q(X) - v$ can be expressed as the right side of this equation, then clearly $q(z) - v = 0$, and hence $q(z) = v$.</p>
+        <p>On the other hand, suppose that $q(z) = v$. By dividing $q(X) - v$ by $(X_1 - z_1)$, we can identify multilinear polynomials $w_1$ and $s_1$ such that:</p>
+        <p>$$q(X) - v = (X_1 - z_1) \cdot w_1(X_2, \ldots, X_{\ell}) + s_1(X_2, \ldots, X_{\ell})$$</p>
+        <p>Since $q$ has degree one in $X_1$, neither $w_1$ nor the remainder $s_1$ depends on $X_1$. Iterating this process, we can divide $s_1$ by $(X_2 - z_2)$ to write:</p>
+        <p>$$q(X) - v = (X_1 - z_1) \cdot w_1(X_2, \ldots, X_{\ell}) + (X_2 - z_2) \cdot w_2(X_3, \ldots, X_{\ell}) + s_2(X_3, \ldots, X_{\ell})$$</p>
+        <p>and so forth, until we have written:</p>
+        <p>$$q(X) - v = \sum_{i=1}^{\ell} (X_i - z_i) \cdot w_i(X_{i+1}, \ldots, X_{\ell}) + s_{\ell}$$</p>
+        <p>where $s_{\ell}$ depends on no variables, i.e. it is simply a field element. Setting $X = z$ makes every other term vanish, and since $q(z) - v = 0$, it must hold that $s_{\ell} = 0$, completing the proof.</p>
+        <p>To open the commitment at $z$ to the value $v$, the prover computes $w_1, \ldots, w_{\ell}$ and sends the verifier values $y_1, \ldots, y_{\ell}$ claimed to equal $g_1^{w_i(\tau)}$. Since each $w_i$ is multilinear, $g_1^{w_i(\tau)}$ can be computed from the SRS, even though the prover does not know $\tau$.</p>
+        <h3>Verification</h3>
+        <p>The verification stage is less trouble than opening. The major operations are computing some elliptic curve pairings, multiplying them, and comparing the results.</p>
+        <p>Mathematically, with commitment $c$:</p>
+        <p>$$e(c \cdot g_1^{-v},\ g_2) = \prod_{i=1}^{\ell} e\left(y_i,\ g_2^{\tau_i} \cdot g_2^{-z_i}\right)$$</p>
+        <p>This looks complete. Yes, it is, but still confusing...</p>
+        <h3>Example</h3>
+        <p>Given the polynomial</p>
+        <p>$$f(x,y) = 2xy + 4x + 3$$</p>
+        <p>this is its representation in evaluation form over the Boolean hypercube:</p>
+        <table><thead><tr><th>Boolean hypercube</th><th>Poly eval</th><th>Evaluation result</th></tr></thead><tbody><tr><td>$0,0$</td><td>$f(0,0)$</td><td>$3$</td></tr><tr><td>$0,1$</td><td>$f(0,1)$</td><td>$3$</td></tr><tr><td>$1,0$</td><td>$f(1,0)$</td><td>$7$</td></tr><tr><td>$1,1$</td><td>$f(1,1)$</td><td>$9$</td></tr></tbody></table>
+        <p>$$f(x,y) = [3, 3, 7, 9]$$</p>
+        <p>We use small integers so the arithmetic is easy to follow. In reality, all exponents live in a large finite field.</p>
+        <p><strong>Trusted setup</strong></p>
+        <ol><li>Generate a vector of $\tau$ values, with one per variable of the polynomial:</li></ol>
+        <p>$$\tau_x = 2, \quad \tau_y = 4$$</p>
+        <ol><li>Perform the SRS generation step, evaluating each Lagrange basis polynomial at $\tau$:</li></ol>
+        <table><thead><tr><th>Boolean hypercube</th><th>Basis polynomial</th><th>Operation</th><th>Result</th></tr></thead><tbody><tr><td>$0,0$</td><td>$(1-x)(1-y)$</td><td>$(1-2)(1-4)$</td><td>$3$</td></tr><tr><td>$0,1$</td><td>$(1-x)y$</td><td>$(1-2) \cdot 4$</td><td>$-4$</td></tr><tr><td>$1,0$</td><td>$x(1-y)$</td><td>$2(1-4)$</td><td>$-6$</td></tr><tr><td>$1,1$</td><td>$xy$</td><td>$2 \cdot 4$</td><td>$8$</td></tr></tbody></table>
+        <p>So the SRS in $\mathbb{G}_1$ is $[g_1^{3}, g_1^{-4}, g_1^{-6}, g_1^{8}]$, and in $\mathbb{G}_2$ it is $[g_2^{2}, g_2^{4}]$.</p>
+        <p><strong>Commitment</strong></p>
+        <p>Raise each SRS element to the matching evaluation of $f$, and multiply:</p>
+        <p>$$c = (g_1^{3})^{3} \cdot (g_1^{-4})^{3} \cdot (g_1^{-6})^{7} \cdot (g_1^{8})^{9} = g_1^{9 - 12 - 42 + 72} = g_1^{27}$$</p>
+        <p>As a check, this is $f(\tau_x, \tau_y) = f(2, 4) = 16 + 8 + 3 = 27$.</p>
+        <p><strong>Opening</strong></p>
+        <p>Open at $x = 5$, $y = 1$. The evaluation is:</p>
+        <p>$$v = f(5, 1) = 2 \cdot 5 \cdot 1 + 4 \cdot 5 + 3 = 33$$</p>
+        <p>Subtract the value, then divide by $(x - 5)$ and $(y - 1)$ in turn:</p>
+        <p>$$f(x,y) - 33 = 2xy + 4x - 30$$</p>
+        <p>$$2xy + 4x - 30 = (x - 5)(2y + 4) + (10y - 10)$$</p>
+        <p>$$10y - 10 = (y - 1) \cdot 10$$</p>
+        <p>So $w_x = 2y + 4$ and $w_y = 10$. Evaluating them at $\tau$ using the SRS gives the two proof elements:</p>
+        <p>$$y_x = g_1^{2 \cdot 4 + 4} = g_1^{12}, \qquad y_y = g_1^{10}$$</p>
+        <p><strong>Verification</strong></p>
+        <p>The verifier checks:</p>
+        <p>$$e(c \cdot g_1^{-33},\ g_2) = e(y_x,\ g_2^{\tau_x} \cdot g_2^{-5}) \cdot e(y_y,\ g_2^{\tau_y} \cdot g_2^{-1})$$</p>
+        <p>Substituting the values:</p>
+        <p>$$e(g_1^{27 - 33},\ g_2) = e(g_1^{12},\ g_2^{2 - 5}) \cdot e(g_1^{10},\ g_2^{4 - 1})$$</p>
+        <p>With $g_T = e(g_1, g_2)$, the exponents multiply across each pairing:</p>
+        <p>$$g_T^{-6} = g_T^{12 \cdot (-3)} \cdot g_T^{10 \cdot 3} = g_T^{-36 + 30} = g_T^{-6}$$</p>
+        <p>The check passes.</p>
+        <p>Special credit to:</p>
+        <ul><li><a href="https://people.cs.georgetown.edu/jthaler/ProofsArgsAndZK.html" target="_blank" rel="noopener noreferrer">Proofs, Arguments, and Zero-Knowledge</a> by <a href="https://x.com/SuccinctJT" target="_blank" rel="noopener noreferrer">Justin Thaler</a></li><li><a href="https://x.com/only1franchesco" target="_blank" rel="noopener noreferrer">Mike Francis</a></li></ul>
+        <p>Rust implementation: <a href="https://github.com/developeruche/cryptography-n-zk-research/blob/main/pcs/src/kzg/multilinear/mod.rs" target="_blank" rel="noopener noreferrer"><code>pcs/src/kzg/multilinear/mod.rs</code></a></p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/"><span>← Previous</span>Univariate KZG Polynomial Commitment Scheme</a>
+        <a class="book-nav-next" href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/"><span>Next →</span>Batch Univariate KZG Polynomial Commitment Scheme</a>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/univariate-kzg/">Univariate KZG: Worked Example and Rust Code</a><span>Univariate KZG in practice: recommended resources, a small worked commit, open and verify example, and a Rust implementation.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/kzg-polynomial-commitment/">KZG Polynomial Commitments Explained</a><span>How KZG works: the SRS, committing, the quotient polynomial, the pairing check, and the costs of its trusted setup.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

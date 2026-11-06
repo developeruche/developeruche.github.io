@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keccak Explained: The Sponge and Keccak-f — Developer Uche</title>
+  <meta name="description" content="How Keccak works: the sponge, padding, absorbing and squeezing, the five steps of Keccak-f, and where its one-way security actually comes from." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="Keccak Explained: The Sponge and Keccak-f" />
+  <meta property="og:description" content="How Keccak works: the sponge, padding, absorbing and squeezing, the five steps of Keccak-f, and where its one-way security actually comes from." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-06" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="Keccak Explained: The Sponge and Keccak-f" />
+  <meta name="twitter:description" content="How Keccak works: the sponge, padding, absorbing and squeezing, the five steps of Keccak-f, and where its one-way security actually comes from." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Keccak Hash Function",
+  "description": "How Keccak works: the sponge, padding, absorbing and squeezing, the five steps of Keccak-f, and where its one-way security actually comes from.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/",
+  "datePublished": "2026-11-06",
+  "inLanguage": "en",
+  "keywords": "Hash Functions, Keccak, SHA-3",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Computational Proof Systems",
+    "url": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-06",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Keccak Hash Function",
+      "item": "https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/">← Computational Proof Systems contents</a>
+      <header>
+        <span class="section-label">// COMPUTATIONAL PROOF SYSTEMS · MISCELLANEOUS</span>
+        <h1 class="post-title">Keccak Hash Function</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-06">2026-11-06</time></p>
+      </header>
+
+      <div class="post-body">
+<p>Understanding the Keccak hash function and its variants. Rust implementation: <a href="https://github.com/developeruche/cryptography-n-zk-research/tree/main/hash-functions/keccak256" target="_blank" rel="noopener noreferrer"><code>hash-functions/keccak256</code></a>.</p>
+        <h3>Output Lengths</h3>
+        <p>The Keccak algorithm is standardized with 4 different output lengths:</p>
+        <table><thead><tr><th>Output $n$</th><th>Definition</th><th>Rate $r$</th><th>Capacity $c$</th></tr></thead><tbody><tr><td>224</td><td>Keccak$[r = 1152, c = 448]_{224}$</td><td>1152</td><td>448</td></tr><tr><td>256</td><td>Keccak$[r = 1088, c = 512]_{256}$</td><td>1088</td><td>512</td></tr><tr><td>384</td><td>Keccak$[r = 832, c = 768]_{384}$</td><td>832</td><td>768</td></tr><tr><td>512</td><td>Keccak$[r = 576, c = 1024]_{512}$</td><td>576</td><td>1024</td></tr></tbody></table>
+        <ul><li><strong>$n$:</strong> The output length.</li><li><strong>$r$:</strong> The bitrate, which determines how much data can be absorbed per block.</li><li><strong>$c$:</strong> The capacity, the remaining part of the internal state, which input is not written into directly. It determines the security level, helping to prevent collision and preimage attacks. Each variant here sets $c = 2n$.</li></ul>
+        <p>Keccak and SHA-3 aren't quite the same thing. NIST's SHA-3 standard changed the padding by adding domain bits, so the outputs differ. Ethereum's <code>keccak256</code> uses the original padding:</p>
+        <ul><li><code>keccak256("")</code> starts with <code>c5d24601...</code></li><li><code>SHA3-256("")</code> starts with <code>a7ffc6f8...</code></li></ul>
+        <h3>The Sponge Function</h3>
+        <p>Keccak is built from a sponge:</p>
+        <p>$$\text{Keccak}[r, c] \triangleq \text{Sponge}[\text{Keccak-}f[r + c],\ \text{pad10}^*\text{1},\ r]$$</p>
+        <p><img src="/assets/notes/computational-proof-systems/keccak-sponge.svg" alt="The sponge construction: message blocks are XORed into the rate part of the state, with the permutation f between them, and output blocks are read from the rate part" loading="lazy" /></p>
+        <p><strong>1. Padding the message $M$</strong></p>
+        <ul><li>Pad the message $M$ with the pattern $10^*1$, so that the result is a multiple of the bitrate $r$.</li><li>Divide the padded message into $m = \frac{\text{padded message length}}{r}$ blocks, $P_0, P_1, P_2, \ldots, P_{m-1}$.</li><li>A general rule: padding is always added, so if the original message length is already a multiple of $r$, a whole block's worth of padding is added.</li></ul>
+        <p><strong>2. Absorbing phase</strong></p>
+        <p>Start with $S = 0^b$, where $b = r + c = 1600$ is the state size. For each block $P_i$:</p>
+        <ul><li>Pad the block to the state size: $P_i \| 0^{b - r}$</li><li>XOR it into the state: $S = S \oplus (P_i \| 0^{b - r})$</li><li>Apply the permutation: $S = f(S)$</li></ul>
+        <p><strong>3. Squeezing phase</strong></p>
+        <p>Let $Z_0 = [S]_r$, the first $r$ bits of the state.</p>
+        <ul><li>If $|Z_0| \geq n$: the output is $[Z_0]_n$, the first $n$ bits.</li><li>If $|Z_0| < n$: apply $S = f(S)$, take $Z_1 = [S]_r$, and let $Z = Z_0 \| Z_1$.</li></ul>
+        <p>Squeezing continues until the output is at least $n$ bits long. All four variants above have $r \geq n$, so for them a single squeeze is enough.</p>
+        <h3>The Permutation $f$</h3>
+        <p>$f$ is the permutation function, made of $n_r$ rounds of $R$.</p>
+        <ul><li>The state $S[w(5y + x) + z]$ is mapped to $a[x][y][z]$, where $x = 0, \ldots, 4$, $y = 0, \ldots, 4$ and $z = 0, \ldots, 2^l - 1$.</li><li>We set $l = 6$, so that $w = 2^l = 64$ and $1600 = 5 \times 5 \times w$, and $n_r = 12 + 2l = 24$.</li></ul>
+        <p>Each round is:</p>
+        <p>$$R = \iota \circ \chi \circ \pi \circ \rho \circ \theta$$</p>
+        <p>where, with all arithmetic over bits (addition is XOR):</p>
+        <p>$$\theta: \quad a[x][y][z] \leftarrow a[x][y][z] + \sum_{y'=0}^{4} a[x-1][y'][z] + \sum_{y'=0}^{4} a[x+1][y'][z-1]$$</p>
+        <p>$$\rho: \quad a[x][y][z] \leftarrow a[x][y][z - (t+1)(t+2)/2]$$</p>
+        <p>with $t$ satisfying $0 \leq t < 24$ and $\begin{pmatrix} 0 & 1 \\ 2 & 3 \end{pmatrix}^t \begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} x \\ y \end{pmatrix}$ in $GF(5)^{2 \times 2}$, or $t = -1$ if $x = y = 0$.</p>
+        <p>$$\pi: \quad a[x][y] \leftarrow a[x'][y'], \quad \text{with} \quad \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ 2 & 3 \end{pmatrix} \begin{pmatrix} x' \\ y' \end{pmatrix}$$</p>
+        <p>$$\chi: \quad a[x] \leftarrow a[x] + (a[x+1] + 1)\, a[x+2]$$</p>
+        <p>$$\iota: \quad a \leftarrow a + RC[i_r]$$</p>
+        <p>In words:</p>
+        <ol><li><strong>Theta (parity mixing):</strong> Each bit is mixed with the parity of two other columns, so small changes in the input diffuse across the state.</li><li><strong>Rho (bitwise rotation):</strong> Each lane is rotated by its own offset, spreading bits within lanes.</li><li><strong>Pi (lane permutation):</strong> Lanes are moved to new positions. This is a linear rearrangement, which spreads bits across lanes.</li><li><strong>Chi (nonlinear layer):</strong> This AND-XOR step is the only nonlinear one, and it defeats attacks based on solving linear equations.</li><li><strong>Iota (round constant injection):</strong> Each round gets a different constant, which breaks the symmetry between rounds and across the state.</li></ol>
+        <h3>Why Is Keccak a One-Way Hash Function?</h3>
+        <p>A one-way function means that, given an output $h = H(m)$, it is computationally infeasible to find an input $m$ that produces it (preimage resistance). It is worth being precise about where this comes from, because it isn't that the steps above are hard to reverse.</p>
+        <p><strong>Keccak-$f$ itself is invertible.</strong> It's a permutation, and each of its five steps has an inverse. Given a <em>whole</em> 1600-bit state, anyone can run it backwards.</p>
+        <p><strong>The attacker never gets a whole state.</strong> That is the role of the capacity. The output reveals only part of the rate, and the $c$ capacity bits stay hidden. To run the permutation backwards from an output, an attacker would have to guess all the missing bits, which is at least $2^c$ possibilities for the capacity alone. A wrong guess gives nonsense, and nothing signals when a guess is right.</p>
+        <p><strong>The permutation makes those guesses useless.</strong> Its 24 rounds of mixing and nonlinearity are designed so that the output behaves like a random function of the input, leaving no shortcut better than brute force. If the permutation is ideal, the sponge has a security level of up to $c/2$ bits, and for preimages of an $n$-bit output, at most $n$ bits.</p>
+        <p>So, for Keccak-256, finding a preimage costs about $2^{256}$ work and finding a collision about $2^{128}$. Note that this is computational security. Many inputs map to each output, so inverting isn't "impossible" in principle, just infeasible.</p>
+      </div>
+
+      <nav class="book-nav" aria-label="Book pages">
+        <a class="book-nav-prev" href="/notes/cryptography-zkp/computational-proof-systems/sumcheck201-paper-note/"><span>← Previous</span>Sumcheck 201 Paper Note</a>
+        <span></span>
+      </nav>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/arithmetic-circuits/">Arithmetic Circuits for Zero-Knowledge Proofs</a><span>What arithmetic circuits are, how their wires and gates compute polynomials over a finite field, and how they differ from Boolean circuits.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/batch-univariate-kzg/">Batch KZG: Opening at Many Points with One Proof</a><span>Batch KZG opens one polynomial at several points with a single proof, using an interpolated remainder and a vanishing polynomial. Includes an example.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+      <a class="back-link" href="/notes/cryptography-zkp/computational-proof-systems/" style="margin-top: var(--space-lg);">← Computational Proof Systems contents</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>
