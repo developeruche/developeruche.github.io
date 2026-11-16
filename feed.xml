@@ -7,6 +7,14 @@
     <language>en</language>
     <atom:link href="https://developeruche.com/feed.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>WOTS+ Explained in Rust: Checksum, Masks, Fast Verify</title>
+      <link>https://developeruche.com/notes/cryptography-zkp/wots-plus/</link>
+      <guid isPermaLink="true">https://developeruche.com/notes/cryptography-zkp/wots-plus/</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 +0000</pubDate>
+      <description>WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way.</description>
+      <category>Post-Quantum Cryptography</category><category>Hash-Based Signatures</category><category>WOTS+</category><category>Rust</category>
+    </item>
+    <item>
       <title>Computational Proof Systems</title>
       <link>https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/</link>
       <guid isPermaLink="true">https://developeruche.com/notes/cryptography-zkp/computational-proof-systems/</guid>

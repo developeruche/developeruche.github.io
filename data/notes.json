@@ -1,5 +1,21 @@
 [
   {
+    "title": "WOTS+: Winternitz One-Time Signatures, Plus",
+    "slug": "wots-plus",
+    "category": "cryptography-zkp",
+    "date": "2026-11-16",
+    "excerpt": "The plain WOTS code upgraded to WOTS+: the checksum that stops forgeries, randomized hash chains, and rapid verification, with a fix for a grinding loop that optimized the wrong way.",
+    "tags": [
+      "Post-Quantum Cryptography",
+      "Hash-Based Signatures",
+      "WOTS+",
+      "Rust"
+    ],
+    "link": "/notes/cryptography-zkp/wots-plus/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "Computational Proof Systems",
     "slug": "computational-proof-systems",
     "category": "cryptography-zkp",

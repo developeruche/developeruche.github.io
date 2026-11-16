@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOTS+ Explained in Rust: Checksum, Masks, Fast Verify</title>
+  <meta name="description" content="WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way." />
+  <meta name="author" content="Developer Uche" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://developeruche.com/notes/cryptography-zkp/wots-plus/" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Developer Uche" />
+  <meta property="og:title" content="WOTS+ Explained in Rust: Checksum, Masks, Fast Verify" />
+  <meta property="og:description" content="WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way." />
+  <meta property="og:url" content="https://developeruche.com/notes/cryptography-zkp/wots-plus/" />
+  <meta property="og:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Blueprint diagram of an arithmetic circuit and polynomial evaluation domain" />
+  <meta property="article:published_time" content="2026-11-16" />
+  <meta property="article:author" content="https://developeruche.com" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@developeruche" />
+  <meta name="twitter:creator" content="@developeruche" />
+  <meta name="twitter:title" content="WOTS+ Explained in Rust: Checksum, Masks, Fast Verify" />
+  <meta name="twitter:description" content="WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way." />
+  <meta name="twitter:image" content="https://developeruche.com/assets/og/cryptography-zkp.jpg" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "WOTS+: Winternitz One-Time Signatures, Plus",
+  "description": "WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way.",
+  "url": "https://developeruche.com/notes/cryptography-zkp/wots-plus/",
+  "datePublished": "2026-11-16",
+  "inLanguage": "en",
+  "keywords": "Post-Quantum Cryptography, Hash-Based Signatures, WOTS+, Rust",
+  "author": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/",
+    "sameAs": [
+      "https://github.com/developeruche",
+      "https://x.com/developeruche",
+      "https://www.linkedin.com/in/developeruche",
+      "https://hackmd.io/@0xdeveloperuche"
+    ]
+  },
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "Cryptography & ZKP Notes",
+    "url": "https://developeruche.com/notes/cryptography-zkp/"
+  },
+  "image": [
+    "https://developeruche.com/assets/og/cryptography-zkp.jpg"
+  ],
+  "dateModified": "2026-11-16",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://developeruche.com/notes/cryptography-zkp/wots-plus/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Developer Uche",
+    "url": "https://developeruche.com/"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- KaTeX for LaTeX math (inline $…$ / \(…\) and block $$…$$ / \[…\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://developeruche.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notes",
+      "item": "https://developeruche.com/notes"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cryptography & ZKP Notes",
+      "item": "https://developeruche.com/notes/cryptography-zkp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "WOTS+: Winternitz One-Time Signatures, Plus",
+      "item": "https://developeruche.com/notes/cryptography-zkp/wots-plus/"
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="application/rss+xml" title="Developer Uche — Blog & Notes" href="/feed.xml" />
+</head>
+<body data-page="notes">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <article class="post container">
+      <a class="back-link" href="/notes/cryptography-zkp/">← Back to Cryptography &amp; ZKP notes</a>
+      <header>
+        <span class="section-label">// STUDY NOTE · CRYPTOGRAPHY &amp; ZKP</span>
+        <h1 class="post-title">WOTS+: Winternitz One-Time Signatures, Plus</h1>
+        <p class="post-meta">// <span rel="author">Developer Uche</span> · <time datetime="2026-11-16">2026-11-16</time></p>
+        <div class="meta-tags" style="margin-top: var(--space-sm);">
+          <span>Post-Quantum Cryptography</span>
+          <span>Hash-Based Signatures</span>
+          <span>WOTS+</span>
+          <span>Rust</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+<p>This note is the sequel to <a href="/blog/winternitz-one-time-signature/">Winternitz One-Time Signature</a>. That post built plain WOTS in Rust: hash a secret 256 times to get a public key, and sign a byte by stopping partway along the chain. This note takes the same code and works through the three changes that turn it into <strong>WOTS+</strong>, the one-time signature inside XMSS and SPHINCS+:</p>
+        <ol><li><strong>A checksum.</strong> Plain WOTS lets anyone forge a signature for some other messages. The checksum closes that hole.</li><li><strong>Randomized hash chains.</strong> Every step of every chain is XORed with a public mask before it is hashed.</li><li><strong>A public seed.</strong> The masks are derived from it, so both the signer and the verifier can recompute them.</li></ol>
+        <p>The last section covers a signing-time trick, <em>rapid verification</em>, from the <a href="/notes/cryptography-zkp/rapidly-verifiable-xmss/">Rapidly Verifiable XMSS</a> note. It also shows that the code's version of the trick optimizes in the wrong direction, and gives the one-line fix.</p>
+        <h2>Phase 0: Parameters</h2>
+        <pre><code>const HASH_SIZE: usize = 32; // SHA-256 output, in bytes
+const L1: usize = 32;        // message chunks: one per byte of the message hash
+const L2: usize = 2;         // checksum chunks
+const L: usize = L1 + L2;    // 34 chains in total
+const W: u16 = 256;          // w = 8 bits per chunk, so W = 2^8 values
+
+type Fragment = [u8; HASH_SIZE];
+type Seed = [u8; 32];</code></pre>
+        <p>Plain WOTS had $L = 32$ chains, one per byte of the message hash. WOTS+ adds $L_2 = 2$ chains for the checksum, so $L = 34$.</p>
+        <table><thead><tr><th>Symbol</th><th>Value</th><th>Meaning</th></tr></thead><tbody><tr><td>$n$</td><td>32 bytes</td><td>hash output size (SHA-256)</td></tr><tr><td>$w$</td><td>8 bits</td><td>bits signed per chain</td></tr><tr><td>$W$</td><td>$2^8 = 256$</td><td>values one chunk can take; also the chain length</td></tr><tr><td>$L_1$</td><td>32</td><td>message chains</td></tr><tr><td>$L_2$</td><td>2</td><td>checksum chains</td></tr><tr><td>$L$</td><td>34</td><td>total chains</td></tr></tbody></table>
+        <h2>Phase 1: The randomized hash chain</h2>
+        <p>Plain WOTS walks a chain by hashing the previous value: $x_{j+1} = H(x_j)$. WOTS+ XORs a mask in first:</p>
+        <p>$$
+x_{i,0} = sk_i, \qquad x_{i,j+1} = H\big(x_{i,j} \oplus r_{i,j}\big), \qquad pk_i = x_{i,W}.
+$$</p>
+        <p>Here $i$ is the chain number ($0 \le i < 34$) and $j$ is the step ($0 \le j < 256$). Each mask $r_{i,j}$ is unique to its position, and anyone can recompute it from the public seed:</p>
+        <p>$$
+r_{i,j} = \mathrm{SHA256}\big(\textit{pub\_seed} \,\|\, i_{\text{u32,BE}} \,\|\, j_{\text{u16,BE}}\big).
+$$</p>
+        <pre><code>/// r_{i,j} = PRF(pub_seed, chain_idx, step_idx)
+fn derive_randomizer(pub_seed: &amp;Seed, chain_idx: u32, step_idx: u16) -&gt; Fragment {
+    let mut hasher = Sha256::new();
+    hasher.update(pub_seed);
+    hasher.update(&amp;chain_idx.to_be_bytes()); // i
+    hasher.update(&amp;step_idx.to_be_bytes());  // j
+    hasher.finalize().into()
+}
+
+/// x_{i,j+1} = H(x_{i,j} XOR r_{i,j}), run `iterations` times from step `start_index`.
+fn hash_chain(start: &amp;Fragment, start_index: u16, iterations: u16,
+              pub_seed: &amp;Seed, chain_addr: u32) -&gt; Fragment {
+    let mut result = *start;
+    for k in 0..iterations {
+        let r = derive_randomizer(pub_seed, chain_addr, start_index + k);
+        let mut tmp = [0u8; HASH_SIZE];
+        for b in 0..HASH_SIZE {
+            tmp[b] = result[b] ^ r[b];
+        }
+        result = Sha256::digest(&amp;tmp).into();
+    }
+    result
+}</code></pre>
+        <p>Compared with the plain WOTS version, <code>hash_chain</code> takes two new arguments:</p>
+        <ul><li><strong><code>chain_addr</code></strong> ($i$) selects which chain's masks to use.</li><li><strong><code>start_index</code></strong> ($j$) says which absolute step the chain starts from. Plain WOTS could start hashing from anywhere because every step was the same function. In WOTS+, step $j$ uses mask $r_{i,j}$, so a verifier who picks up a chain halfway must know exactly where it is. If the index is off by one, every mask after that point is wrong and the chain never reaches the public key.</li></ul>
+        <h3>Why mask the chain?</h3>
+        <p>In plain WOTS, every step of every chain uses the same function $H$. If an attacker sees many chain values from many keys, a preimage of <em>any</em> of them is useful, which gives the attacker many targets at once. Plain WOTS also needs $H$ to be collision resistant.</p>
+        <p>WOTS+ gives every position $(i, j)$ its own function $x \mapsto H(x \oplus r_{i,j})$. A value computed at one position is useless at any other, and the security proof only needs second-preimage resistance and one-wayness, not collision resistance. Second-preimage resistance is the weaker assumption, which is why WOTS+ can use shorter hashes than plain WOTS for the same security. (The proof also assumes a keyed hash family; this code keeps the masks but uses unkeyed SHA-256. See the comparison table at the end.) The rapidly verifiable XMSS note describes the attacks this blocks: chain splicing and multi-target attacks.</p>
+        <h2>Phase 2: Key generation</h2>
+        <pre><code>pub struct WotsPrivateKey { keys: Vec&lt;Fragment&gt;, pub_seed: Seed }
+pub struct WotsPublicKey  { keys: Vec&lt;Fragment&gt;, pub_seed: Seed }
+pub struct WotsSignature  { keys: Vec&lt;Fragment&gt; }
+
+impl WotsPrivateKey {
+    pub fn new() -&gt; Self {
+        let mut rng = rand::rng();
+        let mut keys = Vec::with_capacity(L);
+        for _ in 0..L {
+            let mut key_fragment = [0u8; HASH_SIZE];
+            rng.fill_bytes(&amp;mut key_fragment);
+            keys.push(key_fragment);
+        }
+        let mut pub_seed = [0u8; 32];
+        rng.fill_bytes(&amp;mut pub_seed);
+        WotsPrivateKey { keys, pub_seed }
+    }
+
+    pub fn to_public(&amp;self) -&gt; WotsPublicKey {
+        let pub_keys = self.keys.iter().enumerate()
+            .map(|(i, sk_i)| hash_chain(sk_i, 0, W, &amp;self.pub_seed, i as u32))
+            .collect();
+        WotsPublicKey { keys: pub_keys, pub_seed: self.pub_seed }
+    }
+}</code></pre>
+        <ol><li>Draw 34 random 32-byte fragments. These are the private key.</li><li>Draw a random 32-byte <code>pub_seed</code>. It is public; it only fixes the masks.</li><li>Walk each chain from step 0 for all $W = 256$ steps. The 34 end points, together with <code>pub_seed</code>, are the public key.</li></ol>
+        <p><code>pub_seed</code> lives in both keys. The signature leaves it out, because the verifier already holds the public key.</p>
+        <p><strong>Sizes:</strong></p>
+        <ul><li>Public key: $34 \times 32 + 32 = 1{,}120$ bytes.</li><li>Signature: $34 \times 32 = 1{,}088$ bytes.</li><li><code>WotsPublicKey::hash()</code> compresses the public key to one 32-byte value, $\mathrm{SHA256}(pk_0 \| \dots \| pk_{33} \| \textit{pub\_seed})$, which is the kind of value a Merkle tree leaf stores.</li></ul>
+        <h2>Phase 3: The checksum</h2>
+        <h3>The hole in plain WOTS</h3>
+        <p>A signature reveals the chain value at position $W - m_i$. Anyone can hash forward, but nobody can hash backward. From a signature on $m$, an attacker can compute every position $\ge W - m_i$, which means valid signatures for <strong>every message $m'$ with $m'_i \le m_i$ in every byte</strong>.</p>
+        <p>Plain WOTS therefore leaks signatures for other messages. Since the attacker can't choose the hash of a message, this is a weakness rather than a direct break, but it is exactly the kind of weakness that should not exist.</p>
+        <h3>The fix</h3>
+        <p>Append a counter that moves the <em>other</em> way. The code computes</p>
+        <p>$$
+C = \sum_{i=0}^{31} \big(W - m_i\big) = \sum_{i=0}^{31} (256 - m_i),
+$$</p>
+        <p>and signs its two big-endian bytes on chains 32 and 33, the same way it signs message bytes:</p>
+        <pre><code>fn checksum(msg: &amp;[u8]) -&gt; Vec&lt;u8&gt; {
+    let mut c: u16 = 0;
+    for &amp;byte in msg {
+        c += W - (byte as u16);
+    }
+    vec![(c &gt;&gt; 8) as u8, (c &amp; 0xFF) as u8]
+}</code></pre>
+        <p>This is why a forger loses:</p>
+        <ul><li>Making any message byte smaller (the only direction hashing forward allows) makes $C$ larger.</li><li>A larger $C$ has, at its first differing big-endian byte, a larger value $c'_k > c_k$.</li><li>Signing $c'_k$ needs the chain value at position $W - c'_k$, which is <em>earlier</em> than the revealed $W - c_k$. Getting there means inverting the hash.</li></ul>
+        <p>So every tampered message breaks at least one chain.</p>
+        <p><strong>Range check.</strong> Each term $256 - m_i$ lies in $[1, 256]$, so $C \in [32, 8192]$. The code's comment says the maximum is "$L_1 (W-1) \approx 8160$". That's slightly off: the true maximum is $32 \times 256 = 8192$. It still fits easily in a <code>u16</code> and in two base-256 digits (the high byte is at most $8192 \gg 8 = 32$), so the code is correct.</p>
+        <p><strong>Orientation.</strong> This code signs with $W - v$ steps. RFC 8391 and the XMSS papers do the opposite: they sign with $v$ steps and use the checksum $\sum (w - 1 - m_i)$. The two conventions are mirror images of each other, so each checksum runs against the direction the forger can move in. Keep that in mind when comparing this code with the papers, because it matters for rapid verification below.</p>
+        <h2>Phase 4: Signing</h2>
+        <p>Put the 32 message bytes and the 2 checksum bytes into one list $v = (v_0, \dots, v_{33})$, and reveal each chain at position $W - v_i$:</p>
+        <p>$$
+\sigma_i = x_{i,\,W - v_i} = \mathrm{chain}_i\big(sk_i,\ \text{from step } 0,\ W - v_i \text{ steps}\big).
+$$</p>
+        <pre><code>pub fn sign(&amp;self, message_hash: &amp;Fragment) -&gt; WotsSignature {
+    let cs = checksum(message_hash);
+    let signature_keys = self.keys.iter()
+        .zip(message_hash.iter().chain(cs.iter()))   // v = m || checksum
+        .enumerate()
+        .map(|(i, (sk_i, &amp;v_i))| {
+            hash_chain(sk_i, 0, W - (v_i as u16), &amp;self.pub_seed, i as u32)
+        })
+        .collect();
+    WotsSignature { keys: signature_keys }
+}</code></pre>
+        <p>Two edge cases:</p>
+        <ul><li>Since $v_i \le 255$, the revealed position is always at least 1. The private key itself ($x_{i,0}$) is never revealed.</li><li>When $v_i = 0$, the signature fragment <em>is</em> the public key fragment $x_{i,256}$, and the verifier does no work on that chain.</li></ul>
+        <h2>Phase 5: Verification</h2>
+        <p>Recompute $v$ from the message hash, then finish each chain. Start at position $W - v_i$ and take the remaining $v_i$ steps up to $W$:</p>
+        <pre><code>pub fn verify(&amp;self, message_hash: &amp;Fragment, signature: &amp;WotsSignature) -&gt; bool {
+    if signature.keys.len() != L {
+        return false;
+    }
+    let cs = checksum(message_hash);
+    let recovered_keys: Vec&lt;Fragment&gt; = signature.keys.iter()
+        .zip(message_hash.iter().chain(cs.iter()))
+        .enumerate()
+        .map(|(i, (sig_i, &amp;v_i))| {
+            let start_index = W - (v_i as u16); // where the signer stopped
+            hash_chain(sig_i, start_index, v_i as u16, &amp;self.pub_seed, i as u32)
+        })
+        .collect();
+    self.keys == recovered_keys
+}</code></pre>
+        <p>The <code>start_index = W - v_i</code> line is the WOTS+ detail that has no counterpart in plain WOTS. The verifier continues the signer's chain from the exact step where the signer stopped, using masks $r_{i,W-v_i}, \dots, r_{i,W-1}$. The length check at the top rejects a signature with too few fragments. Without it, <code>zip</code> would silently compare fewer chains.</p>
+        <h3>Cost</h3>
+        <p>Signing and verifying split each 256-step chain between them, so together they always do $L \cdot W = 34 \times 256 = 8{,}704$ steps. The verifier's share is</p>
+        <p>$$
+\text{verify steps} = \sum_{i=0}^{33} v_i .
+$$</p>
+        <p>Each step costs <strong>two</strong> SHA-256 calls: one to derive $r_{i,j}$ and one for the chain hash. Key generation is therefore $8{,}704 \times 2 = 17{,}408$ SHA-256 calls. For a random message, verification averages about <strong>4,200 steps</strong>: the message bytes contribute about $32 \times 127.5 = 4{,}080$, and the checksum bytes contribute the rest.</p>
+        <h2>Phase 6: Rapid verification</h2>
+        <h3>The idea</h3>
+        <p>Verification cost depends on the message digest, and the signer can choose among many digests. Hash the message with a counter, $d_{ctr} = \mathrm{SHA256}(\text{message} \,\|\, ctr_{\text{u32,BE}})$, try $T+1$ counters, sign the cheapest $d_{ctr}$, and send $ctr$ along with the signature. Signing costs a few hundred extra hashes, once. Every later verification is cheaper. This is the idea behind the <a href="/notes/cryptography-zkp/rapidly-verifiable-xmss/">Rapidly Verifiable XMSS</a> note.</p>
+        <p>The code does this in <code>sign_optimized</code>. It hashes the message once, clones the hasher state for each counter (so the extra signing cost does not grow with message length), and scores each digest:</p>
+        <pre><code>pub fn sign_optimized(&amp;self, message: &amp;[u8], max_attempts: u32) -&gt; (WotsSignature, u32) {
+    let mut best_ctr = 0;
+    let mut best_score = 0;
+    let mut best_digest = [0u8; HASH_SIZE];
+
+    let mut base_hasher = Sha256::new();
+    base_hasher.update(message);
+
+    for ctr in 0..=max_attempts {
+        let mut hasher = base_hasher.clone();
+        hasher.update(&amp;ctr.to_be_bytes());
+        let digest: Fragment = hasher.finalize().into();
+        let cs = checksum(&amp;digest);
+        let score: u32 = digest.iter().chain(cs.iter()).map(|&amp;x| x as u32).sum();
+        if score &gt; best_score {          // &lt;-- keeps the HIGHEST score
+            best_score = score;
+            best_ctr = ctr;
+            best_digest = digest;
+        }
+    }
+    (self.sign(&amp;best_digest), best_ctr)
+}</code></pre>
+        <h3>The bug: it maximizes verification cost</h3>
+        <p>The comment above the score says verification cost is proportional to $\sum (W - 1 - v_i)$, so the largest $\sum v_i$ is the cheapest. That is true for the <strong>RFC orientation</strong>, where the signer walks $v_i$ steps and the verifier walks the rest. This code uses the mirror image (Phase 3): the verifier walks $v_i$ steps. Its cost <strong>is</strong> the score:</p>
+        <p>$$
+\text{verify steps} = \sum_{i=0}^{33} v_i = \text{score}.
+$$</p>
+        <p>Keeping the highest score therefore picks the digest that is <strong>most expensive</strong> to verify. I ported the code to Python step for step and measured it on 300 random messages with <code>max_attempts = 255</code> (256 counters):</p>
+        <table><thead><tr><th>Counter choice</th><th>Mean verify steps</th><th>vs. <code>ctr = 0</code></th></tr></thead><tbody><tr><td><code>ctr = 0</code> (no search)</td><td>4,209</td><td>—</td></tr><tr><td>code as written (<code>score &gt; best</code>)</td><td>5,397</td><td><strong>28% slower</strong></td></tr><tr><td>fixed (<code>score &lt; best</code>)</td><td>3,036</td><td><strong>28% faster, 1.39×</strong></td></tr></tbody></table>
+        <p>The fixed result agrees with the roughly 1.44× speed-up reported in the rapidly verifiable XMSS note. The test suite missed the bug because <code>test_optimization_gain</code> checks that the score went <em>up</em>. It never measures the verifier's work.</p>
+        <h3>The fix</h3>
+        <p>Keep the lowest score:</p>
+        <pre><code>let mut best_score = u32::MAX;
+// ...
+if score &lt; best_score {</code></pre>
+        <p>Alternatively, flip the whole scheme to the RFC orientation: sign with $v_i$ steps, verify with $W - v_i$, and use the checksum $\sum (W - 1 - m_i)$. Then keeping the highest score is correct. Either way, the score and the verifier must agree on which direction is cheap.</p>
+        <p>Two more points on using <code>sign_optimized</code>:</p>
+        <ul><li><strong>The counter travels with the signature.</strong> The verifier recomputes $\mathrm{SHA256}(\text{message} \| ctr)$ and calls the ordinary <code>verify</code>. <code>test_sign_optimized</code> does exactly this.</li><li><strong>Grinding does not weaken security.</strong> The signer is only choosing among hash outputs that it computes honestly. The key is still used once, on one digest.</li></ul>
+        <h2>Why "one-time" still holds</h2>
+        <p>Sign two different digests with the same key, and for each chain the attacker learns the earlier of the two revealed positions. They can now sign any value up to $\max(v_i, v'_i)$ on every chain, <em>including the checksum chains</em>. The checksum argument from Phase 3 no longer applies: an attacker can mix high bytes from one signature with high checksum digits from the other. Every WOTS+ key must sign exactly one digest. XMSS enforces this with a state counter; SPHINCS+ does it by picking keys from a huge tree at random.</p>
+        <h2>This code vs. RFC 8391</h2>
+        <p>This implementation is a faithful <em>teaching</em> version of WOTS+. These are the differences from the standardized version used in XMSS:</p>
+        <table><thead><tr><th></th><th>This code</th><th>RFC 8391 (XMSS)</th></tr></thead><tbody><tr><td>Winternitz parameter</td><td>$w = 256$ ($\log w = 8$)</td><td>$w = 16$ ($\log w = 4$): 64 + 3 chains for $n = 32$</td></tr><tr><td>Chain step</td><td>$H(x \oplus r_{i,j})$</td><td>$F(\textit{key}_{i,j},\ x \oplus \textit{bm}_{i,j})$: a mask <strong>and</strong> a per-step key, both from PRF(seed, address)</td></tr><tr><td>Mask address</td><td>chain $i$, step $j$</td><td>layer, tree, key pair (OTS index), chain, step</td></tr><tr><td>Private key</td><td>34 random fragments</td><td>derived from one secret seed via PRF</td></tr><tr><td>Orientation</td><td>sign $W - v_i$ steps, verify $v_i$</td><td>sign $v_i$ steps, verify $w - 1 - v_i$</td></tr><tr><td>Public key compression</td><td><code>hash()</code>: one SHA-256 over all fragments</td><td>L-tree (a binary hash tree)</td></tr></tbody></table>
+        <p>The address row matters once keys are placed in a tree. Here the masks depend only on $(i, j)$, so two key pairs that share a <code>pub_seed</code> would share all their masks. XMSS adds the key-pair index to the address so every leaf gets its own masks. A single key, as used here and in the tests, is unaffected.</p>
+        <h2>Summary</h2>
+        <ul><li><strong>WOTS+ = WOTS + checksum + masked chains.</strong> The checksum stops forward-hashing forgeries. The masks give every chain position its own hash function, which defeats multi-target attacks and reduces security to second-preimage resistance.</li><li><strong><code>start_index</code> is the key implementation detail.</strong> The verifier continues the chain from the exact step where the signer stopped, because each step uses a different mask.</li><li><strong>Costs at these parameters:</strong><ul><li>Public key: 1,120 bytes. Signature: 1,088 bytes.</li><li>Key generation: 17,408 SHA-256 calls.</li><li>Signing plus verifying: 8,704 chain steps in total, about 4,200 of them for the verifier.</li></ul></li><li><strong>Rapid verification works, once it points the right way.</strong> Searching 256 counters makes verification about 1.39× faster, but only after <code>sign_optimized</code> keeps the <em>lowest</em> $\sum v_i$. As written, it makes verification 28% slower.</li></ul>
+      </div>
+      <!-- RELATED:START -->
+      <aside class="related" aria-label="Related reading">
+        <span class="section-label">// RELATED READING</span>
+        <ul class="related-list">
+          <li><a href="/notes/cryptography-zkp/rapidly-verifiable-xmss/">Rapidly Verifiable XMSS Signatures</a><span>How XMSS and WOTS+ work, and how a counter search at signing time makes hash-based signatures verify up to 1.44× faster on embedded devices.</span></li>
+          <li><a href="/notes/cryptography-zkp/computational-proof-systems/">Computational Proof Systems</a><span>A study book on zero-knowledge proofs: circuits, R1CS and QAP, polynomial commitments, sum-check, GKR, Groth16, PLONK and lookups, with Rust code.</span></li>
+        </ul>
+      </aside>
+      <!-- RELATED:END -->
+
+      <a class="back-link" href="/notes/cryptography-zkp/" style="margin-top: var(--space-lg);">← Back to Cryptography &amp; ZKP notes</a>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountLayout } from '/assets/js/layout.js';
+    mountLayout();
+  </script>
+  <!-- KaTeX auto-render: typeset math in the note body after load -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement === 'undefined') return;
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    });
+  </script>
+</body>
+</html>

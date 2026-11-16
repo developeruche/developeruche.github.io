@@ -262,5 +262,9 @@
   "/notes/cryptography-zkp/computational-proof-systems/keccak-hash-function/": {
     "title": "Keccak Explained: The Sponge and Keccak-f",
     "description": "How Keccak works: the sponge, padding, absorbing and squeezing, the five steps of Keccak-f, and where its one-way security actually comes from."
+  },
+  "/notes/cryptography-zkp/wots-plus/": {
+    "title": "WOTS+ Explained in Rust: Checksum, Masks, Fast Verify",
+    "description": "WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way."
   }
 }
