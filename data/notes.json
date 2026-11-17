@@ -1,5 +1,22 @@
 [
   {
+    "title": "Merkle Hypertrees: A Guide for Cryptographers and Implementers",
+    "slug": "merkle-hypertrees",
+    "category": "cryptography-zkp",
+    "date": "2026-11-17",
+    "excerpt": "How hypertrees stack Merkle trees of one-time keys, and how HSS, XMSS^MT and SLH-DSA use them: index arithmetic, state, sizes, fault attacks, and tested reference code.",
+    "tags": [
+      "Post-Quantum Cryptography",
+      "Hash-Based Signatures",
+      "SLH-DSA",
+      "LMS",
+      "XMSS"
+    ],
+    "link": "/notes/cryptography-zkp/merkle-hypertrees/",
+    "highlight": true,
+    "thumbnail": null
+  },
+  {
     "title": "WOTS+: Winternitz One-Time Signatures, Plus",
     "slug": "wots-plus",
     "category": "cryptography-zkp",

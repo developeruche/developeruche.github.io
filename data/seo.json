@@ -266,5 +266,9 @@
   "/notes/cryptography-zkp/wots-plus/": {
     "title": "WOTS+ Explained in Rust: Checksum, Masks, Fast Verify",
     "description": "WOTS+ from Rust code: the checksum that blocks forgeries, randomized hash chains, sizes and costs, and rapid verification done the right way."
+  },
+  "/notes/cryptography-zkp/merkle-hypertrees/": {
+    "title": "Merkle Hypertrees: HSS, XMSS^MT and SLH-DSA Explained",
+    "description": "How Merkle hypertrees work in HSS, XMSS^MT and SLH-DSA: index math, stateful vs stateless signing, h/d trade-offs, fault attacks and tested Python code."
   }
 }
